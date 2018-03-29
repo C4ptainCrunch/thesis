@@ -1,0 +1,282 @@
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Bright/cmun-bright.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Bright Semibold/cmun-bright-semibold.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Classical Serif Italic/cmun-classical-serif-italic.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Concrete/cmun-concrete.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Sans/cmun-sans.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Sans Demi-Condensed/cmun-sans-demicondensed.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Serif/cmun-serif.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Serif Slanted/cmun-serif-slanted.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Typewriter/cmun-typewriter.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Typewriter Light/cmun-typewriter-light.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Typewriter Variable/cmun-typewriter-variable.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Upright Italic/cmun-upright-italic.css);
+
+body {
+  font-family: "Computer Modern Serif", serif !important;
+  font-size: 19px;
+}
+
+a.image-reference:hover {
+    border-bottom: none !important;
+    border: none !important;
+}
+
+div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
+  font-family: "Computer Modern Serif", serif !important;
+}
+
+.bibtex.reference {
+  white-space: nowrap;
+}
+
+.figure img {
+  width: 80%;
+  max-height: 25em;
+  max-width: 30em;
+}
+
+.filter--filtered {
+  display: none;
+}
+
+/* Document width */
+@media screen {
+  div.document {
+      width: 90vw !important;
+      max-width: 1000px;
+  }
+}
+
+section.first-page {
+  margin-top: 6em;
+  margin-bottom: 9em;
+}
+
+section.first-page h1 {
+  font-size: 3.5em;
+  margin-top: 2em;
+}
+
+section.first-page h2 {
+  font-size: 120%;
+  width: 70%;
+}
+
+@media print {
+  div.document {
+      width: 100%;
+  }
+
+  body {
+    font-size: 12px;
+  }
+
+  h1 {
+    break-before: page;
+  }
+
+  section.first-page {
+    margin-top: 40vh;
+    page-break-after: always;
+  }
+
+  pre, table, .figure, .proof.proof-type-application {
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3 {
+    page-break-inside: avoid;
+    page-break-after: avoid;
+  }
+
+}
+
+
+
+div.body {
+    max-width: none !important;
+}
+
+/* Misc */
+
+div.body p.caption {
+    text-align: center;
+    width: 100%;
+    opacity: 0.8;
+}
+
+.sphinxsidebar {
+  display: none;
+}
+
+blockquote {
+    margin: 0;
+}
+
+#bibliography td.label {
+    width: 7em;
+    text-align: right
+}
+
+div.body h1 {
+    /* text-align: center;
+    font-size: 270%; */
+}
+
+div.topic {
+    padding: 15px 30px;
+    margin-top: 30px;
+}
+
+/* ipynb cells styling */
+
+
+pre {
+    border-radius: 3px;
+    background-color: #F7F7F7;
+    border: 1px solid #CFCFCF;
+    padding: 0.7em;
+    font-size: 0.75em
+}
+
+dl pre, blockquote pre, li pre {
+  padding-left: 0.7em;
+}
+
+.highlight-ipython3:before {
+  content: "[In]:";
+  font-family: monospace;
+  color: blue;
+  float: left;
+  width: 4.1em;
+  font-size: 0.75em;
+  position: relative;
+  top: 9px;
+  height: 0;
+}
+
+div.highlight pre {
+  margin-left: 4em;
+}
+
+.highlight-none:before {
+   content: "[Out]:";
+   font-family: monospace;
+   color: red;
+   float: left;
+   width: 4.1em;
+   font-size: 0.75em;
+   position: relative;
+   top: 9px;
+   height: 0;
+}
+
+.highlight-default {
+}
+
+
+/* Sidebar */
+
+body > div.document > div.sphinxsidebar > div {
+    position: fixed;
+    width: 180px;
+}
+
+a.toc-backref {
+  color: #3E4349;
+  text-decoration: none;
+}
+
+table.docutils {
+  margin-top: 1em;
+  margin-bottom: 1.5em;
+}
+
+table.docutils.caption {
+  margin-bottom: 1em;
+}
+
+
+.proof.proof-type-theorem .proof-title .proof-type{
+ font-weight: bold;
+}
+
+.proof.proof-type-application {
+  border: 1px solid grey;
+  padding: 1em;
+  margin-top: 1em;
+  padding-bottom: 0;
+}
+
+.proof.proof-type-application .proof-title .proof-type{
+  font-style: italic;
+}
+
+
+.problematic {
+  color: red;
+}
+
+
+.switcher {
+  text-align: center;
+  display: block;
+  margin: 2em;
+  cursor: pointer
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #CFCFCF;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 10px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 4px;
+  bottom: 3px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #004B6B;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #004B6B;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(17px);
+  -ms-transform: translateX(17px);
+  transform: translateX(17px);
+}

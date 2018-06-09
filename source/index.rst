@@ -6,11 +6,6 @@
 Playing Mancala with MCTS and Alpha Zero
 ==========================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-
 Mancala
 -------
 
@@ -70,7 +65,7 @@ has been solved in 2000 for :math:`m \leq 6`  and :math:`n \leq 6` except (:math
 by Jos Uiterwijk :cite:`irving2000solving`
 and in 2011 for :math:`n = 6, m=6` by Anders Carstensen :cite:`kalah66`.
 
-J. W. Romein et al. :cite:`1236468` also claims to have solved
+J. W. Romein et al. :cite:`romein2003solving` also claims to have solved
 Awalé by quasi-*brute-force* -- retrograde analysis,
 but this claim has since been challenged by others like Víktor Bautista i Roca.
 Roca claims that several endgames were incorrect and the results are invalid.
@@ -193,4 +188,4 @@ Bibliography
 ------------
 
 .. bibliography:: refs.bib
-   :style: unsrtalpha
+   :style: custom

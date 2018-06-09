@@ -161,3 +161,24 @@ texinfo_documents = [
 
 
 # -- Extension configuration -------------------------------------------------
+
+
+from pybtex.style.formatting.unsrt import Style as UnsrtStyle # noqa
+from pybtex.style.labels.alpha import LabelStyle as AlphaLabelStyle # noqa
+from pybtex.plugin import register_plugin # noqa
+
+
+class CustomLabelStyle(AlphaLabelStyle):
+    def format_label(self, entry):
+        label = entry.persons['author'][0].last()[-1]
+        if "year" in entry.fields:
+            label += entry.fields["year"][-2:]
+        return label
+
+
+class CustomStyle(UnsrtStyle):
+    default_label_style = 'customlabel'
+
+
+register_plugin('pybtex.style.labels', 'customlabel', CustomLabelStyle)
+register_plugin('pybtex.style.formatting', 'custom', CustomStyle)

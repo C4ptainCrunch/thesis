@@ -40,9 +40,12 @@ release = ''
 # ones.
 extensions = [
     'sphinx.ext.mathjax',
+    'sphinx.ext.todo',
     'sphinx.ext.ifconfig',
     'sphinxcontrib.bibtex',
 ]
+
+todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -172,7 +175,7 @@ class CustomLabelStyle(AlphaLabelStyle):
     def format_label(self, entry):
         label = entry.persons['author'][0].last()[-1]
         if "year" in entry.fields:
-            label += entry.fields["year"][-2:]
+            label += ", " + entry.fields["year"]
         return label
 
 

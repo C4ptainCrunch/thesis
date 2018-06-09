@@ -40,6 +40,9 @@ Mancala games are :
 This type of game is called a sequential perfect information game
 :cite:`osborne1994course`.
 
+.. todo::
+    Insert something about finite state machines ?
+
 Other games in this category are for example Chess, Go, Checkers or even
 Tic-tac-toe and Connect Four. This type of game is a particularly interesting
 field to study in computer science and artificial intelligence as they are easy
@@ -95,7 +98,7 @@ Monte Carlo tree search
 Many algorithms have been proposed and studied to play sequential
 perfect information games.
 A few examples are :math:`\alpha-\beta` pruning, Minimax,
-Monte Carlo tree search (MCTS) and Alpha (Go) Zero :cite:`silver2017mastering`.
+Monte Carlo tree search (MCTS) and Alpha (Go) Zero :cite:`AlphaGoZero`.
 
 We will focus on MCTS as it does not require any expert knowledge
 about the given game to make reasonable decisions.
@@ -193,7 +196,7 @@ Alpha Zero
 ----------
 
 To replace the random play in step 3, D. Silver et al. propose
-:cite:`silver2017mastering` to use a neural network to estimate the value of a
+:cite:`AlphaGoZero` to use a neural network to estimate the value of a
 game state without having to play it. This can greatly enhances the performance
 of the algorithm as much less playouts are required.
 

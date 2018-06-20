@@ -5,6 +5,9 @@ jupyter
 ipython
 recordclass
 
+import-ipynb
+
 sphinx
 sphinxcontrib-bibtex
 sphinx-autobuild
+nbsphinx

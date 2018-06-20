@@ -6,6 +6,12 @@
 Playing Mancala with MCTS and Alpha Zero
 ==========================================
 
+.. toctree::
+   :maxdepth: 2
+
+   rules
+   players
+
 Mancala
 -------
 

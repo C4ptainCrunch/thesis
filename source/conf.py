@@ -43,6 +43,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.ifconfig',
     'sphinxcontrib.bibtex',
+    # 'rinoh.frontend.sphinx',
     'nbsphinx',
 ]
 
@@ -56,8 +57,7 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
 
 # The master toctree document.
 master_doc = 'index'
@@ -120,7 +120,7 @@ htmlhelp_basename = 'mancala-thesisdoc'
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
-    # 'papersize': 'letterpaper',
+    'papersize': 'a4paper',
 
     # The font size ('10pt', '11pt' or '12pt').
     #

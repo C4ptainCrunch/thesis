@@ -1,3 +1,5 @@
 .ipynb_checkpoints/
 ve/
 build/
+source/data/
+source/nb_builds

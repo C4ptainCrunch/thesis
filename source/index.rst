@@ -12,6 +12,17 @@ Playing Mancala with MCTS and Alpha Zero
    rules
    players
 
+
+.. topic:: About this work
+
+    This work is a thesis submitted to the Faculty of Sciences in partial
+    fulfillment of the requirements for the degree of Master’s in Computer Science.
+
+    This work was originaly published on mancala.ml_ as a webpage consisting in text
+    and notebook cells mixed togeather.
+
+    .. _mancala.ml: https://mancala.ml
+
 Mancala
 -------
 
@@ -35,7 +46,6 @@ Perfect information games
 -------------------------
 
 Mancala games are :
-
 
 * Sequential: the opponents play one after the other,
 * Hold no secret information: each player has the same information about
@@ -61,6 +71,21 @@ of the state space. For example, Romein et al. claims that Awalé has
 889,063,398,406 legal positions :cite:`romein2003solving` and the exact number
 (:math:`\approx 2.08 \times 10^{170}`) of legal positions in Go has only
 recently been determined :cite:`tromp2016`.
+
+.. topic:: How should you read this document ?
+
+    This document is a mix of text and Python code in the form of notebook
+    cells. Reading only the text and skipping all the code should be enough for
+    you to understand the whole work. But if you are interested in the
+    implementation work and the details of the simulations you are welcome to
+    read the notebook cells as well.
+
+    Some output and cells are hidden for the sake of brievty and readability.
+    Click on the button to reveal the full code and output that were used for
+    the simulations to write this work.
+
+.. include:: nb_builds/rules.rst
+
 
 Solved games
 ------------

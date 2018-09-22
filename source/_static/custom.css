@@ -6,7 +6,7 @@ div.body p.caption {
 
 blockquote div {
     font-style: italic;
-    opacity: 0.8;
+    opacity: 0.85;
 }
 
 #bibliography td.label {
@@ -17,4 +17,53 @@ blockquote div {
 div.body h1 {
     text-align: center;
     font-size: 270%;
+}
+
+div.topic {
+    padding: 15px 30px;
+    margin-top: 30px;
+}
+
+/* ipynb cells styling */
+
+
+pre {
+    border-radius: 3px;
+    background-color: #F7F7F7;
+    border: 1px solid #CFCFCF;
+    padding: 0.7em;
+    font-size: 0.75em
+}
+
+.highlight-ipython3:before {
+   content: "[In]:";
+   font-family: monospace;
+   color: blue;
+   float: left;
+   width: 4.1em;
+   font-size: 0.75em
+}
+
+
+.highlight-ipython3 {
+}
+
+.highlight-default:before {
+   content: "[Out]:";
+   font-family: monospace;
+   color: red;
+   float: left;
+   width: 4.1em;
+   font-size: 0.75em
+}
+
+.highlight-default {
+}
+
+
+/* Sidebar */
+
+body > div.document > div.sphinxsidebar > div {
+    position: fixed;
+    width: 220px;
 }

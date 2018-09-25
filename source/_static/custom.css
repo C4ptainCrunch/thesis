@@ -1,3 +1,16 @@
+/* Document width */
+
+div.document {
+    min-width: 940px !important;
+    width: 75vw !important;
+}
+
+div.body {
+    max-width: none !important;
+}
+
+/* Misc */
+
 div.body p.caption {
     text-align: center;
     width: 100%;

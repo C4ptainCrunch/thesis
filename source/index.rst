@@ -1,16 +1,9 @@
-.. mancala-thesis documentation master file, created by
-   sphinx-quickstart on Sat Jun  9 11:24:52 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
+========================================
 Playing Mancala with MCTS and Alpha Zero
-==========================================
+========================================
 
 .. toctree::
    :maxdepth: 2
-
-   rules
-   players
 
 
 .. topic:: About this work
@@ -18,10 +11,13 @@ Playing Mancala with MCTS and Alpha Zero
     This work is a thesis submitted to the Faculty of Sciences in partial
     fulfillment of the requirements for the degree of Master’s in Computer Science.
 
-    This work was originaly published on mancala.ml_ as a webpage consisting in text
-    and notebook cells mixed togeather.
+    This work was originally published on https://mancala.ml as a web page consisting in text
+    and notebook cells mixed together.
 
-    .. _mancala.ml: https://mancala.ml
+    The source of this document along with the source code of all experiments
+    are available on GitHub_.
+
+    .. _GitHub: https://github.com/C4ptainCrunch/thesis
 
 Mancala
 -------
@@ -33,19 +29,65 @@ row of pits each containing a proportionate amount of seeds,
 stones or shells. Usually, these games are played by two opponents who play sequentially.
 The goal for each opponent is to capture as many seeds as possible before the other.
 
-We will focus on Awalé (also called Oware or Owari), originating from Ghana and Kalah,
-a modern version invented by William Julius Champion Jr. circa 1940.
-There are too many other existing variations to list them all here,
-but a few notable ones are Wari, Bao and Congkak.
+.. figure:: _static/intro-kalah.jpg
+
+  A wooden Mancala game [#source_kalah]_
+
+We will focus on Awalé (also sometimes called Oware or Owari), originating from
+Ghana. There are too many other existing variations to list them all here, but a
+few notable ones are Wari, Bao, Congkak and Kalah, a modern version invented by
+William Julius Champion Jr. circa 1940.
+
+.. [#source_kalah] Picture by Adam Cohn under Creative Commonds license https://www.flickr.com/photos/adamcohn/3076571304/
+
+
+Awalé
+-----
+
+The subject of our study, Awalé is played on a board made of two row of six
+pits. Each row is owned by a player. In the initial state of the game every hole
+contains 4 seeds thus the game contains 48 seeds in total.
 
 .. figure:: _static/awale.jpg
 
-   A typical Awalé board.
+   A typical Awalé board in the start position.
+
+The goal for both players is to capture more seeds than its opponent. As the
+game has 48 seeds, capturing 25 is enough to win and end the game.
+
+Each player plays alternatively, without the right to pass their turn. A
+player's turn consists in choosing one of his non-empty pits, pick all seeds
+contained in it and seed them one by one in every consecutive pits on the right
+(rotating counter-clockwise). The player thus has at most 6 possible moves at
+each turn.
+
+If the pit chosen by the player contains more than 12 seeds, the sowing makes
+more than a full circle and the starting hole is skipped during the second pass.
+When the last sowed seed is placed in a pit that was containing no seed, more
+than 2 seeds or in the current player's pits, the turn of the player is ended.
+
+Otherwise, when the last sowed seed is placed in a pit owned by the opponent and
+the pit contains then two or three seeds, the content of the pit is captured by
+the player and removed of the game. If the pit preceding the captured pit also
+contains two or three seeds, it is also captured. The capture continues until a
+pit without two or three seeds is encountered. When the capture is ended the
+next player's turn starts.
+
+If the current player's opponent has no seed left in his half of the board, the
+current player has to play a move that gives him seeds if such a move exists.
+This rule is called the "let the opponent play".
+
+When a player has captured more than 25 seeds the game ends and he wins. If both
+players have captured 24 seeds, the game ends by a draw. If the current player's
+pits are all empty, the game ends and the player with the most captures wins.
+The last way to stop the game is when a position is encountered twice in the
+same game (there is a cycle): the game ends and player with the most captures
+wins.
 
 Perfect information games
 -------------------------
 
-Mancala games are :
+Now that we know the rules, we can see that Mancala games are :
 
 * Sequential: the opponents play one after the other,
 * Hold no secret information: each player has the same information about
@@ -56,39 +98,61 @@ Mancala games are :
 This type of game is called a sequential perfect information game
 :cite:`osborne1994course`.
 
-.. todo::
-    Insert something about finite state machines ?
-
 Other games in this category are for example Chess, Go, Checkers or even
 Tic-tac-toe and Connect Four. This type of game is a particularly interesting
 field to study in computer science and artificial intelligence as they are easy
 to simulate.
 
-While it might be tempting to enumerate every possible play of those games by
-starting a game and recursively try each legal action until the end of the play,
-most of the time, this is not a feasible approach for most games due to the size
-of the state space. For example, Romein et al. claims that Awalé has
+
+Perfect information games as finite state machines
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. TODO formal definition of FSM ?
+
+When viewed from an external point of view, these types of games can be
+modelized as finite states machines with boards being states (the initial board
+is the initial state), each player's action being transitions and wins and draws
+being terminal states.
+
+.. TODO formal description of the game as a FSM ?
+
+It might be tempting to try to enumerate every possible play of those games by
+starting a game and recursively try each legal action until the end of the play
+to find the best move for each state.
+
+Unfortunately, most of the time, this is not a feasible approach due to the size
+of the state space. As an example, Romein et al. claims that Awalé has
 889,063,398,406 legal positions :cite:`romein2003solving` and the exact number
-(:math:`\approx 2.08 \times 10^{170}`) of legal positions in Go has only
-recently been determined :cite:`tromp2016`.
+(:math:`\approx 2.08 \times 10^{170}`) of legal positions in Go is so big that
+it has only recently been determined :cite:`tromp2016`. Such state space are too
+big to be quickly enumerated.
 
-.. topic:: How should you read this document ?
+Perfect information games as Markov decision processes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    This document is a mix of text and Python code in the form of notebook
-    cells. Reading only the text and skipping all the code should be enough for
-    you to understand the whole work. But if you are interested in the
-    implementation work and the details of the simulations you are welcome to
-    read the notebook cells as well.
+Instead of being viewed from an external point of view, these types of games can
+also be seen from the point of view of a single player. He only knows the state
+of the board and his own moves and is not aware of the moves from his opponent,
+neither in advance or after the move has been played.
 
-    Some output and cells are hidden for the sake of brievty and readability.
-    Click on the button to reveal the full code and output that were used for
-    the simulations to write this work.
+When viewed under this angle, a game looks like this:
+ * the game is in a state :math:`A`,
+ * the player plays his turn, the board changes deterministically,
+ * the game is in state :math:`A'`,
+ * his opponent plays and the board has multiple ways of changing,
+ * the game is in state :math:`B`, :math:`B` is one of the 6 possible successors
+   of :math:`A'`.
 
-.. include:: nb_builds/rules.rst
+We can model this as a Markov decision process (MDP).
+
+.. TODO More on MDP and why it is a MDP.
+
 
 
 Solved games
 ------------
+
+
 
 A strongly solved game is defined by Allis :cite:`Allis94searchingfor` as:
 
@@ -96,21 +160,21 @@ A strongly solved game is defined by Allis :cite:`Allis94searchingfor` as:
     obtain the game-theoretic value of the position, for both players, under
     reasonable resources.
 
-A strongly solved game is, of course much less interesting to study than an
-unsolved one as we could just make an agent that uses the strategy found when
-proving the solution of the game.
+A solved game is, of course much less interesting to study than an
+unsolved one as we could just create an agent that has the knowledge of each
+game-theoretic position values and can thus play perfectly.
 
-Unfortunately, (:math:`m,n`)-Kalah (:math:`m` pits per side and :math:`n` stones
-in each pit) has been solved in 2000 for :math:`m \leq 6`  and :math:`n \leq 6`
-except (:math:`6,6`) by Jos Uiterwijk :cite:`irving2000solving` and in 2011 for
-:math:`n = 6, m=6` by Anders Carstensen :cite:`kalah66`.
+Unfortunately for us, (:math:`m,n`)-Kalah (:math:`m` pits per side and :math:`n`
+stones in each pit) has been solved in 2000 for :math:`m \leq 6`  and :math:`n
+\leq 6` except (:math:`6,6`) by Jos Uiterwijk :cite:`irving2000solving` and in
+2011 for :math:`n = 6, m=6` by Anders Carstensen :cite:`kalah66`.
 
 J. W. Romein et al. :cite:`romein2003solving` also claims to have solved
 Awalé by quasi-*brute-force* -- retrograde analysis,
 but this claim has since been challenged by others like Víktor Bautista i Roca.
 Roca claims that several endgames were incorrect and the results are invalid.
 As both the database made by Romein and the claim from Roca are not available
-anymore publicly we can know who is right.
+anymore publicly we can not know who is right.
 
 Nevertheless, these proofs for Kalah and Awalé both use a quasi-*brute-force*
 method to solve the game and uses a database all possible states. The database
@@ -120,8 +184,23 @@ improvement if we can create an agent that has a policy that does not need a
 exhaustive database, even if the agent is not capable of a perfect play.
 
 We arbitrarily chose to work on Awalé as it might not have been solved but
-the same work could most probably be done on Kalah.
+the same work could most probably be done on Kalah and other variants.
 
+
+
+.. .. topic:: How should you read this document ?
+..
+..     This document is a mix of text and Python code in the form of notebook
+..     cells. Reading only the text and skipping all the code should be enough for
+..     you to understand the whole work. But if you are interested in the
+..     implementation work and the details of the simulations you are welcome to
+..     read the notebook cells as well.
+..
+..     Some output and cells are hidden for the sake of brevity and readability.
+..     Click on the button to reveal the full code and output that were used for
+..     the simulations to write this work.
+
+.. .. include:: nb_builds/rules.rst
 
 Monte Carlo tree search
 -----------------------

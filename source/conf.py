@@ -43,7 +43,6 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.ifconfig',
     'sphinxcontrib.bibtex',
-    # 'rinoh.frontend.sphinx',
     'nbsphinx',
 ]
 

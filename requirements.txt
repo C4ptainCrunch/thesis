@@ -4,8 +4,14 @@ scipy
 jupyter
 ipython
 recordclass
+matplotlib
+
+tensorflow
+keras
+sklearn
 
 import-ipynb
+tqdm
 
 sphinx
 sphinxcontrib-bibtex

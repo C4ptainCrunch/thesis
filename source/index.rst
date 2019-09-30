@@ -33,7 +33,7 @@ The goal for each opponent is to capture as many seeds as possible before the ot
 
   A wooden Mancala game [#source_kalah]_
 
-We will focus on Awalé (also sometimes called Oware or Owari), originating from
+We will focus on Awalé (also sometimes called Oware,  Owari or Ayo), originating from
 Ghana. There are too many other existing variations to list them all here, but a
 few notable ones are Wari, Bao, Congkak and Kalah, a modern version invented by
 William Julius Champion Jr. circa 1940.
@@ -302,6 +302,28 @@ In step 3, the playouts are played at random as it is the first time these nodes
 are seen and we do not have a generic evaluation function do direct the playout
 towards "better" states.
 
+
+Informed UCT
+------------
+
+
+Surprisingly,
+increasing the bias in the random play-outs can
+occasionally weaken the strength of a program using the
+UCT algorithm even when the bias is correlated with Go
+playing strength. One instance of this was reported by Gelly
+and Silver [#GS07]_, and our group observed a drop in strength
+when the random play-outs were encouraged to form patterns
+commonly occurring in computer Go games [#Fly08]_.
+
+.. [#GS07] Sylvain Gelly and David Silver. Combining online and offline
+ knowledge in uct. In ICML ’07: Proceedings of the 24th
+ Internatinoal Conference on Machine Learning, pages 273–280.
+ ACM, 2007.
+
+.. [#Fly08] Jennifer Flynn. Independent study quarterly reports.
+ http://users.soe.ucsc.edu/~charlie/projects/SlugGo/, 2008
+
 Alpha Zero
 ----------
 
@@ -316,3 +338,11 @@ Bibliography
 
 .. bibliography:: refs.bib
    :style: custom
+
+
+
+Although captured stones
+contribute to a position’s final outcome, the best
+move from a position does not depend on them.
+We therefore consider the distribution of only
+uncaptured stones [romein2003] -> faux : need proof

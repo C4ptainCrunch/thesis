@@ -306,15 +306,16 @@ towards "better" states.
 Informed UCT
 ------------
 
+Citation:
 
-Surprisingly,
-increasing the bias in the random play-outs can
-occasionally weaken the strength of a program using the
-UCT algorithm even when the bias is correlated with Go
-playing strength. One instance of this was reported by Gelly
-and Silver [#GS07]_, and our group observed a drop in strength
-when the random play-outs were encouraged to form patterns
-commonly occurring in computer Go games [#Fly08]_.
+> Surprisingly,
+> increasing the bias in the random play-outs can
+> occasionally weaken the strength of a program using the
+> UCT algorithm even when the bias is correlated with Go
+> playing strength. One instance of this was reported by Gelly
+> and Silver [#GS07]_, and our group observed a drop in strength
+> when the random play-outs were encouraged to form patterns
+> commonly occurring in computer Go games [#Fly08]_.
 
 .. [#GS07] Sylvain Gelly and David Silver. Combining online and offline
  knowledge in uct. In ICML ’07: Proceedings of the 24th

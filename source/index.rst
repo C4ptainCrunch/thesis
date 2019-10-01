@@ -188,19 +188,19 @@ the same work could most probably be done on Kalah and other variants.
 
 
 
-.. .. topic:: How should you read this document ?
-..
-..     This document is a mix of text and Python code in the form of notebook
-..     cells. Reading only the text and skipping all the code should be enough for
-..     you to understand the whole work. But if you are interested in the
-..     implementation work and the details of the simulations you are welcome to
-..     read the notebook cells as well.
-..
-..     Some output and cells are hidden for the sake of brevity and readability.
-..     Click on the button to reveal the full code and output that were used for
-..     the simulations to write this work.
+.. topic:: How should you read this document ?
 
-.. .. include:: nb_builds/rules.rst
+    This document is a mix of text and Python code in the form of notebook
+    cells. Reading only the text and skipping all the code should be enough for
+    you to understand the whole work. But if you are interested in the
+    implementation work and the details of the simulations you are welcome to
+    read the notebook cells as well.
+
+    Some output and cells are hidden for the sake of brevity and readability.
+    Click on the button to reveal the full code and output that were used for
+    the simulations to write this work.
+
+.. include:: nb_builds/rules.rst
 
 Monte Carlo tree search
 -----------------------
@@ -332,6 +332,18 @@ To replace the random play in step 3, D. Silver et al. propose
 game state without having to play it. This can greatly enhances the performance
 of the algorithm as much less playouts are required.
 
+Notebooks
+---------
+
+:ref:`players`
+
+:ref:`compare`
+
+:ref:`learning`
+
+:ref:`alpha`
+
+
 
 Bibliography
 ------------
@@ -340,9 +352,9 @@ Bibliography
    :style: custom
 
 
-
-Although captured stones
-contribute to a position’s final outcome, the best
-move from a position does not depend on them.
-We therefore consider the distribution of only
-uncaptured stones [romein2003] -> faux : need proof
+..
+.. Although captured stones
+.. contribute to a position’s final outcome, the best
+.. move from a position does not depend on them.
+.. We therefore consider the distribution of only
+.. uncaptured stones [romein2003] -> false : need proof

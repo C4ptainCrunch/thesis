@@ -1,8 +1,8 @@
 /* Document width */
 
 div.document {
-    min-width: 940px !important;
-    width: 75vw !important;
+    /* min-width: 940px !important; */
+    width: 60vw !important;
 }
 
 div.body {

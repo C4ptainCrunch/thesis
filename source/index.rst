@@ -44,45 +44,7 @@ William Julius Champion Jr. circa 1940.
 Awalé
 -----
 
-The subject of our study, Awalé is played on a board made of two row of six
-pits. Each row is owned by a player. In the initial state of the game every hole
-contains 4 seeds thus the game contains 48 seeds in total.
-
-.. figure:: _static/awale.jpg
-
-   A typical Awalé board in the start position.
-
-The goal for both players is to capture more seeds than its opponent. As the
-game has 48 seeds, capturing 25 is enough to win and end the game.
-
-Each player plays alternatively, without the right to pass their turn. A
-player's turn consists in choosing one of his non-empty pits, pick all seeds
-contained in it and seed them one by one in every consecutive pits on the right
-(rotating counter-clockwise). The player thus has at most 6 possible moves at
-each turn.
-
-If the pit chosen by the player contains more than 12 seeds, the sowing makes
-more than a full circle and the starting hole is skipped during the second pass.
-When the last sowed seed is placed in a pit that was containing no seed, more
-than 2 seeds or in the current player's pits, the turn of the player is ended.
-
-Otherwise, when the last sowed seed is placed in a pit owned by the opponent and
-the pit contains then two or three seeds, the content of the pit is captured by
-the player and removed of the game. If the pit preceding the captured pit also
-contains two or three seeds, it is also captured. The capture continues until a
-pit without two or three seeds is encountered. When the capture is ended the
-next player's turn starts.
-
-If the current player's opponent has no seed left in his half of the board, the
-current player has to play a move that gives him seeds if such a move exists.
-This rule is called the "let the opponent play".
-
-When a player has captured more than 25 seeds the game ends and he wins. If both
-players have captured 24 seeds, the game ends by a draw. If the current player's
-pits are all empty, the game ends and the player with the most captures wins.
-The last way to stop the game is when a position is encountered twice in the
-same game (there is a cycle): the game ends and player with the most captures
-wins.
+.. include:: nb_builds/explanation-rules.rst
 
 Perfect information games
 -------------------------

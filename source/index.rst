@@ -45,9 +45,6 @@ William Julius Champion Jr. circa 1940.
 
 
 
-
-
-
   
 Awalé
 -----
@@ -61,7 +58,12 @@ In the initial state of the game every pit contains 4 seeds thus the game contai
 
    A typical Awalé board in the start position.
 
-The board can be schematized like this, every big circle representing a pit and every small disc representing a seed. The 6 pits from the top row belonging to player A and the 6 others belonging to player B.
+The board can be schematized like this, every big circle representing a pit and every small disc representing a seed. The 6 pits from the top row belonging to the north player and the 6 others belonging to the south player.
+
+Numbers in the bottom right of each pits are the count of stones in each pit for better readability.
+
+
+
 
 
 
@@ -101,7 +103,7 @@ each turn.
 
 Usually, the player that starts the game is the oldest player. Here, we will start at random.
 
-As an example, if we start from the initial state showed above, the first player to move is B (on the bottom) and he chooses the 4th pit, the board will then have the following state [#numbers]_.
+As an example, if we start from the initial state showed above, the first player to move is the south (on the bottom) and he chooses the 4th pit, the board will then have the following state.
 
 
 
@@ -138,7 +140,7 @@ Otherwise, when the last sowed seed is placed in a pit that now contains one see
 than 3 seeds or in the current player's own pits, the turn of the player is ended without
 any capture.
 
-For example, if the bottom player plays the 4th pit in the following configuration he will
+For example, if the south player plays the 4th pit in the following configuration he will
 be able to capture the opponent's 4th and 5th pits (highlighted in red in the second figure) 
 
 
@@ -197,7 +199,7 @@ This rule has for second consequence that if a player plays a move that could ca
 every seed of the opponent, he may play this move but he may not capture the seeds as
 it would also prevent the opponent of playing.
 
-In the following example, the bottom player has to play the fifth pit because playing the first would leave the opponent without any move to play.
+In the following example, the south player has to play the fifth pit because playing the first would leave the opponent without any move to play.
 
 
 
@@ -951,9 +953,6 @@ Footnotes
 ---------
 
 .. [#source_kalah] Picture by Adam Cohn under Creative Commonds license https://www.flickr.com/photos/adamcohn/3076571304/
-
-.. [#numbers] Numbers in the bottom right of each pits are the count of stones in each pit for better readability.
-
 
 .. [#Fly08] Jennifer Flynn. Independent study quarterly reports.
  http://users.soe.ucsc.edu/~charlie/projects/SlugGo/, 2008

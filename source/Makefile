@@ -1,13 +1,8 @@
-NOTEBOOKS := $(wildcard notebooks/*.ipynb)
-RSTS := $(patsubst notebooks/%.ipynb,nb_builds/%.rst,$(NOTEBOOKS))
-
-notebooks: $(RSTS)
-
-nb_builds/%.rst: notebooks/%.ipynb
-	jupyter-nbconvert --to rst '$<' --output='../$@' --template=celltemplate.tpl
+index.rst: index.ipynb
+	jupyter-nbconvert --to rst index.ipynb --output=index.rst --template=celltemplate.tpl
 
 watch_notebooks:
 	@while true; do \
-		make notebooks; \
+		make index.rst; \
 		inotifywait -qre close_write .; \
 	done

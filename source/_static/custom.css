@@ -17,10 +17,11 @@ div.body p.caption {
     opacity: 0.8;
 }
 
+/* Citations but conflicts with code
 blockquote div {
     font-style: italic;
     opacity: 0.85;
-}
+} */
 
 #bibliography td.label {
     width: 7em;
@@ -79,4 +80,9 @@ pre {
 body > div.document > div.sphinxsidebar > div {
     position: fixed;
     width: 220px;
+}
+
+a.toc-backref {
+  color: #3E4349;
+  text-decoration: none;
 }

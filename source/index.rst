@@ -1,10 +1,10 @@
+  
 ========================================
 Playing Mancala with MCTS and Alpha Zero
 ========================================
 
-.. toctree::
-   :maxdepth: 2
-
+.. contents:: Table of Contents
+   :depth: 2
 
 .. topic:: About this work
 
@@ -19,6 +19,10 @@ Playing Mancala with MCTS and Alpha Zero
 
     .. _GitHub: https://github.com/C4ptainCrunch/thesis
 
+
+
+
+  
 Mancala
 -------
 
@@ -38,14 +42,199 @@ Ghana. There are too many other existing variations to list them all here, but a
 few notable ones are Wari, Bao, Congkak and Kalah, a modern version invented by
 William Julius Champion Jr. circa 1940.
 
-.. [#source_kalah] Picture by Adam Cohn under Creative Commonds license https://www.flickr.com/photos/adamcohn/3076571304/
 
 
+
+
+
+
+  
 Awalé
 -----
 
-.. include:: nb_builds/explanation-rules.rst
+The subject of our study, Awalé is played on a board made of two rows of six
+pits. Each row is owned by a player that sits in front of it.
+In the initial state of the game every pit contains 4 seeds thus the game contains
+48 seeds in total.
 
+.. figure:: /_static/awale.jpg
+
+   A typical Awalé board in the start position.
+
+The board can be schematized like this, every big circle representing a pit and every small disc representing a seed. The 6 pits from the top row belonging to player A and the 6 others belonging to player B.
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+.. raw:: html
+    :file: index_files/index_4_0.svg
+
+
+
+
+
+
+
+
+  
+Rules of the game
+-----------------
+
+The goal for both players is to capture more seeds than its opponent. As the
+game has 48 seeds, capturing 25 is enough to win and end the game.
+
+Each player plays alternatively, without the right to pass their turn. A
+player's turn consists in choosing one of his non-empty pits, pick all seeds
+contained in the pit and seed them one by one in every consecutive pits on the right
+(rotating counter-clockwise). The player thus has at most 6 possible moves at
+each turn.
+
+Usually, the player that starts the game is the oldest player. Here, we will start at random.
+
+As an example, if we start from the initial state showed above, the first player to move is B (on the bottom) and he chooses the 4th pit, the board will then have the following state [#numbers]_.
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+.. raw:: html
+    :file: index_files/index_6_0.svg
+
+
+
+
+
+
+
+
+  
+When the last sowed seed is placed in a pit owned by the opponent and after seeding
+the pit contains two or three seeds, the content of the pit is captured by
+the player and removed from the game. If the pit preceding the captured pit also
+contains two or three seeds, it is also captured. The capture continues until a
+pit without two or three seeds is encountered. When the capture is ended the
+next player's turn starts.
+
+Otherwise, when the last sowed seed is placed in a pit that now contains one seed, more
+than 3 seeds or in the current player's own pits, the turn of the player is ended without
+any capture.
+
+For example, if the bottom player plays the 4th pit in the following configuration he will
+be able to capture the opponent's 4th and 5th pits (highlighted in red in the second figure) 
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+.. raw:: html
+    :file: index_files/index_8_0.svg
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+.. raw:: html
+    :file: index_files/index_9_0.svg
+
+
+
+
+
+
+
+
+  
+If the pit chosen by the player contains more than 12 seeds, the sowing makes
+more than a full revolution and the starting hole is skipped during the second
+and subsequent passes.
+
+If the current player's opponent has no seed left in his half of the board, the
+current player has to play a move that gives him seeds if such a move exists.
+This rule is called the "let the opponent play" or "don't starve your opponent".
+
+This rule has for second consequence that if a player plays a move that could capture
+every seed of the opponent, he may play this move but he may not capture the seeds as
+it would also prevent the opponent of playing.
+
+In the following example, the bottom player has to play the fifth pit because playing the first would leave the opponent without any move to play.
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+.. raw:: html
+    :file: index_files/index_11_0.svg
+
+
+
+
+
+
+
+
+  
+When a player has captured more than 25 seeds the game ends and he wins. If both
+players have captured 24 seeds, the game ends by a draw. If the current player
+pits are all empty, the game ends and the player with the most captures wins.
+
+The last way to stop the game is when a position is encountered twice in the
+same game (there is a cycle): the game ends and player with the most captures
+wins.
+
+
+
+
+  
 Perfect information games
 -------------------------
 
@@ -66,6 +255,9 @@ field to study in computer science and artificial intelligence as they are easy
 to simulate.
 
 
+
+
+  
 Perfect information games as finite state machines
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -89,6 +281,10 @@ of the state space. As an example, Romein et al. claims that Awalé has
 it has only recently been determined :cite:`tromp2016`. Such state space are too
 big to be quickly enumerated.
 
+
+
+
+  
 Perfect information games as Markov decision processes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -111,10 +307,10 @@ We can model this as a Markov decision process (MDP).
 
 
 
+
+  
 Solved games
 ------------
-
-
 
 A strongly solved game is defined by Allis :cite:`Allis94searchingfor` as:
 
@@ -162,8 +358,444 @@ the same work could most probably be done on Kalah and other variants.
     Click on the button to reveal the full code and output that were used for
     the simulations to write this work.
 
-.. include:: nb_builds/rules.rst
 
+
+
+
+
+
+  
+Implementation of the rules
+---------------------------
+
+Some rules have deliberately been excuded from this implementation :
+
+-  Loops in the game state are not checked (this speeds up considerably
+   the computations and we never encountered a loop in practice)
+-  You are authorized to starve your opponent. This was made so the
+   rules are a little bit simpler and should not change the complexity
+   of the game.
+
+We first define a dataclass with the minmal attributes needed to store the game state
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    from dataclasses import dataclass
+    from typing import Tuple
+    
+    @dataclass
+    class Game:
+        pits: np.array
+        current_player: int
+        captures: Tuple[int, int]
+
+
+
+
+
+
+  
+We add a static method to start a new game
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class Game(Game):
+        ...
+        
+        @classmethod
+        def new(klass):
+            return klass(
+                # A 6x2 matrix filled with 4
+                pits=np.ones(6 * 2, dtype=int) * 4,
+                current_player=0,
+                captures=(0, 0)
+            )
+
+
+
+
+
+
+  
+Next, we add some convenience methods that will be usefull later
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class Game(Game):
+        ...
+    
+        @property
+        def view_from_current_player(self):
+            if self.current_player == 0:
+                return self.pits
+            else:
+                return np.roll(self.pits, 6)
+        
+        @property
+        def current_player_pits(self):
+            if self.current_player == 0:
+                return self.pits[:6]
+            else:
+                return self.pits[6:]
+    
+        @property
+        def current_opponent(self):
+            return (self.current_player + 1) % 2
+        
+        @property
+        def adverse_pits_idx(self):
+            if self.current_player == 1:
+                return list(range(6))
+            else:
+                return list(range(6, 6 * 2))
+        
+
+
+
+
+
+
+  
+Now we start implementing the rules
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class Game(Game):
+        ...
+        
+        @property
+        def legal_actions(self):
+            our_pits = self.current_player_pits
+            return [x for x in range(6) if our_pits[x] != 0]
+        
+        @property
+        def game_finished(self):
+            no_moves_left = np.sum(self.current_player_pits) == 0
+            
+            half_seeds = 6 * 4
+            enough_captures = self.captures[0] > half_seeds or self.captures[1] > half_seeds
+            
+            draw = self.captures[0] == half_seeds and self.captures[1] == half_seeds
+            
+            return no_moves_left or enough_captures or draw
+        
+        @property
+        def winner(self):
+            if not self.game_finished:
+                return None
+            return np.argmax(self.captures)
+
+
+
+
+
+
+  
+We can now add the ``step()`` functions that plays a turn
+
+The main method you are interested in is ``Game.step(i)`` to play the
+i-th pit in the current sate. This will return the new state, the amount
+of seeds captured and a boolean informing you if the game is finished.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class Game(Game):
+        ...
+        
+        def step(self, action):
+            assert 0 <= action < 6, "Illegal action"
+            
+            target_pit = action if self.current_player == 0 else action - 6
+            
+            seeds = self.pits[target_pit]
+            assert seeds != 0, "Illegal action: pit % is empty" % target_pit
+            
+            # copy attributes
+            pits = np.copy(self.pits)
+            captures = np.copy(self.captures)
+            
+            # empty the target pit
+            pits[target_pit] = 0
+            
+            # fill the next pits
+            pit_to_sow = target_pit
+            while seeds > 0:
+                pit_to_sow = (pit_to_sow + 1) % (6 * 2)
+                if pit_to_sow != target_pit: # do not fill the target pit ever
+                    pits[pit_to_sow] += 1
+                    seeds -= 1
+            
+            # Capture
+            # -------
+            
+            # count the captures of the play
+            round_captures = 0
+            if pit_to_sow in self.adverse_pits_idx:
+                # if the last seed was in a adverse pit
+                # we can try to collect seeds
+                while pits[pit_to_sow] in (2, 3):
+                    # if the pit contains 2 or 3 seeds, we capture them
+                    captures[self.current_player] += pits[pit_to_sow]
+                    round_captures += pits[pit_to_sow]
+                    pits[pit_to_sow] = 0
+                    
+                    # go backwards
+                    pit_to_sow = (pit_to_sow - 1) % (self.n_pits * 2)
+            
+            # change player
+            current_player = (self.current_player + 1) % 2
+            
+            new_game = type(self)(
+                pits,
+                current_player,
+                captures
+            )
+    
+            return new_game, round_captures, new_game.game_finished
+
+
+
+
+
+
+
+  
+And some display functions
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class Game(Game):
+        ...
+        
+        def show_state(self):
+            if self.game_finished:
+                print("Game finished")
+            print("Current player: {} - Score: {}/{}\n{}".format(
+                self.current_player,
+                self.captures[self.current_player],
+                self.captures[(self.current_player + 1) % 2],
+                "-" * self.n_pits * 3
+            ))
+            
+            pits = []
+            for seeds in self.view_from_current_player:
+                pits.append("{:3}".format(seeds))
+            
+            print("".join(reversed(pits[self.n_pits:])))
+            print("".join(pits[:self.n_pits]))
+    
+        def __repr__(self):
+            return "<Game current_player:{player} captures:{captures[0]}/{captures[1]}>".format(
+                player=self.current_player,
+                captures=self.captures
+            )
+        
+        def _repr_svg_(self):
+            board = np.array([
+                list(reversed(self.pits[6:])),
+                self.pits[:6]
+            ])
+            return board_to_svg(board, True)
+
+
+
+
+
+
+  
+Play a game
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    g = Game.new()
+    g, captures, done = g.step(4)
+    g
+
+
+
+
+
+
+
+
+.. raw:: html
+    :file: index_files/index_31_0.svg
+
+
+
+
+
+
+
+
+  
+As the rest of this work is always using trees as the base model for a game,
+we also use it here in the implementation.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    from typing import Optional, List
+    from dataclasses import field
+    
+    @dataclass
+    class TreeGame(Game):
+        parent: Optional[Game] = None
+        children: List[Optional[Game]] = field(default_factory=lambda: [None] * 6)
+
+
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class TreeGame(TreeGame):
+        ...
+        
+        def step(self, action):
+            # If we already did compute the children node, juste return it
+            if self.children[action] is not None:
+                new_game = self.children[action]
+                captures = new_game.captures[self.current_player] - self.captures[self.current_player]
+                return new_game, captures, new_game.game_finished
+            else:
+                new_game, captures, finished = super().step(action)
+                new_game.parent = self
+                return new_game, captures, finished
+
+
+
+
+
+
+  
+
+-  ``is_fully_expanded`` tells you if all actions of this state have
+   been computed
+-  …
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class TreeGame(TreeGame):
+        ...
+    
+        @property
+        def successors(self):
+            children = [x for x in self.children if x is not None]
+            successors = children + list(itertools.chain(*[x.successors for x in children]))
+            return successors
+        
+        @property
+        def unvisited_actions(self):
+            return [i for i, x in enumerate(self.children) if x is None]
+    
+        @property
+        def legal_unvisited_actions(self):
+            return list(set(self.unvisited_actions).intersection(set(self.legal_actions)))
+        
+        @property
+        def expanded_children(self):
+            return [x for x in self.children if x is not None]
+        
+        @property
+        def is_fully_expanded(self):
+            legal_actions = set(self.legal_actions)
+            unvisited_actions = set(self.unvisited_actions)
+            return len(legal_actions.intersection(unvisited_actions)) == 0
+        
+        @property
+        def is_leaf_game(self):
+            return self.children == [None] * 6
+        
+        @property
+        def depth(self):
+            if self.parent is None:
+                return 0
+            return 1 + self.parent.depth
+
+
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class TreeGame(TreeGame):
+        ...
+        
+        def update_stats(self, winner):
+            assert winner in [0, 1]
+            self.wins[winner] += 1
+            self.n_playouts += 1
+            if self.parent:
+                self.parent.update_stats(winner)
+
+
+
+
+
+
+  
 Monte Carlo tree search
 -----------------------
 
@@ -225,6 +857,10 @@ winning when choosing a child of the root node. When we are done sampling the
 agent chooses the child with the highest probability of winning and plays the
 corresponding action in the game.
 
+
+
+
+  
 Node Selection
 --------------
 
@@ -237,6 +873,9 @@ every part of the tree even if a part has no chance of leading to a win for the
 player.
 
 
+
+
+  
 Upper Confidence Bounds for Trees
 ---------------------------------
 
@@ -265,6 +904,9 @@ are seen and we do not have a generic evaluation function do direct the playout
 towards "better" states.
 
 
+
+
+  
 Informed UCT
 ------------
 
@@ -279,14 +921,10 @@ Citation:
 > when the random play-outs were encouraged to form patterns
 > commonly occurring in computer Go games [#Fly08]_.
 
-.. [#GS07] Sylvain Gelly and David Silver. Combining online and offline
- knowledge in uct. In ICML ’07: Proceedings of the 24th
- Internatinoal Conference on Machine Learning, pages 273–280.
- ACM, 2007.
 
-.. [#Fly08] Jennifer Flynn. Independent study quarterly reports.
- http://users.soe.ucsc.edu/~charlie/projects/SlugGo/, 2008
 
+
+  
 Alpha Zero
 ----------
 
@@ -295,24 +933,40 @@ To replace the random play in step 3, D. Silver et al. propose
 game state without having to play it. This can greatly enhances the performance
 of the algorithm as much less playouts are required.
 
-Notebooks
----------
-
-:ref:`players`
-
-:ref:`compare`
-
-:ref:`learning`
-
-:ref:`alpha`
 
 
 
+  
 Bibliography
 ------------
 
 .. bibliography:: refs.bib
    :style: custom
+
+
+
+
+  
+Footnotes
+---------
+
+.. [#source_kalah] Picture by Adam Cohn under Creative Commonds license https://www.flickr.com/photos/adamcohn/3076571304/
+
+.. [#numbers] Numbers in the bottom right of each pits are the count of stones in each pit for better readability.
+
+
+.. [#Fly08] Jennifer Flynn. Independent study quarterly reports.
+ http://users.soe.ucsc.edu/~charlie/projects/SlugGo/, 2008
+ 
+.. [#GS07] Sylvain Gelly and David Silver. Combining online and offline
+ knowledge in uct. In ICML ’07: Proceedings of the 24th
+ Internatinoal Conference on Machine Learning, pages 273–280.
+ ACM, 2007.
+
+
+
+
+  
 
 
 ..
@@ -321,3 +975,6 @@ Bibliography
 .. move from a position does not depend on them.
 .. We therefore consider the distribution of only
 .. uncaptured stones [romein2003] -> false : need proof
+
+
+

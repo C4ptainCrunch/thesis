@@ -22,6 +22,9 @@ Playing Mancala with MCTS and Alpha Zero
 
 
 
+
+
+
   
 Mancala
 -------
@@ -79,7 +82,7 @@ Numbers in the bottom right of each pits are the count of stones in each pit for
 
 
 .. raw:: html
-    :file: index_files/index_4_0.svg
+    :file: index_files/index_5_0.svg
 
 
 
@@ -119,7 +122,7 @@ As an example, if we start from the initial state showed above, the first player
 
 
 .. raw:: html
-    :file: index_files/index_6_0.svg
+    :file: index_files/index_7_0.svg
 
 
 
@@ -157,7 +160,7 @@ be able to capture the opponent's 4th and 5th pits (highlighted in red in the se
 
 
 .. raw:: html
-    :file: index_files/index_8_0.svg
+    :file: index_files/index_9_0.svg
 
 
 
@@ -177,7 +180,7 @@ be able to capture the opponent's 4th and 5th pits (highlighted in red in the se
 
 
 .. raw:: html
-    :file: index_files/index_9_0.svg
+    :file: index_files/index_10_0.svg
 
 
 
@@ -215,7 +218,7 @@ In the following example, the south player has to play the fifth pit because pla
 
 
 .. raw:: html
-    :file: index_files/index_11_0.svg
+    :file: index_files/index_12_0.svg
 
 
 
@@ -232,6 +235,310 @@ pits are all empty, the game ends and the player with the most captures wins.
 The last way to stop the game is when a position is encountered twice in the
 same game (there is a cycle): the game ends and player with the most captures
 wins.
+
+
+
+
+  
+Implementation of the rules
+---------------------------
+
+We define a dataclass with the minmal attributes needed to store all the game state.
+
+
+
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    from dataclasses import dataclass
+    
+    @dataclass
+    class Game:
+        pits: np.array
+        current_player: int
+        captures: np.array
+
+
+
+
+
+
+  
+Now that we have defined the fields our dataclass can hold to represent the state of the game,
+we can inherit from it to add new methods.
+
+The first is a static method to intantiate a game state in the initial position, with 4 seeds in earch pit.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class Game(Game):
+        ...
+        
+        @classmethod
+        def new(klass):
+            return klass(
+                # A 6x2 matrix filled with 4
+                pits=np.ones(6 * 2, dtype=int) * 4,
+                current_player=0,
+                captures=np.zeros(2, dtype=int),
+            )
+
+
+
+
+
+
+  
+Next, we add some convenience methods that will be usefull later
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class Game(Game):
+        ...
+    
+        @property
+        def view_from_current_player(self):
+            if self.current_player == 0:
+                return self.pits
+            else:
+                return np.roll(self.pits, 6)
+        
+        @property
+        def current_player_pits(self):
+            if self.current_player == 0:
+                return self.pits[:6]
+            else:
+                return self.pits[6:]
+    
+        @property
+        def current_opponent(self):
+            return (self.current_player + 1) % 2
+        
+        @property
+        def adverse_pits_idx(self):
+            if self.current_player == 1:
+                return list(range(6))
+            else:
+                return list(range(6, 6 * 2))
+
+
+
+
+
+
+  
+Now we start implementing the rules
+
+Some rules have deliberately been excuded from this implementation :
+
+-  Loops in the game state are not checked (this speeds up considerably
+   the computations and we never encountered a loop in practice)
+-  You are authorized to starve your opponent. This was made so the
+   rules are a little bit simpler and should not change the complexity
+   of the game.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class Game(Game):
+        ...
+        
+        @property
+        def legal_actions(self):
+            our_pits = self.current_player_pits
+            return [x for x in range(6) if our_pits[x] != 0]
+        
+        @property
+        def game_finished(self):
+            no_moves_left = np.sum(self.current_player_pits) == 0
+            
+            half_seeds = 6 * 4
+            enough_captures = self.captures[0] > half_seeds or self.captures[1] > half_seeds
+            
+            draw = self.captures[0] == half_seeds and self.captures[1] == half_seeds
+            
+            return no_moves_left or enough_captures or draw
+        
+        @property
+        def winner(self):
+            if not self.game_finished:
+                return None
+            elif self.captures[0] == self.captures[1]:
+                return None
+            else:
+                return 0 if self.captures[0] > self.captures[1] else 1
+
+
+
+
+
+
+  
+We can now add the ``step()`` functions that plays a turn
+
+``Game.step(i)`` to play the
+i-th pit in the current sate. This will return the new state, the amount
+of seeds captured and a boolean informing you if the game is finished.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class Game(Game):
+        ...
+        
+        def step(self, action):
+            assert 0 <= action < 6, "Illegal action"
+            
+            target_pit = action if self.current_player == 0 else action - 6
+            
+            seeds = self.pits[target_pit]
+            assert seeds != 0, "Illegal action: pit % is empty" % target_pit
+            
+            # copy attributes
+            pits = np.copy(self.pits)
+            captures = np.copy(self.captures)
+            
+            # empty the target pit
+            pits[target_pit] = 0
+            
+            # fill the next pits
+            pit_to_sow = target_pit
+            while seeds > 0:
+                pit_to_sow = (pit_to_sow + 1) % (6 * 2)
+                if pit_to_sow != target_pit: # do not fill the target pit ever
+                    pits[pit_to_sow] += 1
+                    seeds -= 1
+    
+            # count the captures of the play
+            round_captures = 0
+            if pit_to_sow in self.adverse_pits_idx:
+                # if the last seed was in a adverse pit
+                # we can try to collect seeds
+                while pits[pit_to_sow] in (2, 3):
+                    # if the pit contains 2 or 3 seeds, we capture them
+                    captures[self.current_player] += pits[pit_to_sow]
+                    round_captures += pits[pit_to_sow]
+                    pits[pit_to_sow] = 0
+                    
+                    # go backwards
+                    pit_to_sow = (pit_to_sow - 1) % (self.n_pits * 2)
+            
+            # change player
+            current_player = (self.current_player + 1) % 2
+            
+            new_game = type(self)(
+                pits,
+                current_player,
+                captures
+            )
+    
+            return new_game, round_captures, new_game.game_finished
+
+
+
+
+
+
+
+  
+And some display functions
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class Game(Game):
+        ...
+        
+        def show_state(self):
+            if self.game_finished:
+                print("Game finished")
+            print("Current player: {} - Score: {}/{}\n{}".format(
+                self.current_player,
+                self.captures[self.current_player],
+                self.captures[(self.current_player + 1) % 2],
+                "-" * 6 * 3
+            ))
+            
+            pits = []
+            for seeds in self.view_from_current_player:
+                pits.append("{:3}".format(seeds))
+            
+            print("".join(reversed(pits[6:])))
+            print("".join(pits[:6]))
+        
+        def _repr_svg_(self):
+            board = np.array([
+                list(reversed(self.pits[6:])),
+                self.pits[:6]
+            ])
+            return board_to_svg(board, True)
+
+
+
+
+
+
+  
+We can now play a move and have its results displayed here.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    g = Game.new()
+    g, captures, done = g.step(4)
+    g
+
+
+
+
+
+
+
+
+.. raw:: html
+    :file: index_files/index_28_0.svg
+
+
+
+
 
 
 
@@ -348,333 +655,14 @@ the same work could most probably be done on Kalah and other variants.
 
 
 
-.. topic:: How should you read this document ?
-
-    This document is a mix of text and Python code in the form of notebook
-    cells. Reading only the text and skipping all the code should be enough for
-    you to understand the whole work. But if you are interested in the
-    implementation work and the details of the simulations you are welcome to
-    read the notebook cells as well.
-
-    Some output and cells are hidden for the sake of brevity and readability.
-    Click on the button to reveal the full code and output that were used for
-    the simulations to write this work.
-
-
-
-
-
-
 
   
-Implementation of the rules
----------------------------
+Tree representation
+-------------------
 
-Some rules have deliberately been excuded from this implementation :
+We now build a tree representation of the game state where the root of the tree is the initial state and each children are the states created by playing each pits.
 
--  Loops in the game state are not checked (this speeds up considerably
-   the computations and we never encountered a loop in practice)
--  You are authorized to starve your opponent. This was made so the
-   rules are a little bit simpler and should not change the complexity
-   of the game.
-
-We first define a dataclass with the minmal attributes needed to store the game state
-
-
-
-
-  
-
-
-  .. code:: ipython3
-
-    from dataclasses import dataclass
-    from typing import Tuple
-    
-    @dataclass
-    class Game:
-        pits: np.array
-        current_player: int
-        captures: Tuple[int, int]
-
-
-
-
-
-
-  
-We add a static method to start a new game
-
-
-
-
-  
-
-
-  .. code:: ipython3
-
-    class Game(Game):
-        ...
-        
-        @classmethod
-        def new(klass):
-            return klass(
-                # A 6x2 matrix filled with 4
-                pits=np.ones(6 * 2, dtype=int) * 4,
-                current_player=0,
-                captures=(0, 0)
-            )
-
-
-
-
-
-
-  
-Next, we add some convenience methods that will be usefull later
-
-
-
-
-  
-
-
-  .. code:: ipython3
-
-    class Game(Game):
-        ...
-    
-        @property
-        def view_from_current_player(self):
-            if self.current_player == 0:
-                return self.pits
-            else:
-                return np.roll(self.pits, 6)
-        
-        @property
-        def current_player_pits(self):
-            if self.current_player == 0:
-                return self.pits[:6]
-            else:
-                return self.pits[6:]
-    
-        @property
-        def current_opponent(self):
-            return (self.current_player + 1) % 2
-        
-        @property
-        def adverse_pits_idx(self):
-            if self.current_player == 1:
-                return list(range(6))
-            else:
-                return list(range(6, 6 * 2))
-        
-
-
-
-
-
-
-  
-Now we start implementing the rules
-
-
-
-
-  
-
-
-  .. code:: ipython3
-
-    class Game(Game):
-        ...
-        
-        @property
-        def legal_actions(self):
-            our_pits = self.current_player_pits
-            return [x for x in range(6) if our_pits[x] != 0]
-        
-        @property
-        def game_finished(self):
-            no_moves_left = np.sum(self.current_player_pits) == 0
-            
-            half_seeds = 6 * 4
-            enough_captures = self.captures[0] > half_seeds or self.captures[1] > half_seeds
-            
-            draw = self.captures[0] == half_seeds and self.captures[1] == half_seeds
-            
-            return no_moves_left or enough_captures or draw
-        
-        @property
-        def winner(self):
-            if not self.game_finished:
-                return None
-            return np.argmax(self.captures)
-
-
-
-
-
-
-  
-We can now add the ``step()`` functions that plays a turn
-
-The main method you are interested in is ``Game.step(i)`` to play the
-i-th pit in the current sate. This will return the new state, the amount
-of seeds captured and a boolean informing you if the game is finished.
-
-
-
-
-  
-
-
-  .. code:: ipython3
-
-    class Game(Game):
-        ...
-        
-        def step(self, action):
-            assert 0 <= action < 6, "Illegal action"
-            
-            target_pit = action if self.current_player == 0 else action - 6
-            
-            seeds = self.pits[target_pit]
-            assert seeds != 0, "Illegal action: pit % is empty" % target_pit
-            
-            # copy attributes
-            pits = np.copy(self.pits)
-            captures = np.copy(self.captures)
-            
-            # empty the target pit
-            pits[target_pit] = 0
-            
-            # fill the next pits
-            pit_to_sow = target_pit
-            while seeds > 0:
-                pit_to_sow = (pit_to_sow + 1) % (6 * 2)
-                if pit_to_sow != target_pit: # do not fill the target pit ever
-                    pits[pit_to_sow] += 1
-                    seeds -= 1
-            
-            # Capture
-            # -------
-            
-            # count the captures of the play
-            round_captures = 0
-            if pit_to_sow in self.adverse_pits_idx:
-                # if the last seed was in a adverse pit
-                # we can try to collect seeds
-                while pits[pit_to_sow] in (2, 3):
-                    # if the pit contains 2 or 3 seeds, we capture them
-                    captures[self.current_player] += pits[pit_to_sow]
-                    round_captures += pits[pit_to_sow]
-                    pits[pit_to_sow] = 0
-                    
-                    # go backwards
-                    pit_to_sow = (pit_to_sow - 1) % (self.n_pits * 2)
-            
-            # change player
-            current_player = (self.current_player + 1) % 2
-            
-            new_game = type(self)(
-                pits,
-                current_player,
-                captures
-            )
-    
-            return new_game, round_captures, new_game.game_finished
-
-
-
-
-
-
-
-  
-And some display functions
-
-
-
-
-  
-
-
-  .. code:: ipython3
-
-    class Game(Game):
-        ...
-        
-        def show_state(self):
-            if self.game_finished:
-                print("Game finished")
-            print("Current player: {} - Score: {}/{}\n{}".format(
-                self.current_player,
-                self.captures[self.current_player],
-                self.captures[(self.current_player + 1) % 2],
-                "-" * self.n_pits * 3
-            ))
-            
-            pits = []
-            for seeds in self.view_from_current_player:
-                pits.append("{:3}".format(seeds))
-            
-            print("".join(reversed(pits[self.n_pits:])))
-            print("".join(pits[:self.n_pits]))
-    
-        def __repr__(self):
-            return "<Game current_player:{player} captures:{captures[0]}/{captures[1]}>".format(
-                player=self.current_player,
-                captures=self.captures
-            )
-        
-        def _repr_svg_(self):
-            board = np.array([
-                list(reversed(self.pits[6:])),
-                self.pits[:6]
-            ])
-            return board_to_svg(board, True)
-
-
-
-
-
-
-  
-Play a game
-
-
-
-
-  
-
-
-  .. code:: ipython3
-
-    g = Game.new()
-    g, captures, done = g.step(4)
-    g
-
-
-
-
-
-
-
-
-.. raw:: html
-    :file: index_files/index_31_0.svg
-
-
-
-
-
-
-
-
-  
-As the rest of this work is always using trees as the base model for a game,
-we also use it here in the implementation.
+First, we start by adding new fields to the ``Game`` dataclass we defined earlier so a state can hold links to its parent and children.
 
 
 
@@ -693,6 +681,12 @@ we also use it here in the implementation.
         children: List[Optional[Game]] = field(default_factory=lambda: [None] * 6)
 
 
+
+
+
+
+  
+Next, we overload the ``step()`` method so we don't compute twice the same state and to keep links to the parent when we create a new child.
 
 
 
@@ -717,15 +711,6 @@ we also use it here in the implementation.
                 return new_game, captures, finished
 
 
-
-
-
-
-  
-
--  ``is_fully_expanded`` tells you if all actions of this state have
-   been computed
--  …
 
 
 
@@ -771,26 +756,6 @@ we also use it here in the implementation.
             if self.parent is None:
                 return 0
             return 1 + self.parent.depth
-
-
-
-
-
-
-  
-
-
-  .. code:: ipython3
-
-    class TreeGame(TreeGame):
-        ...
-        
-        def update_stats(self, winner):
-            assert winner in [0, 1]
-            self.wins[winner] += 1
-            self.n_playouts += 1
-            if self.parent:
-                self.parent.update_stats(winner)
 
 
 
@@ -858,6 +823,29 @@ time, the agent is time constrained}, each time, refining the probability of
 winning when choosing a child of the root node. When we are done sampling the
 agent chooses the child with the highest probability of winning and plays the
 corresponding action in the game.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    @dataclass
+    class TreeStatsGame(TreeGame):
+        wins: np.array = field(default_factory=np.zeros(2, dtype=int))
+        n_playouts: int = 0
+        
+        
+        def update_stats(self, winner):
+            assert winner in [0, 1]
+            self.wins[winner] += 1
+            self.n_playouts += 1
+            if self.parent:
+                self.parent.update_stats(winner)
+
+
 
 
 
@@ -966,14 +954,11 @@ Footnotes
 
 
   
-
-
 ..
 .. Although captured stones
 .. contribute to a position’s final outcome, the best
 .. move from a position does not depend on them.
 .. We therefore consider the distribution of only
 .. uncaptured stones [romein2003] -> false : need proof
-
 
 

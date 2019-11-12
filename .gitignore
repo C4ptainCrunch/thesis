@@ -3,3 +3,4 @@ ve/
 build/
 source/data/
 source/nb_builds
+source/*_files

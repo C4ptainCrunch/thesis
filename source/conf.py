@@ -105,7 +105,7 @@ html_static_path = ['_static', '_static/custom.css']
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-# html_sidebars = {}
+html_sidebars = {}
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
@@ -140,28 +140,6 @@ latex_elements = {
 latex_documents = [
     (master_doc, 'mancala-thesis.tex', 'mancala-thesis Documentation',
      'Nikita Marchant', 'manual'),
-]
-
-
-# -- Options for manual page output ------------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'mancala-thesis', 'mancala-thesis Documentation',
-     [author], 1)
-]
-
-
-# -- Options for Texinfo output ----------------------------------------------
-
-# Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
-#  dir menu entry, description, category)
-texinfo_documents = [
-    (master_doc, 'mancala-thesis', 'mancala-thesis Documentation',
-     author, 'mancala-thesis', 'One line description of project.',
-     'Miscellaneous'),
 ]
 
 

@@ -1,10 +1,8 @@
   
-========================================
-Playing Mancala with MCTS and Alpha Zero
-========================================
-
 .. contents:: Table of Contents
-   :depth: 2
+   :depth: 3
+
+.. sectnum::
 
 .. topic:: About this work
 
@@ -29,21 +27,27 @@ Playing Mancala with MCTS and Alpha Zero
 Mancala
 -------
 
-Mancala is a ancient family of games played played on many continents :cite:`deVoogt2008`.
-The word mancala comes from the Arabic word "نقلة"transliterated "naqala"
-meaning literally "to move". Mancala games usually consists of two
-row of pits each containing a proportionate amount of seeds,
-stones or shells. Usually, these games are played by two opponents who play sequentially.
-The goal for each opponent is to capture as many seeds as possible before the other.
+Mancala is a ancient family of games played  on many continents :cite:`deVoogt2008`.
+The word mancala comes from the Arabic word "نقلة", transliterated as "naqala", literally meaning "to move". Mancala games usually consist of two
+rows of pits, each containing a proportionate amount of seeds,
+stones or shells. In the present document, we will name them seeds.
+Usually, these games are played by two opponents who play sequentially.
+The goal for each opponent is to capture more seeds than the opponent.
+
+.. _intro-kalah:
 
 .. figure:: _static/intro-kalah.jpg
 
   A wooden Mancala game [#source_kalah]_
 
 We will focus on Awalé (also sometimes called Oware,  Owari or Ayo), originating from
-Ghana. There are too many other existing variations to list them all here, but a
+Ghana. There are too many variants to list them all here, but a
 few notable ones are Wari, Bao, Congkak and Kalah, a modern version invented by
 William Julius Champion Jr. circa 1940.
+
+.. todo: version commercialisée et répendue aux US
+
+.. todo Chamionats ? Ligue ?
 
 
 
@@ -53,17 +57,17 @@ Awalé
 -----
 
 The subject of our study, Awalé is played on a board made of two rows of six
-pits. Each row is owned by a player that sits in front of it.
-In the initial state of the game every pit contains 4 seeds thus the game contains
-48 seeds in total.
+pits. Each row is owned by a player that sits in front of it (see figure ":ref:`intro-kalah`").
+In the initial state of the game, every pit contains 4 seeds and  the game thus contains
+48 seeds in total. For the sake of convenience, the players are named North and South.
 
 .. figure:: /_static/awale.jpg
 
-   A typical Awalé board in the start position.
+   A typical Awalé board in the initial position.
 
-The board can be schematized like this, every big circle representing a pit and every small disc representing a seed. The 6 pits from the top row belonging to the north player and the 6 others belonging to the south player.
+The board can be schematized as in Figure #REF:initial board this, every big circle representing a pit and every small disc representing a seed. The 6 pits from the top row belong to North and the 6 others to South.
 
-Numbers in the bottom right of each pits are the count of stones in each pit for better readability.
+Numbers at the bottom right of each pit is the count of seeds in each pit for better readability.
 
 
 
@@ -96,17 +100,17 @@ Rules of the game
 -----------------
 
 The goal for both players is to capture more seeds than its opponent. As the
-game has 48 seeds, capturing 25 is enough to win and end the game.
+game has 48 seeds, capturing 25 is enough to win and ends the game.
 
-Each player plays alternatively, without the right to pass their turn. A
-player's turn consists in choosing one of his non-empty pits, pick all seeds
-contained in the pit and seed them one by one in every consecutive pits on the right
+Each player plays alternatively, without the right to pass his turn. A
+player's turn consists in choosing one of his non-empty pits, picking all seeds
+contained in the pit and sowing them one by one in every consecutive pits on the right
 (rotating counter-clockwise). The player thus has at most 6 possible moves at
 each turn.
 
 Usually, the player that starts the game is the oldest player. Here, we will start at random.
 
-As an example, if we start from the initial state showed above, the first player to move is the south (on the bottom) and he chooses the 4th pit, the board will then have the following state.
+As an example, if we are in the initial state (showed above) and the first player to move is South (on the bottom) and he chooses the 4th pit, the board will then be in the following state.
 
 
 
@@ -132,19 +136,21 @@ As an example, if we start from the initial state showed above, the first player
 
 
   
-When the last sowed seed is placed in a pit owned by the opponent and after seeding
+When the last sowed seed is placed in a pit owned by the opponent and after sowing
 the pit contains two or three seeds, the content of the pit is captured by
 the player and removed from the game. If the pit preceding the captured pit also
 contains two or three seeds, it is also captured. The capture continues until a
 pit without two or three seeds is encountered. When the capture is ended the
 next player's turn starts.
 
-Otherwise, when the last sowed seed is placed in a pit that now contains one seed, more
+Otherwise, when the last sowed seed is placed in a pit that, after sowing, contains one seed, more
 than 3 seeds or in the current player's own pits, the turn of the player is ended without
 any capture.
 
-For example, if the south player plays the 4th pit in the following configuration he will
+For example, if South plays the 4th pit in the following configuration he will
 be able to capture the opponent's 4th and 5th pits (highlighted in red in the second figure) 
+
+.. todo "Second figure" -> utiliser numéro
 
 
 
@@ -194,15 +200,12 @@ If the pit chosen by the player contains more than 12 seeds, the sowing makes
 more than a full revolution and the starting hole is skipped during the second
 and subsequent passes.
 
-If the current player's opponent has no seed left in his half of the board, the
+If the current player's opponent has no seed left in his half board, the
 current player has to play a move that gives him seeds if such a move exists.
-This rule is called the "let the opponent play" or "don't starve your opponent".
 
-This rule has for second consequence that if a player plays a move that could capture
-every seed of the opponent, he may play this move but he may not capture the seeds as
-it would also prevent the opponent of playing.
+This rule is called the "feed your opponent".
 
-In the following example, the south player has to play the fifth pit because playing the first would leave the opponent without any move to play.
+In the following example, South has to play the fifth pit because playing the first would leave the opponent without any move to play.
 
 
 
@@ -233,7 +236,7 @@ players have captured 24 seeds, the game ends by a draw. If the current player
 pits are all empty, the game ends and the player with the most captures wins.
 
 The last way to stop the game is when a position is encountered twice in the
-same game (there is a cycle): the game ends and player with the most captures
+same game (there is a cycle): the game ends and the player with  most captures
 wins.
 
 
@@ -243,7 +246,7 @@ wins.
 Implementation of the rules
 ---------------------------
 
-We define a dataclass with the minmal attributes needed to store all the game state.
+We define a dataclass with the minimal attributes needed to store a state of the game.
 
 
 
@@ -260,9 +263,9 @@ We define a dataclass with the minmal attributes needed to store all the game st
     
     @dataclass
     class Game:
-        pits: np.array
-        current_player: int
-        captures: np.array
+        pits: np.array # a 2x6 matrix containing the number of seeds in each pits
+        current_player: int # 0 for North and 1 for South
+        captures: np.array # the number of seeds captured by each player
 
 
 
@@ -273,7 +276,7 @@ We define a dataclass with the minmal attributes needed to store all the game st
 Now that we have defined the fields our dataclass can hold to represent the state of the game,
 we can inherit from it to add new methods.
 
-The first is a static method to intantiate a game state in the initial position, with 4 seeds in earch pit.
+The first is a static method to instantiate a game state in the initial position, with 4 seeds in each pit.
 
 
 
@@ -289,7 +292,7 @@ The first is a static method to intantiate a game state in the initial position,
         @classmethod
         def new(klass):
             return klass(
-                # A 6x2 matrix filled with 4
+                # A 6x2 matrix filled with 4 seeds
                 pits=np.ones(6 * 2, dtype=int) * 4,
                 current_player=0,
                 captures=np.zeros(2, dtype=int),
@@ -301,7 +304,7 @@ The first is a static method to intantiate a game state in the initial position,
 
 
   
-Next, we add some convenience methods that will be usefull later
+Next, we add some convenient methods that will be usefull later:
 
 
 
@@ -345,15 +348,12 @@ Next, we add some convenience methods that will be usefull later
 
 
   
-Now we start implementing the rules
+Now we start implementing the rules,
+some of them being deliberately excluded from this implementation:
 
-Some rules have deliberately been excuded from this implementation :
-
--  Loops in the game state are not checked (this speeds up considerably
-   the computations and we never encountered a loop in practice)
--  You are authorized to starve your opponent. This was made so the
-   rules are a little bit simpler and should not change the complexity
-   of the game.
+-  Loops in the game state are not checked (this considerably speeds up the computations and we never encountered a loop in practice);
+-  The "feed your opponent" rule is removed; This makes the
+   rules slightly simpler and we expect it does not change the complexity of the game.
 
 
 
@@ -397,11 +397,9 @@ Some rules have deliberately been excuded from this implementation :
 
 
   
-We can now add the ``step()`` functions that plays a turn
-
-``Game.step(i)`` to play the
-i-th pit in the current sate. This will return the new state, the amount
-of seeds captured and a boolean informing you if the game is finished.
+We can now define the ``Game.step(i)`` method that plays the
+i-th pit in the current sate. This method returns the new state, the amount
+of seeds captured and a boolean informing whether the game is finished.
 
 
 
@@ -469,7 +467,7 @@ of seeds captured and a boolean informing you if the game is finished.
 
 
   
-And some display functions
+We then add some display functions.
 
 
 
@@ -547,20 +545,20 @@ We can now play a move and have its results displayed here.
 Perfect information games
 -------------------------
 
-Now that we know the rules, we can see that Mancala games are :
+Now that we know the rules, we can see that Mancala games 
 
-* Sequential: the opponents play one after the other,
-* Hold no secret information: each player has the same information about
-  the game as the other
-* Do not rely on randomness: the state of the game depends only on the actions
+* are sequential: the opponents play one after the other;
+* hold no secret information: each player has the same information about
+  the game;
+* do not rely on randomness: the state of the game depends only on the actions
   taken sequentially by each player and an action has a deterministic result.
 
 This type of game is called a sequential perfect information game
 :cite:`osborne1994course`.
 
 Other games in this category are for example Chess, Go, Checkers or even
-Tic-tac-toe and Connect Four. This type of game is a particularly interesting
-field to study in computer science and artificial intelligence as they are easy
+Tic-tac-toe and Connect Four. Sequential perfect information games are particularly interesting
+ in computer science and artificial intelligence as they are easy
 to simulate.
 
 
@@ -574,13 +572,13 @@ Perfect information games as finite state machines
 
 When viewed from an external point of view, these types of games can be
 modelized as finite states machines with boards being states (the initial board
-is the initial state), each player's action being transitions and wins and draws
+is the initial state), each player's action being a transition and wins and draws
 being terminal states.
 
 .. TODO formal description of the game as a FSM ?
 
 It might be tempting to try to enumerate every possible play of those games by
-starting a game and recursively try each legal action until the end of the play
+starting a game and recursively trying each legal action until the end of the game
 to find the best move for each state.
 
 Unfortunately, most of the time, this is not a feasible approach due to the size
@@ -603,12 +601,12 @@ of the board and his own moves and is not aware of the moves from his opponent,
 neither in advance or after the move has been played.
 
 When viewed under this angle, a game looks like this:
- * the game is in a state :math:`A`,
- * the player plays his turn, the board changes deterministically,
+ * the game is in state :math:`A`,
+ * the player plays his turn and the board changes deterministically,
  * the game is in state :math:`A'`,
  * his opponent plays and the board has multiple ways of changing,
- * the game is in state :math:`B`, :math:`B` is one of the 6 possible successors
-   of :math:`A'`.
+ * the game is in state :math:`B` (one of the 6 possible successors
+   of :math:`A'`).
 
 We can model this as a Markov decision process (MDP).
 
@@ -627,31 +625,30 @@ A strongly solved game is defined by Allis :cite:`Allis94searchingfor` as:
     obtain the game-theoretic value of the position, for both players, under
     reasonable resources.
 
-A solved game is, of course much less interesting to study than an
+A solved game is, of course, much less interesting to study than an
 unsolved one as we could just create an agent that has the knowledge of each
-game-theoretic position values and can thus play perfectly.
+game-theoretic position values and can thus perfectly play.
 
-Unfortunately for us, (:math:`m,n`)-Kalah (:math:`m` pits per side and :math:`n`
-stones in each pit) has been solved in 2000 for :math:`m \leq 6`  and :math:`n
-\leq 6` except (:math:`6,6`) by Jos Uiterwijk :cite:`irving2000solving` and in
-2011 for :math:`n = 6, m=6` by Anders Carstensen :cite:`kalah66`.
+(:math:`m,n`)-Kalah is a game in the Mancala family with :math:`m` pits per
+side and :math:`n` seeds in each pit plus two extra pits with a special role.
+It has been solved in 2000 for :math:`m \leq 6`  and :math:`n
+\leq 6` except (:math:`6,6`) by :cite:`irving2000solving` and in
+2011 for :math:`n = 6, m=6` by :cite:`kalah66`.
 
-J. W. Romein et al. :cite:`romein2003solving` also claims to have solved
-Awalé by quasi-*brute-force* -- retrograde analysis,
-but this claim has since been challenged by others like Víktor Bautista i Roca.
-Roca claims that several endgames were incorrect and the results are invalid.
-As both the database made by Romein and the claim from Roca are not available
-anymore publicly we can not know who is right.
+:cite:`romein2003solving` claim to have solved
+Awalé by almost brute-force retrograde analysis. They have also published a database
+of XXX. Their claim has since been challenged by Víktor Bautista i Roca in a paper published in XXX.
+Bautista i Roca claims that several end states in the database are incorrect and that the proof is thus invalid.
+As both the database made by Romein and the paper by Bautista i Roca are not anymore available
+publicly, we cannot know who is right.
 
-Nevertheless, these proofs for Kalah and Awalé both use a quasi-*brute-force*
-method to solve the game and uses a database all possible states. The database
-used by Romein et al. has 204 billion entries and weighs 178GiB. A database so
-huge is of course not practical so we think that there is still room for
-improvement if we can create an agent that has a policy that does not need a
+The above-mentioned results for Kalah and Awalé both use an almost brute-force
+method to solve the game and use a database of all possible states. The database
+used by :cite:`romein2003solving` has 204 billion entries and weighs 178GiB.
+Such a huge database is of course not practical and  we thus think  there is still room for
+improvement if we can create an agent with a policy that does not need a
 exhaustive database, even if the agent is not capable of a perfect play.
 
-We arbitrarily chose to work on Awalé as it might not have been solved but
-the same work could most probably be done on Kalah and other variants.
 
 
 
@@ -660,9 +657,9 @@ the same work could most probably be done on Kalah and other variants.
 Tree representation
 -------------------
 
-We now build a tree representation of the game state where the root of the tree is the initial state and each children are the states created by playing each pits.
+We now build a tree representation of the game where the root of the tree is the initial state and each child of a node represents one of the states created by playing one of the pits.
 
-First, we start by adding new fields to the ``Game`` dataclass we defined earlier so a state can hold links to its parent and children.
+First, we start by adding new fields to the ``Game`` dataclass we defined earlier so that a state can hold links to its parent and children.
 
 
 
@@ -686,7 +683,7 @@ First, we start by adding new fields to the ``Game`` dataclass we defined earlie
 
 
   
-Next, we overload the ``step()`` method so we don't compute twice the same state and to keep links to the parent when we create a new child.
+Next, we overload the ``Game.step(i)`` method so that we do not compute twice the same state and we keep a reference to the parent when we create a new child.
 
 
 
@@ -700,7 +697,7 @@ Next, we overload the ``step()`` method so we don't compute twice the same state
         ...
         
         def step(self, action):
-            # If we already did compute the children node, juste return it
+            # If we already did compute the children node, just return it
             if self.children[action] is not None:
                 new_game = self.children[action]
                 captures = new_game.captures[self.current_player] - self.captures[self.current_player]
@@ -774,22 +771,21 @@ Monte Carlo tree search (MCTS) and Alpha (Go) Zero :cite:`AlphaGoZero`.
 We will focus on MCTS as it does not require any expert knowledge
 about the given game to make reasonable decisions.
 
-The principle of MCTS is simple : we represent the starting state of a game by
-the root node of a tree. This node then has a children for each possible action
+The principle of MCTS is simple : we represent the initial state of a game by
+the root node of a tree. This node then has a child for each possible action
 the current player can make. The n-th child of the node represents the state in
-which the game would be if the payer had played the n-th possible action.
+which the game would be if the player had played the n-th possible action.
 
 The maximum number of children of a node in the game is called the branching
 factor. In a classical Awalé game the player can choose to sow his seeds from
 one of his non-empty pits. As the player has 6 pits, the branching factor is 6
-(this is very small compared to branching factor of 19 from the game of Go and
-makes Awalé much easier to play with this method).
+(this is very small compared to the branching factor of 19 for the game of Go and
+makes Awalé much easier to play with MCTS).
 
-With this representation, if we build the complete tree, we will have computed
-every possible state in the game and every leaf of the tree will be a final
-state (end of a game). As said, previously, computing the complete tree is not
-ideal for Alawé (it has :math:`\approx 8 \times 10^{11}` nodes) and
-computationally impossible for games with a high branching factor.
+If we build the complete tree, we compute every possible state in the game and every
+leaf of the tree is a final state (end of a game). As said, previously, computing the complete tree is not
+ideal for Awalé (it has :math:`\approx 8 \times 10^{11}` nodes) and
+computationally impossible for games with a high branching factor (unless very shallow).
 
 To overcome this computational problem, the MCTS method constructs only a part
 of the tree by sampling and tries to estimate the chance of winning based on
@@ -812,17 +808,22 @@ The (partial) tree is constructed as follows:
 * Backpropagation: update the counters described below of each ancestor
   of :math:`T`.
 
-Each node holds 3 counters : the number of times a node has been used during a
-sampling iteration (:math:`N`), the number of simulations using this node ended
-with a win for the player 1 (:math:`W_1`) and player 2 (:math:`W_2`). From this
-counters, a probability of winning if an action is chosen can be computed
-immediately: :math:`\frac{W_1}{N}` or :math:`\frac{W_2}{N}`.
 
-This sampling can be ran as many times as needed or allowed\footnote{Most of the
-time, the agent is time constrained}, each time, refining the probability of
-winning when choosing a child of the root node. When we are done sampling the
+Each node holds 3 counters : (:math:`W_S`), the number of simulations using this node ended that
+with a win for South;  and North (:math:`W_N`). From this
+counters, a probability of North winning conditional on a given action can be computed
+immediately: :math:`\frac{W_N}{N}`.
+
+This sampling can be ran as many times as allowed (most of the
+time, the agent is time constrained). One can also stop the sampling earlier if
+
+each time refining the probability of
+winning when choosing a child of the root node. When we are done sampling, the
 agent chooses the child with the highest probability of winning and plays the
 corresponding action in the game.
+
+the total number of times a node has been played during a
+sampling iteration (:math:`N`)
 
 
 
@@ -857,10 +858,8 @@ Node Selection
 In step 1 and 3 of the algorithm, we have to choose nodes.
 There are multiples ways to choose those.
 
-The most naïve method, in the vanilla MCTS we take a child at random each time.
-This is easy to implement and has no bias but it is not effective as it explores
-every part of the tree even if a part has no chance of leading to a win for the
-player.
+In the original MCTS we take a child at random each time.
+This is easy to implement but it is not effective as it explores every part of the tree even if a part has no chance of leading to a win for the player.
 
 
 
@@ -869,29 +868,29 @@ player.
 Upper Confidence Bounds for Trees
 ---------------------------------
 
-A better method would be asymmetric and only explore interesting parts of the
+A better method would be asymmetric and explore more often the interesting parts of the
 tree. Kocsis and Szepervari :cite:`kocsis2006bandit` defined Upper Confidence
 Bounds for Trees (UCT), a method mixing vanilla MCTS and Upper Confidence Bounds
 (UCB).
 
 Indeed, in step 1, selecting the node during the tree descent that maximizes the
 probability of winning is analogous to the multi-armed bandit problem in which a
-player has choose the slot machine that maximizes the estimated reward.
+player has to choose the slot machine that maximizes the estimated reward.
 
-The UCB formula is the following, where :math:`N'` is the number of times the
-parent of the node has been visited and :math:`c` a fixed parameter:
+The UCB is 
 
 .. math::
 
-    \frac{W_1}{N} + c \times \sqrt{\frac{ln N'}{N}}
+    \frac{W_1}{N} + c \times \sqrt{\frac{ln N'}{N}},
 
-:math:`c` can be tuned to balance exploitation of known wins and exploration of
+where :math:`N'` is the number of times the
+parent node has been visited and :math:`c` is a parameter that can be tuned to balance exploitation of known wins and exploration of
 less visited nodes. Kocsis et al. has shown that :math:`\frac{\sqrt{2}}{2}`
 :cite:`kocsis2006bandit` is a good value when rewards are in :math:`[0, 1]`.
 
 In step 3, the playouts are played at random as it is the first time these nodes
 are seen and we do not have a generic evaluation function do direct the playout
-towards "better" states.
+towards 'better' states.
 
 
 

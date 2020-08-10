@@ -2,7 +2,7 @@
 
 div.document {
     /* min-width: 940px !important; */
-    width: 60vw !important;
+    width: 90vw !important;
 }
 
 div.body {
@@ -29,8 +29,8 @@ blockquote div {
 }
 
 div.body h1 {
-    text-align: center;
-    font-size: 270%;
+    /* text-align: center;
+    font-size: 270%; */
 }
 
 div.topic {
@@ -79,7 +79,7 @@ pre {
 
 body > div.document > div.sphinxsidebar > div {
     position: fixed;
-    width: 220px;
+    width: 180px;
 }
 
 a.toc-backref {

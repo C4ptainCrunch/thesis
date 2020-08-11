@@ -24,50 +24,47 @@
 
 
   
-Mancala
--------
+============
+Introduction
+============
 
-Mancala is a ancient family of games played  on many continents :cite:`deVoogt2008`.
-The word mancala comes from the Arabic word "نقلة", transliterated as "naqala", literally meaning "to move". Mancala games usually consist of two
-rows of pits, each containing a proportionate amount of seeds,
-stones or shells. In the present document, we will name them seeds.
-Usually, these games are played by two opponents who play sequentially.
-The goal for each opponent is to capture more seeds than the opponent.
+Awale is a popular board game played mainly in Africa. The board has two rows of six pits, each containing four seeds in the initial state.
 
-.. _intro-kalah:
 
-.. figure:: _static/intro-kalah.jpg
+.. figure:: /_static/awale.jpg
 
-  A wooden Mancala game [#source_kalah]_
+   A typical Awalé board in the initial state.
+	
+At each turn, the players move some seeds and can potentially capture some of them, according to deterministic rules. The goal of the game is to capture more seeds than one's opponent. 
 
-We will focus on Awalé (also sometimes called Oware,  Owari or Ayo), originating from
-Ghana. There are too many variants to list them all here, but a
-few notable ones are Wari, Bao, Congkak and Kalah, a modern version invented by
-William Julius Champion Jr. circa 1940.
+..todo:: Texte expliquant ce que tu vas faire dans ton memoire et pourquoi c'est interessant, pourquoi c'est nouveau
 
-.. todo: version commercialisée et répendue aux US
-
-.. todo Chamionats ? Ligue ?
+In Section 2, we present Awale in detail.
+Section 3 reviews various approaches to solve Awale: retrograde analysis, Minimax, and basic Monte Carlo Tree Search.
+In Section 4, we described more advanced versions of MCTS and in particular UCT.
+Section 5 presents some empirical results (simulations) allowing to compare several MCTS algorithms and Section 6 concludes.
 
 
 
 
   
-Awalé
------
+=====
+Awale
+=====
 
-The subject of our study, Awalé is played on a board made of two rows of six
-pits. Each row is owned by a player that sits in front of it (see figure ":ref:`intro-kalah`").
-In the initial state of the game, every pit contains 4 seeds and  the game thus contains
-48 seeds in total. For the sake of convenience, the players are named North and South.
+The subject of our study, Awale is an ancient, two player board game originating from Ghana.
+This game is also sometimes called Oware, Owari or Ayo in the neighouring countries, languages and cultures.
 
-.. figure:: /_static/awale.jpg
+Originally, the game is played on the ground, by digging two rows of six small pits, each containing
+stones, seeds or shells. In the present document, we will name them seeds. The game is also often played on a wooden board symbolizing the original dirt pits.
+The board can be schematized as in Fig. XXX, every big circle representing a pit and every small disc representing a seed.
+Numbers at the bottom right of each pit are the counts of seeds in each pit for better readability.
+Each row of pits is owned by a player that sits in front of it (:numref:`see Fig. %s <intro-kalah>`).
+For the sake of convenience, the players are named North and South.   
+The 6 pits from the top row belong to North and the 6 from the bottom to South.
 
-   A typical Awalé board in the initial position.
-
-The board can be schematized as in Figure #REF:initial board this, every big circle representing a pit and every small disc representing a seed. The 6 pits from the top row belong to North and the 6 others to South.
-
-Numbers at the bottom right of each pit is the count of seeds in each pit for better readability.
+The game is played turn by turn, a player taking all the seeds from a pit and placing them in others following the rules. This is called sowing the seeds. The resulting configuration of the board might result in the player being allowed by the rules to capture some seeds.
+The goal for each player is to capture more seeds than his opponent.
 
 
 
@@ -96,21 +93,49 @@ Numbers at the bottom right of each pit is the count of seeds in each pit for be
 
 
   
+Mancala
+-------
+
+The Mancala games are an ancient family of game that are played on many continents :cite:`deVoogt2008`, Awale being one of them.
+The word mancala comes from the Arabic word "نقلة", transliterated as "naqala", literally meaning "to move". 
+
+Like Awale, Mancala games can consist of rows of pits, some of them having more than two rows and sometimes extra pits with a special role. Mancala games can sometimes be played by more than two players.
+
+.. _intro-kalah:
+
+.. figure:: _static/intro-kalah.jpg
+
+  A wooden Mancala game [#source_kalah]_
+
+There are too many variants of the Mancala games to list them all here, but a
+few notable ones are Awale, Wari, Bao, Congkak and Kalah.
+
+In particular, Kalah is a commercial, modern variant of Mancala, introduced in the 1950s by William Julius Champion Jr. that is widespread in the United States. :cite:`irving2000solving`. This variant has been studied in Artifical Intelligence as early as 1964 by :cite:`russel1964`.
+Nowadays Kalah is often used as an example game in computer-science courses.
+
+Mancala games, while less known than Chess or Go, are played in tournaments around the world, both in offline and online competitions :cite:`owaresociety,fandom_tournaments`.
+Tournaments opposing computers on both sides also have been organised multiple times, notably in the Computer Olympiad organized by the International Computer Games Association :cite:`icga_olympiad`.
+
+
+
+
+
+  
 Rules of the game
 -----------------
 
 The goal for both players is to capture more seeds than its opponent. As the
-game has 48 seeds, capturing 25 is enough to win and ends the game.
+game has 48 seeds, capturing 25 is enough for a player to win and ends the game.
 
 Each player plays alternatively, without the right to pass his turn. A
 player's turn consists in choosing one of his non-empty pits, picking all seeds
 contained in the pit and sowing them one by one in every consecutive pits on the right
 (rotating counter-clockwise). The player thus has at most 6 possible moves at
-each turn.
+each turn (one per non-empty pit owned by him).
 
-Usually, the player that starts the game is the oldest player. Here, we will start at random.
+Usually, the player that starts the game is the oldest player. In this work, we will start at random.
 
-As an example, if we are in the initial state (showed above) and the first player to move is South (on the bottom) and he chooses the 4th pit, the board will then be in the following state.
+As an example, if we are in the initial state (showed inf Fig. `initial_board`) and the first player to move is South (on the bottom) and he chooses the 4th pit (highlighted in the figure in red), the board will then be in the  state shown in Fig. `first_move`.
 
 
 
@@ -126,7 +151,7 @@ As an example, if we are in the initial state (showed above) and the first playe
 
 
 .. raw:: html
-    :file: index_files/index_7_0.svg
+    :file: index_files/index_8_0.svg
 
 
 
@@ -147,30 +172,10 @@ Otherwise, when the last sowed seed is placed in a pit that, after sowing, conta
 than 3 seeds or in the current player's own pits, the turn of the player is ended without
 any capture.
 
-For example, if South plays the 4th pit in the following configuration he will
-be able to capture the opponent's 4th and 5th pits (highlighted in red in the second figure) 
+For example, if South plays the 4th pit in the configuration shown in Fig. `pre_capture` he will
+be able to capture the opponent's 4th and 5th pits (highlighted in red in Fig. `post_capture`) 
 
-.. todo "Second figure" -> utiliser numéro
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-.. raw:: html
-    :file: index_files/index_9_0.svg
-
-
-
-
+.. todo::  "Second figure" -> utiliser numéro
 
 
 
@@ -196,16 +201,34 @@ be able to capture the opponent's 4th and 5th pits (highlighted in red in the se
 
 
   
+
+
+
+
+
+
+
+
+
+.. raw:: html
+    :file: index_files/index_11_0.svg
+
+
+
+
+
+
+
+
+  
 If the pit chosen by the player contains more than 12 seeds, the sowing makes
-more than a full revolution and the starting hole is skipped during the second
+more than a full revolution of the board and the starting hole is skipped during the second
 and subsequent passes.
 
 If the current player's opponent has no seed left in his half board, the
 current player has to play a move that gives him seeds if such a move exists.
-
 This rule is called the "feed your opponent".
-
-In the following example, South has to play the fifth pit because playing the first would leave the opponent without any move to play.
+In Fig. `feed`, South has to play the fifth pit because playing the first would leave the opponent without any move to play.
 
 
 
@@ -221,7 +244,7 @@ In the following example, South has to play the fifth pit because playing the fi
 
 
 .. raw:: html
-    :file: index_files/index_12_0.svg
+    :file: index_files/index_13_0.svg
 
 
 
@@ -236,7 +259,7 @@ players have captured 24 seeds, the game ends by a draw. If the current player
 pits are all empty, the game ends and the player with the most captures wins.
 
 The last way to stop the game is when a position is encountered twice in the
-same game (there is a cycle): the game ends and the player with  most captures
+same game (there is a cycle): the game ends and the player with most captures
 wins.
 
 
@@ -532,7 +555,7 @@ We can now play a move and have its results displayed here.
 
 
 .. raw:: html
-    :file: index_files/index_28_0.svg
+    :file: index_files/index_29_0.svg
 
 
 
@@ -542,12 +565,12 @@ We can now play a move and have its results displayed here.
 
 
   
-Perfect information games
--------------------------
+Formalism
+---------
 
-Now that we know the rules, we can see that Mancala games 
+Now that we know the rules, we can see that Awale
 
-* are sequential: the opponents play one after the other;
+* is sequential: the opponents play one after the other;
 * hold no secret information: each player has the same information about
   the game;
 * do not rely on randomness: the state of the game depends only on the actions
@@ -556,10 +579,11 @@ Now that we know the rules, we can see that Mancala games
 This type of game is called a sequential perfect information game
 :cite:`osborne1994course`.
 
+We can also see that the game is a two player zero-sum game.
+
 Other games in this category are for example Chess, Go, Checkers or even
 Tic-tac-toe and Connect Four. Sequential perfect information games are particularly interesting
- in computer science and artificial intelligence as they are easy
-to simulate.
+in computer science and artificial intelligence as they are easy to simulate.
 
 
 
@@ -568,24 +592,24 @@ to simulate.
 Perfect information games as finite state machines
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. TODO formal definition of FSM ?
+.. TODO:: formal definition of FSM ?
 
 When viewed from an external point of view, these types of games can be
 modelized as finite states machines with boards being states (the initial board
 is the initial state), each player's action being a transition and wins and draws
 being terminal states.
 
-.. TODO formal description of the game as a FSM ?
+.. TODO:: formal description of the game as a FSM ?
 
 It might be tempting to try to enumerate every possible play of those games by
 starting a game and recursively trying each legal action until the end of the game
 to find the best move for each state.
 
 Unfortunately, most of the time, this is not a feasible approach due to the size
-of the state space. As an example, Romein et al. claims that Awalé has
+of the state space. As an example, Romein et al. claims that Awale has
 889,063,398,406 legal positions :cite:`romein2003solving` and the exact number
-(:math:`\approx 2.08 \times 10^{170}`) of legal positions in Go is so big that
-it has only recently been determined :cite:`tromp2016`. Such state space are too
+(:math:`\approx 2.08 \times 10^{170}`) of legal positions in Go (another popular perfect information game)
+is so big that it has only recently been determined :cite:`tromp2016`. Such state space are too
 big to be quickly enumerated.
 
 
@@ -597,11 +621,11 @@ Perfect information games as Markov decision processes
 
 Instead of being viewed from an external point of view, these types of games can
 also be seen from the point of view of a single player. He only knows the state
-of the board and his own moves and is not aware of the moves from his opponent,
+of the board and his own moves and is not aware of the moves of his opponent,
 neither in advance or after the move has been played.
 
 When viewed under this angle, a game looks like this:
- * the game is in state :math:`A`,
+ * the game is in state :math:`&`,
  * the player plays his turn and the board changes deterministically,
  * the game is in state :math:`A'`,
  * his opponent plays and the board has multiple ways of changing,
@@ -610,7 +634,10 @@ When viewed under this angle, a game looks like this:
 
 We can model this as a Markov decision process (MDP).
 
-.. TODO More on MDP and why it is a MDP.
+.. TODO:: More on MDP and why it is a MDP.
+        Vu qu'on a un MDP, on serait tenté du'iliser le framework classique de Q learning
+        mais vu la taille de l'espace, on ne peut pas -> MCTS résoud bien ça
+        S'inspirer de https://pdfs.semanticscholar.org/574e/6872df3fe9b89afa98a7bdeef710a931da34.pdf
 
 
 
@@ -636,13 +663,15 @@ It has been solved in 2000 for :math:`m \leq 6`  and :math:`n
 2011 for :math:`n = 6, m=6` by :cite:`kalah66`.
 
 :cite:`romein2003solving` claim to have solved
-Awalé by almost brute-force retrograde analysis. They have also published a database
+Awale by almost brute-force retrograde analysis. They have also published a database
 of XXX. Their claim has since been challenged by Víktor Bautista i Roca in a paper published in XXX.
 Bautista i Roca claims that several end states in the database are incorrect and that the proof is thus invalid.
 As both the database made by Romein and the paper by Bautista i Roca are not anymore available
 publicly, we cannot know who is right.
 
-The above-mentioned results for Kalah and Awalé both use an almost brute-force
+.. todo:: cite vandergoot2001 "Awari retrograde analysis" and "Games solved: Now and in the future"
+
+The above-mentioned results for Kalah and Awale both use an almost brute-force
 method to solve the game and use a database of all possible states. The database
 used by :cite:`romein2003solving` has 204 billion entries and weighs 178GiB.
 Such a huge database is of course not practical and  we thus think  there is still room for
@@ -774,17 +803,17 @@ about the given game to make reasonable decisions.
 The principle of MCTS is simple : we represent the initial state of a game by
 the root node of a tree. This node then has a child for each possible action
 the current player can make. The n-th child of the node represents the state in
-which the game would be if the player had played the n-th possible action.
+which the game would be if the player played the n-th possible action.
 
 The maximum number of children of a node in the game is called the branching
-factor. In a classical Awalé game the player can choose to sow his seeds from
+factor. In a classical Awale game the player can choose to sow his seeds from
 one of his non-empty pits. As the player has 6 pits, the branching factor is 6
 (this is very small compared to the branching factor of 19 for the game of Go and
-makes Awalé much easier to play with MCTS).
+makes Awale much easier to play with MCTS).
 
 If we build the complete tree, we compute every possible state in the game and every
 leaf of the tree is a final state (end of a game). As said, previously, computing the complete tree is not
-ideal for Awalé (it has :math:`\approx 8 \times 10^{11}` nodes) and
+ideal for Awale (it has :math:`\approx 8 \times 10^{11}` nodes) and
 computationally impossible for games with a high branching factor (unless very shallow).
 
 To overcome this computational problem, the MCTS method constructs only a part

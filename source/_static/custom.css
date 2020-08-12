@@ -3,6 +3,7 @@
 div.document {
     /* min-width: 940px !important; */
     width: 90vw !important;
+    max-width: 1000px;
 }
 
 div.body {

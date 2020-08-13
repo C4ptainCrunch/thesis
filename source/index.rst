@@ -603,6 +603,25 @@ This type of game is called a sequential perfect information game
 We can also see that the game is a two player zero-sum game.
 
 
+1) Combinatorial Games: Games are classified by the fol-
+lowing properties:
+• zero sum: whether the reward to all players sums to zero
+(in the two-player case, whether players are in strict com-
+petition with each other);
+information: whether the state of the game is fully or par-
+tially observable to the players;
+• determinism: whether chance factors play a part (also
+known as completeness, i.e., uncertainty over rewards);
+• sequential: whether actions are applied sequentially or si-
+multaneously;
+• discrete: whether actions are discrete or applied in real
+time.
+Games with two players that are zero sum, perfect informa-
+tion, deterministic, discrete, and sequential are described as
+combinatorial games.
+
+^ "A Survey of Monte Carlo Tree Search Methods"
+
 Convergence.
 We consider a game to be convergent when the size of the state space decreases as the game progresses. If the size of the state space increases, the game is said to be divergent.
 In some games games like Chess, Checkers and Awari the players may capture pieces in the course of the game and may never add them back these are called convergent games :cite:`vandenherik2002`.
@@ -851,7 +870,7 @@ Bautista i Roca claims that several end states in the database are incorrect and
 As both the database made by Romein and the paper by Bautista i Roca are not anymore available
 publicly, we cannot know who is right.
 
-Furthermore, Ramein makes in his paper an assumption without proof that 
+Furthermore, :cite:`romein2003solving` makes in his paper an assumption without proof that 
 
     Although captured stones
     contribute to a position's final outcome, the best
@@ -865,17 +884,20 @@ We do not provide a proof that this assumption is false, but it seems incorrect 
 Minimax
 -------
 
+Alpha-Beta pruning Minimax
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 Monte Carlo Tree Search
 -----------------------
 
-In this subsection, we define Markov Decision Processes (MDP) and modelize Awale with this framework. We then describe and detail Monte Carlo Tree Search, a policy-optimization algorithm for finite-horizon, finite-size MDPs based on random episode sampling structured by a decision tree. 
+In this subsection, we define Markov Decision Processes (MDP) and modelize Awale with this framework. We then describe and detail Monte Carlo Tree Search, a policy-optimization algorithm for finite-horizon, finite-size MDPs. 
 
 Markov descision processes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A Markov Decision Process is a stochastic model for reward-incentivized, memoryless, sequential decision-making.
-An MDP models a scenario in which an agent iteratively observes the
+In decision theoryn a Markov decision process (MDP) models sequential decision problems in fully observable environments.
+In this model, an agent iteratively observes the
 current state, selects an action, observes a consequential probabilistic state transition, and receives a reward
 according to the outcome.
 Importantly, the agent decides each action based on the current state alone and not the full history of past states, providing a Markov independence property :cite:`markov1954`.
@@ -886,31 +908,29 @@ Mathematically, an MDP consists of the following components:
  - a transition probability function, :math:`P : X × A × X \rightarrow [0, 1]`; and
  - a reward function, :math:`R : X × A \rightarrow [0, 1]`.
 
-If all transitions from a state have zero probability, the state is called a terminal state. By analyst, states that are not terminal are called nonterminal.
+If all transitions from a state have zero probability, the state is called a terminal state. By analogy, states that are not terminal are called nonterminal.
 
+Markov games
+~~~~~~~~~~~~
 
-We can model a game of Awale from the point of view of South as a MDP like this:
- - :math:`X` is the set of game state where South is the current player;
- - :math:`A` is :math:`[1;6]`, South playing one of the 6 pits;
- - :math:`R` is :math:`0` for every nonterminal state, :math:`1` when South wins, :math:`-1` when he loses and :math:`0` for a draw.
+A Markov game can be thought of an extension of MDP environments
+where a player may take an action from a state, but the reward and state transitions are uncertain as they depend on the adversary’s strategy [2].
 
-:math:`P` is :math:`0` for every state if the game is finished. Otherwise, :math:`P` is determined by the policy of North: XXX
+[2] Michael Littman. Markov games as a framework for multi-agent reinforcement learning, 1994
 
-The same can be done for the point of view of North.
+For most common games like Go and Chess the transition and reward functions are deterministic given the actions of the player and the opponent, but we consider them non-deterministic values sine the player and opponent may use randomized strategies.
+Finding an optimal policy in this scenario seems impossible since it depends critically on which adversary is used. The way this is resolved is by evaluating a policy with respect to the worst opponent for that policy.
+The goal now is to find a policy that will maximize the reward knowing that this worst case opponent will then minimize the reward after the action is played (the fact that this is a zero-sum game makes it so the opponent will maximizes your negative reward); this idea is used widely in practice in what is known as
+the minimax principle. This optimal policy is a bit pessimistic since you won’t always be playing against a worst-case opponent for that policy, but it does allow to construct a policy for a game that can be used against any adversary.
 
-.. TODO:: Vu qu'on a un MDP, on serait tenté du'iliser le framework classique de Q learning
-        mais vu la taille de l'espace, on ne peut pas -> MCTS résoud bien ça
-      
-        
+^ Lecture 19: Monte Carlo Tree Search: : Kevin Jamieson
+^ https://pdfs.semanticscholar.org/574e/6872df3fe9b89afa98a7bdeef710a931da34.pdf
 
-Monte Carlo Tree Search principle
+Monte Carlo Tree Search
 ~~~~~~~~~~~~~~~
 
-
-
-To overcome this computational problem, the MCTS method constructs only a part
-of the tree by sampling and tries to estimate the chance of winning based on
-this information.
+As Awale can be represented as an MDP, we could be tempted to use the usual framework of Q-Learning [Cite XXX] to find the best policy to maximise our reward. But as the state space is huge, this is computationally difficult or even impossible in memory and time constrained cases.
+To overcome this computational problem, the MCTS method constructs only a part of game the tree by sampling and tries to estimate the chance of winning based on this information.
 
 Algorithm
 ~~~~~~~~
@@ -1013,7 +1033,7 @@ The UCB is
 
 where :math:`N'` is the number of times the
 parent node has been visited and :math:`c` is a parameter that can be tuned to balance exploitation of known wins and exploration of
-less visited nodes. Kocsis et al. has shown that :math:`\frac{\sqrt{2}}{2}`
+less visited nodes. Kocsis et al. [has shown XXX faux] that :math:`\frac{\sqrt{2}}{2}`
 :cite:`kocsis2006bandit` is a good value when rewards are in :math:`[0, 1]`.
 
 In step 3, the playouts are played at random as it is the first time these nodes
@@ -1059,6 +1079,64 @@ Empirical results
 =================
 
 
+Comparison method
+------------------
+
+How to compare A and B
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+We wish to compare algorithms A and B. The probability that A wins is denoted by :math:`p` and is unknown (the probability that B wins is :math:`1-p`). Our nulhypothesis is that :math:`p=0.50` and the alternative hypothesis is that :math:`p \neq 0.50`. To compare algorithms A and B, we run :math:`N` simulations and A wins :math:`n` times (thus B wins :math:`N-n` times). Using the Python function xxx, we then compute the p-value. If it is lower than :math:`5\%`, we traditionally reject the nulhypothesis. This guarantees that, conditional on H0 being true, the probability of making an incorrect decision is :math:`5\%`. But if H1 is true, the probability of an incorrect decision is not necessarily :math:`5\%`: it depends on the number :math:`N` of simulations. To ensure that the probability of an incorrect decision, conditional on H1, be acceptable, we resort to the concept of statistical power.
+
+Suppose the true proability p is :math:`0.75`. This is very far from the nulhypothesis. In that case, we want the probability of choosing H1 (not making an incorrect decision) to be high (for instance :math:`95\%`). This probability is the power and can be computed by means of the R function powerBinom implemented in the R package exactci:
+powerBinom(power = 0.95, p0 = 0.5, p1 = 0.75, sig.level = 0.05, alternative = "two.sided")
+The output of this command is the number :math:`N` of simulations needed to achieve the desired power and it is 49.
+
+How to compare more than 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Est-ce que c'est transitif ?
+
+Non, preuve théorique de cyclicité non transitive
+
+A .Si on opti un paramètre, on va espérer qu'à l'inérieur d'une même famille, il y a un paramètre qui domine tous les autres
+
+B. Entre familles, on va jouer le tournoi complet.
+
+
+Algorithm tuning
+----------------
+
+Eps-greedy
+~~~~~~~~~~
+
+10 valeurs de eps, faire petit tournoi. On imagine que c'est relativement smooth
+
+MCTS
+~~~~~~~~~~
+
+On part sur MCTS 30s pour que ce soit réaliste
+On le compare à MCTS 5s, 10s, 20s, 40s, 80s, on plot la courbe 
+
+UCT c-tuning
+~~~~~~~~~~
+
+
+
+
+Run + result
+------------
+
+
+Ranking
+--------
+
+On a beaucoup d'algos, Il y a de la recherche sur le ranking, il n'y a pas de consensurs,C'est hors sujet, je ne vais pas plus loin
+https://www.researchgate.net/publication/287630111_A_Comparison_between_Different_Chess_Rating_Systems_for_Ranking_Evolutionary_Algorithms
+
+
+
 
 
   
@@ -1096,16 +1174,5 @@ Footnotes
  knowledge in uct. In ICML ’07: Proceedings of the 24th
  Internatinoal Conference on Machine Learning, pages 273–280.
  ACM, 2007.
-
-
-
-
-  
-..
-.. Although captured stones
-.. contribute to a position’s final outcome, the best
-.. move from a position does not depend on them.
-.. We therefore consider the distribution of only
-.. uncaptured stones [romein2003] -> false : need proof
 
 

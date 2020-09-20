@@ -6,9 +6,9 @@ ipython
 recordclass
 matplotlib
 
-tensorflow
-keras
-sklearn
+# tensorflow
+# keras
+# sklearn
 
 import-ipynb
 tqdm

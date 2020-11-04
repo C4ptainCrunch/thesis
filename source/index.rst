@@ -279,45 +279,16 @@ First, we define a dataclass with the minimal attributes needed to store a state
 
   .. code:: ipython3
 
-    from dataclasses import dataclass
+    from dataclasses import dataclass, field
     
     @dataclass
     class Game:
-        pits: np.array # a 2x6 matrix containing the number of seeds in each pits
-        current_player: int # 0 for South and 1 for North
-        captures: np.array # the number of seeds captured by each player
-
-
-
-
-
-
-  
-Now that we have defined the fields our dataclass can hold to represent the state of the game,
-we can inherit from it to add new methods.
-The first is a static method to instantiate a game state in the initial position, with 4 seeds in each pit.
-
-
-
-
-  
-
-
-  .. code:: ipython3
-
-    class Game(Game):
-        ...
-        
-        @classmethod
-        def new(klass):
-            return klass(
-                # A 6x2 matrix filled with 4 seeds
-                pits=np.ones(6 * 2, dtype=int) * 4,
-                # North is the first player
-                current_player=0,
-                # No captures have been made
-                captures=np.zeros(2, dtype=int),
-            )
+        # a 2x6 matrix containing the number of seeds in each pits
+        pits: np.array = field(default_factory=lambda: np.ones(6 * 2, dtype=int) * 4)
+        # 0 for South and 1 for North
+        current_player: int = 0
+        # the number of seeds captured by each player
+        captures: np.array = field(default_factory=lambda: np.zeros(2, dtype=int))
 
 
 
@@ -488,7 +459,7 @@ This method returns the new state, the amount of seeds captured and a boolean in
                     pits[pit_to_sow] = 0
                     
                     # Select backwards the next pit to check
-                    pit_to_sow = (pit_to_sow - 1) % (self.n_pits * 2)
+                    pit_to_sow = (pit_to_sow - 1) % 12
             
             # Change the current player
             current_player = (self.current_player + 1) % 2
@@ -564,7 +535,7 @@ To show a minimal example of the implementation, we can now play a move and have
 
   .. code:: ipython3
 
-    g = Game.new() # Create a new game
+    g = Game() # Create a new game
     g, captures, done = g.step(4) # play the 5th pit (our implementation starts at 0)
     g # Display the resulting board inline
 
@@ -576,7 +547,7 @@ To show a minimal example of the implementation, we can now play a move and have
 
 
 .. raw:: html
-    :file: index_files/index_28_0.svg
+    :file: index_files/index_26_0.svg
 
 
 
@@ -690,15 +661,17 @@ We now implement this tree representation in Python by inheriting from :code:`Ga
 
   .. code:: ipython3
 
+    from __future__ import annotations
     from typing import Optional, List
-    from dataclasses import field
+    from weakref import ref, ReferenceType
     
     @dataclass
     class TreeGame(Game):
         # Hold an optional reference to the parent state
-        parent: Optional[Game] = None
+        parent: Optional[ReferenceType[Game]] = None
         # Hold a list of 6 optional references to the children
         children: List[Optional[Game]] = field(default_factory=lambda: [None] * 6)
+        depth: int = 0
 
 
 
@@ -728,7 +701,8 @@ Next, we overload the ``Game.step(i)`` method so that we do not compute twice st
             # If not, call the original `step()` method and keep references in both directions
             else:
                 new_game, captures, finished = super().step(action)
-                new_game.parent = self
+                new_game.parent = ref(self)
+                new_game.depth = self.depth + 1
                 self.children[action] = new_game
                 return new_game, captures, finished
 
@@ -772,12 +746,6 @@ Next, we overload the ``Game.step(i)`` method so that we do not compute twice st
         @property
         def is_leaf_game(self):
             return self.children == [None] * 6
-        
-        @property
-        def depth(self):
-            if self.parent is None:
-                return 0
-            return 1 + self.parent.depth
 
 
 
@@ -979,16 +947,16 @@ sampling iteration (:math:`N`)
 
     @dataclass
     class TreeStatsGame(TreeGame):
-        wins: np.array = field(default_factory=np.zeros(2, dtype=int))
+        wins: np.array = field(default_factory=lambda: np.zeros(2, dtype=int))
         n_playouts: int = 0
         
         
         def update_stats(self, winner):
-            assert winner in [0, 1]
-            self.wins[winner] += 1
+            if winner in [0, 1]:
+                self.wins[winner] += 1
             self.n_playouts += 1
-            if self.parent:
-                self.parent.update_stats(winner)
+            if self.parent and self.parent():
+                self.parent().update_stats(winner)
 
 
 
@@ -1116,12 +1084,15 @@ Eps-greedy
 MCTS
 ~~~~~~~~~~
 
+On sait que l'optimium est un temps infini vu que MCTS converge à l'infini. On cherche à voir la croissance de la force le l'algo en fct du temps, comme ça si jamais il y a une croissance rapide à un moment, on ne la loupe pas.
+
 On part sur MCTS 30s pour que ce soit réaliste
-On le compare à MCTS 5s, 10s, 20s, 40s, 80s, on plot la courbe 
+On le compare à MCTS 0.5, 1, 1.5, 2, 3, 5s, 10s, 20s, 40s, 80s, on plot la courbe 
 
 UCT c-tuning
 ~~~~~~~~~~
 
+La courbe est très bruitée à droite, peu à gauche, probablement parce qu'à gauche, il y a peu d'exploration, c'est donc fort déterministe. A droite, l'exploration peut donner des très bons résultats ou très mauvais, selon la chance. 
 
 
 

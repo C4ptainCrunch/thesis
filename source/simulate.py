@@ -65,6 +65,8 @@ print(
             "depth": depth,
             "score": game.captures.tolist(),
             "winner": game.winner,
+            "pool": os.environ["POOL"],
+            "side": os.environ["SIDE"],
             "success": True,
         }
     )

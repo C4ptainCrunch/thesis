@@ -21,7 +21,7 @@ Awale is a popular board game played mainly in Africa. The board has two rows of
 	
 At each turn, the players move some seeds and can potentially capture some of them, according to deterministic rules. The goal of the game is to capture more seeds than one's opponent. 
 
-.. todo:: Texte expliquant ce que je vais faire dans mon memoire et pourquoi c'est interessant, pourquoi c'est nouveau
+.. todo:: Explain here what i'm going to do in my thesis, why it is interesting and why it is new.
 
 In Section 2, we present Awale in detail.
 Section 3 reviews various approaches to solve Awale: retrograde analysis, Minimax, and basic Monte Carlo Tree Search.
@@ -260,6 +260,8 @@ wins.
 Implementation of the rules
 ---------------------------
 
+.. todo:: Insert here some text explaining that we are showing inline code as this document is in fact a big jupyter notebook that is executed.
+
 In this subsection, we define in multiple steps a Python :code:`Game()` class holding the state of the game and its rules. We will then succesively inherit from it to add the rules and some sonvenience methods.
 
 We set the following encoding conventions:
@@ -349,6 +351,8 @@ some of them being deliberately excluded from this implementation:
 -  Loops in the game state are not checked (this considerably speeds up the computations and we did not encounter a loop in our preliminary work);
 -  The "feed your opponent" rule is removed; This makes the
    rules simpler and we expect it does not tremendously change the complexity of the game.
+   
+.. todo We did later encounter loops after running way more simulations. But this only happend yet using basic algorithms (greedy vs greedy for example). For now, we simulate 500 truns, if we hit this threshold, we declare a tie. This should be detailed in the experimental setup
 
 
 
@@ -557,8 +561,55 @@ To show a minimal example of the implementation, we can now play a move and have
 
 
   
-Formal properties and representation of Awale
----------------------------------------------
+=====================
+Awale and Game Theory
+=====================
+
+
+
+Solving games
+-------------
+
+**Theorem** :cite:`neumann1928` In every two-player game (with perfect information) in which the set of outcomes is :math:`0 = \{I \, wins, II \, wins, Draw\}`, one and only one of the following three alternatives holds:
+ 1. Player :math:`I` has a winning strategy
+ 2. Player :math:`II` has a winning strategy
+ 3. Each of the two players has a strategy guaranteeing at least a draw.
+ 
+Solve a position.
+
+A game where all positions are solved is a solved game
+
+Define:
+ - agent policy
+ 
+As stated in Section XXX, the branching factor of Awale is 6. This is very small compared to the branching factor of 19 for the game of Go and makes Awale much easier to explore and play.
+
+If we build the complete tree, we compute every possible state in the game and every
+leaf of the tree is a final state (end of a game). As said, previously, computing the complete tree is not
+ideal for Awale (it has :math:`\approx 8 \times 10^{11}` nodes) and
+computationally impossible for games with a high branching factor (unless very shallow).
+
+
+
+A strongly solved game is defined by Allis :cite:`Allis94searchingfor` as:
+
+    For all legal positions, a strategy has been determined to
+    obtain the game-theoretic value of the position, for both players, under
+    reasonable resources.
+
+A solved game is, of course, much less interesting to study than an
+unsolved one as we could just create an agent that has the knowledge of each
+game-theoretic position values and can thus perfectly play.
+
+(:math:`m,n`)-Kalah is a game in the Mancala family with :math:`m` pits per
+side and :math:`n` seeds in each pit plus two extra pits with a special role.
+It has been solved in 2000 for :math:`m \leq 6`  and :math:`n
+\leq 6` except (:math:`6,6`) by :cite:`irving2000solving` and in
+2011 for :math:`n = 6, m=6` by :cite:`kalah66`.
+
+
+
+
 
 Now that we know the rules, we can see that Awale
 
@@ -574,7 +625,9 @@ This type of game is called a sequential perfect information game
 We can also see that the game is a two player zero-sum game.
 
 
-1) Combinatorial Games: Games are classified by the fol-
+.. todo:: This section is not done and will be heavily reworked. The following block of text is copied from "A Survey of Monte Carlo Tree Search Methods" and should not be in the finished document.
+
+> 1) Combinatorial Games: Games are classified by the fol-
 lowing properties:
 • zero sum: whether the reward to all players sums to zero
 (in the two-player case, whether players are in strict com-
@@ -763,54 +816,11 @@ Monte Carlo tree search (MCTS) and the new approch from Deepmind: Alpha Zero :ci
 
 We will quickly present those and then focus on MCTS and its variants as they are computationaly feasible and do not require expert knowledge about the given game to make reasonable decisions.
 
-Solving games
--------------
-
-**Theorem** :cite:`neumann1928` In every two-player game (with perfect information) in which the set of outcomes is :math:`0 = \{I \, wins, II \, wins, Draw\}`, one and only one of the following three alternatives holds:
- 1. Player :math:`I` has a winning strategy
- 2. Player :math:`II` has a winning strategy
- 3. Each of the two players has a strategy guaranteeing at least a draw.
- 
-Solve a position.
-
-A game where all positions are solved is a solved game
-
-Define:
- - agent policy
- 
-As stated in Section XXX, the branching factor of Awale is 6. This is very small compared to the branching factor of 19 for the game of Go and makes Awale much easier to explore and play.
-
-If we build the complete tree, we compute every possible state in the game and every
-leaf of the tree is a final state (end of a game). As said, previously, computing the complete tree is not
-ideal for Awale (it has :math:`\approx 8 \times 10^{11}` nodes) and
-computationally impossible for games with a high branching factor (unless very shallow).
 
 
+Alpha-Beta pruning Minimax
+--------------------------
 
-A strongly solved game is defined by Allis :cite:`Allis94searchingfor` as:
-
-    For all legal positions, a strategy has been determined to
-    obtain the game-theoretic value of the position, for both players, under
-    reasonable resources.
-
-A solved game is, of course, much less interesting to study than an
-unsolved one as we could just create an agent that has the knowledge of each
-game-theoretic position values and can thus perfectly play.
-
-(:math:`m,n`)-Kalah is a game in the Mancala family with :math:`m` pits per
-side and :math:`n` seeds in each pit plus two extra pits with a special role.
-It has been solved in 2000 for :math:`m \leq 6`  and :math:`n
-\leq 6` except (:math:`6,6`) by :cite:`irving2000solving` and in
-2011 for :math:`n = 6, m=6` by :cite:`kalah66`.
-
-
-
-The above-mentioned results for Kalah and Awale both use an almost brute-force
-method to solve the game and use a database of all possible states. The database
-used by :cite:`romein2003solving` has 204 billion entries and weighs 178GiB.
-Such a huge database is of course not practical and  we thus think  there is still room for
-improvement if we can create an agent with a policy that does not need a
-exhaustive database, even if the agent is not capable of a perfect play.
 
 
 
@@ -833,27 +843,13 @@ By making reverse moves from these final positions the game value of some non-fi
 Ströhlein was the first researcher who came up with the idea to create endgame databases and applied his idea to chess :cite:`endgame1970`.
 The first endgame database for Awale was created by :cite:`allis1995` and was followed by many others, while the quest was ended by :cite:`romein2003solving` publishing a database for all legal positions.
 
-Their claim from :cite:`romein2003solving` has since been challenged by Víktor Bautista i Roca in a paper published in XXX.
-Bautista i Roca claims that several end states in the database are incorrect and that the proof is thus invalid.
-As both the database made by Romein and the paper by Bautista i Roca are not anymore available
-publicly, we cannot know who is right.
 
-Furthermore, :cite:`romein2003solving` makes in his paper an assumption without proof that 
-
-    Although captured stones
-    contribute to a position's final outcome, the best
-    move from a position does not depend on them.
-
-We do not provide a proof that this assumption is false, but it seems incorrect to us and think it would deserve a more formal explanation. Indeed, we can think of a mind experiment where XXX
-
-.. todo:: Formal proof for Romein 
-
-
-Minimax
--------
-
-Alpha-Beta pruning Minimax
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+The above-mentioned results for Kalah and Awale both use an almost brute-force
+method to solve the game and use a database of all possible states. The database
+used by :cite:`romein2003solving` has 204 billion entries and weighs 178GiB.
+Such a huge database is of course not practical and  we thus think  there is still room for
+improvement if we can create an agent with a policy that does not need a
+exhaustive database, even if the agent is not capable of a perfect play.
 
 
 Monte Carlo Tree Search
@@ -1054,56 +1050,65 @@ How to compare A and B
 ~~~~~~~~~~~~~~~~~~~~~~
 
 
-
-We wish to compare algorithms A and B. The probability that A wins is denoted by :math:`p` and is unknown (the probability that B wins is :math:`1-p`). Our nulhypothesis is that :math:`p=0.50` and the alternative hypothesis is that :math:`p \neq 0.50`. To compare algorithms A and B, we run :math:`N` simulations and A wins :math:`n` times (thus B wins :math:`N-n` times). Using the Python function xxx, we then compute the p-value. If it is lower than :math:`5\%`, we traditionally reject the nulhypothesis. This guarantees that, conditional on H0 being true, the probability of making an incorrect decision is :math:`5\%`. But if H1 is true, the probability of an incorrect decision is not necessarily :math:`5\%`: it depends on the number :math:`N` of simulations. To ensure that the probability of an incorrect decision, conditional on H1, be acceptable, we resort to the concept of statistical power.
+We wish to compare algorithms A and B. The probability that A wins is denoted by :math:`p` and is unknown (the probability that B wins is :math:`1-p`). Our nulhypothesis is that :math:`p=0.50` and the alternative hypothesis is that :math:`p \neq 0.50`. To compare algorithms A and B, we run :math:`N` simulations and A wins :math:`n` times (thus B wins :math:`N-n` times). Using the Python function xxx, we then compute the p-value. If it is lower than :math:`5\%`, we traditionally reject the nulhypothesis. This guarantees that, conditional on H0 being true, the probability of making an incorrect decision is :math:`5\%`. But if H1 is true, the probability of an incorrect decision is not necessarily :math:`5\%`: it depends on the number :math:`N` of simulations and on the true value of :math:`p`. To ensure that the probability of an incorrect decision, conditional on H1, be acceptable, we resort to the concept of statistical power.
 
 Suppose the true proability p is :math:`0.75`. This is very far from the nulhypothesis. In that case, we want the probability of choosing H1 (not making an incorrect decision) to be high (for instance :math:`95\%`). This probability is the power and can be computed by means of the R function powerBinom implemented in the R package exactci:
 powerBinom(power = 0.95, p0 = 0.5, p1 = 0.75, sig.level = 0.05, alternative = "two.sided")
 The output of this command is the number :math:`N` of simulations needed to achieve the desired power and it is 49.
 
+
+Experimental setup
+~~~~~~~~~~~~~~~~~~
+
+.. todo:: As an algorithm might have an advantage we will always play A vs B and then B vs A. We thus have an even number or matches so we pick 50 and not 49 matches. Here we should also explain where we run the simulations (hardware setup) some explanation of the software distribution of the computation and then describe the simulation in itself and the limit to 500 steps.
+
 How to compare more than 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. Est-ce que c'est transitif ?
+.. todo:: Now that we can compare 2 algorithms, we can ask ourselves if this relation is transitive.
+In fact, we can prove that this relation is not always transitive in a mind experiment with 3 algorithms and a cycle. (I will write the proof later)
 
-Non, preuve théorique de cyclicité non transitive
-
-A .Si on opti un paramètre, on va espérer qu'à l'inérieur d'une même famille, il y a un paramètre qui domine tous les autres
-
-B. Entre familles, on va jouer le tournoi complet.
-
+.. todo:: Transitivity can not be assumed in all cases. However, we can hope that if we optimize a parameter in an algorithm, transitivity exists. (We can show experimental clues that it is the case). If we want to compare different algorithms, we will have to use a full tournament.
 
 Algorithm tuning
 ----------------
 
+
 Eps-greedy
 ~~~~~~~~~~
 
-10 valeurs de eps, faire petit tournoi. On imagine que c'est relativement smooth
+.. todo:: As eps-greedy is really quick, we can still do a full tournament. With the results we see that we indeed have something that looks transitive
+
+
+.. figure:: /notebooks/plot-eps.png
 
 MCTS
 ~~~~~~~~~~
 
-On sait que l'optimium est un temps infini vu que MCTS converge à l'infini. On cherche à voir la croissance de la force le l'algo en fct du temps, comme ça si jamais il y a une croissance rapide à un moment, on ne la loupe pas.
-
-On part sur MCTS 30s pour que ce soit réaliste
-On le compare à MCTS 0.5, 1, 1.5, 2, 3, 5s, 10s, 20s, 40s, 80s, on plot la courbe 
+.. todo:: We have to choose a time limit for the MCTS iterations. THe optimal value would be infinite as we know that MCTS converges after an infinite number of iterations. But we have to be practical as our goal is to play against a human. So 3s seems a reasonable time. Howerver, we do not know if the performance of the algorithm grows lineraly with time or not. So we will (not done yet) run simulations of MCTS(30s) against a list of opponents (0.5, 1, 1.5, 2, 3, 5s, 10s, 20s, 40s, 80s) and plot the performance to have an idea of the shape of the curve. If the curve is very steep around 3s, we might want to increase the time to 5 or 7s to reap the performance improvements withtout paying too much of a time penalty.
 
 UCT c-tuning
 ~~~~~~~~~~
 
-La courbe est très bruitée à droite, peu à gauche, probablement parce qu'à gauche, il y a peu d'exploration, c'est donc fort déterministe. A droite, l'exploration peut donner des très bons résultats ou très mauvais, selon la chance. 
+.. todo:: :math:`c = \sqrt(2) / 2` is a good theoritical starting point (see aglo description) so we run matches with :math:`c = \sqrt(2) / 2` against a range of values, from 0.1 to 2. What we see is a bell curve with some noise. :math:`c = \sqrt(2) / 2` seems indeed the best value.
 
+
+
+.. figure:: /notebooks/plot-c.png
+
+.. todo:: Interpretation of the curve: The curve has a lot of noise on the right, not much on the left. An explanation for this could be that on the left, there is not much exploration so the algorithm is more deterministic while it's the opposite on the right and each simulation could be really good or really bad depending on luck.
 
 
 Run + result
 ------------
 
+.. todo:: Here we run the big tournament with all the algorithms against the others
+
 
 Ranking
 --------
 
-On a beaucoup d'algos, Il y a de la recherche sur le ranking, il n'y a pas de consensurs,C'est hors sujet, je ne vais pas plus loin
+.. todo:: We might still want to rank our algorithms on a scale with total ordering. There are a lot of algorithms to do this (Elo ranking and others). Research is still developing on this subject and there is no consensus on the right method to use. This is beyond the topic, i won't go further. 
 https://www.researchgate.net/publication/287630111_A_Comparison_between_Different_Chess_Rating_Systems_for_Ranking_Evolutionary_Algorithms
 
 

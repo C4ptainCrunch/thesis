@@ -68,6 +68,7 @@ print(
             "pool": os.environ["POOL"],
             "side": os.environ["SIDE"],
             "success": True,
+            "version": 2,
         }
     )
 )

@@ -8,7 +8,7 @@ from datetime import timedelta as td
 
 import import_ipynb
 from index import Game
-from players import GreedyPlayer, MCTSPlayer, UCTPlayer
+from players import GreedyPlayer, GreedyUCTPlayer, MCTSPlayer, RandomPlayer, UCTPlayer
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)8s | %(message)s", level=logging.DEBUG

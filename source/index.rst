@@ -18,8 +18,8 @@ Awale is a popular board game played mainly in Africa. The board has two rows of
 .. figure:: /_static/awale.jpg
 
    A typical Awalé board in the initial state.
-	
-At each turn, the players move some seeds and can potentially capture some of them, according to deterministic rules. The goal of the game is to capture more seeds than one's opponent. 
+
+At each turn, the players move some seeds and can potentially capture some of them, according to deterministic rules. The goal of the game is to capture more seeds than one's opponent.
 
 .. todo:: Explain here what i'm going to do in my thesis, why it is interesting and why it is new.
 
@@ -37,14 +37,14 @@ Awale
 =====
 
 The subject of our study, Awale is an ancient, two player board game originating from Ghana.
-This game is also sometimes called Awele, Oware, Owari or Ayo in the neighouring countries, languages and cultures :cite:`crane1982`.
+This game is also sometimes called Awele, Oware, Owari or Ayo in the neighboring countries, languages and cultures :cite:`crane1982`.
 
 Originally, the game is played on the ground, by digging two rows of six small pits, each containing
 stones, seeds or shells. In the present document, we will name them seeds. The game is also often played on a wooden board symbolizing the original dirt pits.
 The board can be schematized as in Fig. YYY, every big circle representing a pit and every small disc representing a seed.
 Numbers at the bottom right of each pit are the counts of seeds in each pit for better readability.
 Each row of pits is owned by a player that sits in front of it (:numref:`see Fig. %s <intro-kalah>`).
-For the sake of convenience, the players are named North and South.   
+For the sake of convenience, the players are named North and South.
 The 6 pits from the top row belong to North and the 6 from the bottom to South.
 
 The players take turns, a player removing all the seeds from a pit and placing them in other pits following the rules. This is called sowing the seeds. This can result in a configuration in which the player is allowed to capture some seeds according to the rules.
@@ -82,7 +82,7 @@ Mancala
 -------
 
 The Mancala games are an ancient family of game that are played on many continents :cite:`deVoogt2008`, Awale being one of them.
-The word mancala comes from the Arabic word "نقلة", transliterated as "naqala" and literally meaning "to move". 
+The word mancala comes from the Arabic word "نقلة", transliterated as "naqala" and literally meaning "to move".
 
 Like Awale, Mancala games can consist of rows of pits, some of them having more than two rows (see Fig. XXX, a Bao board) and sometimes extra pits with a special role. Mancala games can sometimes be played by more than two players.
 
@@ -114,7 +114,7 @@ Rules of the game
 The basic rules of Awale are the same everywhere but there are some minor differences around the globe and in the literature.
 The rules presented here and implemented later in this thesis are inspired from :cite:`goot2001` and adapted by us.
 
-The goal for earch player is to capture more seeds than his opponent. Because the
+The goal for each player is to capture more seeds than his opponent. Because the
 game has 48 seeds, capturing 25 is enough for a player to win and ends the game.
 
 Each player plays alternatively, without the right to pass his turn. A
@@ -262,7 +262,7 @@ Implementation of the rules
 
 .. todo:: Insert here some text explaining that we are showing inline code as this document is in fact a big jupyter notebook that is executed.
 
-In this subsection, we define in multiple steps a Python :code:`Game()` class holding the state of the game and its rules. We will then succesively inherit from it to add the rules and some sonvenience methods.
+In this subsection, we define in multiple steps a Python :code:`Game()` class holding the state of the game and its rules. We will then successively inherit from it to add the rules and some convenience methods.
 
 We set the following encoding conventions:
  - :code:`0` is South, :code:`1` is North,
@@ -282,6 +282,7 @@ First, we define a dataclass with the minimal attributes needed to store a state
   .. code:: ipython3
 
     from dataclasses import dataclass, field
+    
     
     @dataclass
     class Game:
@@ -313,15 +314,15 @@ Next, we add some convenient methods that will be useful later.
     
         @property
         def view_from_current_player(self) -> List[int]:
-            '''Returns the board as seen by a player'''
+            """Returns the board as seen by a player"""
             if self.current_player == 0:
                 return self.pits
             else:
                 return np.roll(self.pits, 6)
-        
+    
         @property
         def current_player_pits(self) -> List[int]:
-            '''Returns a 6-vector containing the pits owned by the current player'''
+            """Returns a 6-vector containing the pits owned by the current player"""
             if self.current_player == 0:
                 return self.pits[:6]
             else:
@@ -330,10 +331,10 @@ Next, we add some convenient methods that will be useful later.
         @property
         def current_opponent(self) -> int:
             return (self.current_player + 1) % 2
-        
+    
         @property
         def adverse_pits_idx(self) -> List[int]:
-            '''Returns the indices in the `self.pits` array owned by the opposing player'''
+            """Returns the indices in the `self.pits` array owned by the opposing player"""
             if self.current_player == 1:
                 return list(range(6))
             else:
@@ -351,8 +352,8 @@ some of them being deliberately excluded from this implementation:
 -  Loops in the game state are not checked (this considerably speeds up the computations and we did not encounter a loop in our preliminary work);
 -  The "feed your opponent" rule is removed; This makes the
    rules simpler and we expect it does not tremendously change the complexity of the game.
-   
-.. todo We did later encounter loops after running way more simulations. But this only happend yet using basic algorithms (greedy vs greedy for example). For now, we simulate 500 truns, if we hit this threshold, we declare a tie. This should be detailed in the experimental setup
+
+.. todo We did later encounter loops after running way more simulations. But this only happened yet using basic algorithms (greedy vs greedy for example). For now, we simulate 500 turns, if we hit this threshold, we declare a tie. This should be detailed in the experimental setup
 
 
 
@@ -364,32 +365,32 @@ some of them being deliberately excluded from this implementation:
 
     class Game(Game):
         ...
-        
+    
         @property
         def legal_actions(self) -> List[int]:
-            '''Returns a list of indices for each legal action for the current player'''
+            """Returns a list of indices for each legal action for the current player"""
             our_pits = self.current_player_pits
             # Return every pit of the player that contains some seeds
             return [x for x in range(6) if our_pits[x] != 0]
-        
+    
         @property
         def game_finished(self) -> bool:
             # Does the current player has an available move ?
             no_moves_left = np.sum(self.current_player_pits) == 0
-            
-            # Has one player cpatured more than half the total seeds ?
-            HALF_SEEDS = 24 # (there are 2*6*4=48 seeds in total)
+    
+            # Has one player captured more than half the total seeds ?
+            HALF_SEEDS = 24  # (there are 2*6*4=48 seeds in total)
             enough_captures = self.captures[0] > HALF_SEEDS or self.captures[1] > HALF_SEEDS
-            
+    
             # Is it a draw ? Does both player have 24 seeds ?
             draw = self.captures[0] == HALF_SEEDS and self.captures[1] == HALF_SEEDS
-            
+    
             # If one of the above three are True, the game is finished
             return no_moves_left or enough_captures or draw
-        
+    
         @property
         def winner(self) -> Optional[int]:
-            '''Returns the winner of the game or None if the game is not finished or in a draw'''
+            """Returns the winner of the game or None if the game is not finished or in a draw"""
             if not self.game_finished:
                 return None
             # The game is finished but both player have the same amount of seeds: it's a draw
@@ -406,7 +407,7 @@ some of them being deliberately excluded from this implementation:
 
   
 We can now define the :code:`Game.step(i)` method that is called for every step of the game.
-It takes a single paramter, :code:`i`, and plays the i-th pit in the current sate.
+It takes a single parameter, :code:`i`, and plays the i-th pit in the current sate.
 This method returns the new state, the amount of seeds captured and a boolean informing whether the game is finished.
 
 
@@ -419,29 +420,29 @@ This method returns the new state, the amount of seeds captured and a boolean in
 
     class Game(Game):
         ...
-        
+    
         def step(self, action: int) -> Tuple[Game, int, bool]:
-            '''Plays the action given as parameter and returns:
+            """Plays the action given as parameter and returns:
                 - a the new state as a new Game object,
                 - the amount of captured stones in the transition
                 - a bool indicating if the new state is the end of the game
-            '''
+            """
             assert 0 <= action < 6, "Illegal action"
-            
+    
             # Translate the action index to a pit index
             target_pit = action if self.current_player == 0 else action - 6
-            
+    
             seeds = self.pits[target_pit]
             assert seeds != 0, "Illegal action: pit % is empty" % target_pit
-            
+    
             # Copy the attributes of `Game` so that the original
             # stays immutable
             pits = np.copy(self.pits)
             captures = np.copy(self.captures)
-            
-            # Empty the pit targeted by the player 
+    
+            # Empty the pit targeted by the player
             pits[target_pit] = 0
-            
+    
             # Fill the next pits while there are still seeds
             pit_to_sow = target_pit
             while seeds > 0:
@@ -453,7 +454,7 @@ This method returns the new state, the amount of seeds captured and a boolean in
     
             # Count the captures of the play
             round_captures = 0
-            
+    
             # If the last seed was in a adverse pit we can try to collect seeds
             if pit_to_sow in self.adverse_pits_idx:
                 # If the pit contains 2 or 3 seeds, we capture them
@@ -461,22 +462,17 @@ This method returns the new state, the amount of seeds captured and a boolean in
                     captures[self.current_player] += pits[pit_to_sow]
                     round_captures += pits[pit_to_sow]
                     pits[pit_to_sow] = 0
-                    
+    
                     # Select backwards the next pit to check
                     pit_to_sow = (pit_to_sow - 1) % 12
-            
+    
             # Change the current player
             current_player = (self.current_player + 1) % 2
-            
+    
             # Create the new `Game` instance
-            new_game = type(self)(
-                pits,
-                current_player,
-                captures
-            )
+            new_game = type(self)(pits, current_player, captures)
     
             return new_game, round_captures, new_game.game_finished
-
 
 
 
@@ -496,31 +492,30 @@ As the game rules are now implemented, we can add some methods to display the cu
 
     class Game(Game):
         ...
-        
+    
         def show_state(self):
-            '''Print a textual representation of the game to the stdandard output'''
+            """Print a textual representation of the game to the standard output"""
             if self.game_finished:
                 print("Game finished")
-            print("Current player: {} - Score: {}/{}\n{}".format(
-                self.current_player,
-                self.captures[self.current_player],
-                self.captures[(self.current_player + 1) % 2],
-                "-" * 6 * 3
-            ))
-            
+            print(
+                "Current player: {} - Score: {}/{}\n{}".format(
+                    self.current_player,
+                    self.captures[self.current_player],
+                    self.captures[(self.current_player + 1) % 2],
+                    "-" * 6 * 3,
+                )
+            )
+    
             pits = []
             for seeds in self.view_from_current_player:
                 pits.append("{:3}".format(seeds))
-            
+    
             print("".join(reversed(pits[6:])))
             print("".join(pits[:6]))
-        
+    
         def _repr_svg_(self):
-            '''Return a SVG file representing the current state to be displayed in a notebook'''
-            board = np.array([
-                list(reversed(self.pits[6:])),
-                self.pits[:6]
-            ])
+            """Return a SVG file representing the current state to be displayed in a notebook"""
+            board = np.array([list(reversed(self.pits[6:])), self.pits[:6]])
             return board_to_svg(board, True)
 
 
@@ -539,9 +534,9 @@ To show a minimal example of the implementation, we can now play a move and have
 
   .. code:: ipython3
 
-    g = Game() # Create a new game
-    g, captures, done = g.step(4) # play the 5th pit (our implementation starts at 0)
-    g # Display the resulting board inline
+    g = Game()  # Create a new game
+    g, captures, done = g.step(4)  # play the 5th pit (our implementation starts at 0)
+    g  # Display the resulting board inline
 
 
 
@@ -574,14 +569,14 @@ Solving games
  1. Player :math:`I` has a winning strategy
  2. Player :math:`II` has a winning strategy
  3. Each of the two players has a strategy guaranteeing at least a draw.
- 
+
 Solve a position.
 
 A game where all positions are solved is a solved game
 
 Define:
  - agent policy
- 
+
 As stated in Section XXX, the branching factor of Awale is 6. This is very small compared to the branching factor of 19 for the game of Go and makes Awale much easier to explore and play.
 
 If we build the complete tree, we compute every possible state in the game and every
@@ -664,7 +659,7 @@ Perfect information games as finite state machines
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When viewed from an external point of view, these types of games can be
-modelized as finite states machines with boards being states (the initial board
+modeled as finite states machines with boards being states (the initial board
 is the initial state), each player's action being a transition and wins and draws
 being terminal states.
 
@@ -692,11 +687,11 @@ If in a state :math:`s` the current player plays action :math:`i` resulting in s
 
 This results in the following properties:
     - As the current player at the root node is South and that players alternate after each turn,
-      the tree containsalternating layers of current players:
+      the tree contains alternating layers of current players:
       the current player for nodes with an even depth is South and for odd depths is North;
     - The leaf nodes of the tree correspond to final states;
     - The path from the root to a leaf thus represents an instance of a full game.
-   
+
 .. todo:: Insert a figure of an tree here
 
 
@@ -717,6 +712,7 @@ We now implement this tree representation in Python by inheriting from :code:`Ga
     from __future__ import annotations
     from typing import Optional, List
     from weakref import ref, ReferenceType
+    
     
     @dataclass
     class TreeGame(Game):
@@ -744,12 +740,15 @@ Next, we overload the ``Game.step(i)`` method so that we do not compute twice st
 
     class TreeGame(TreeGame):
         ...
-        
+    
         def step(self, action):
             # If we already did compute the children node, just return it
             if self.children[action] is not None:
                 new_game = self.children[action]
-                captures = new_game.captures[self.current_player] - self.captures[self.current_player]
+                captures = (
+                    new_game.captures[self.current_player]
+                    - self.captures[self.current_player]
+                )
                 return new_game, captures, new_game.game_finished
             # If not, call the original `step()` method and keep references in both directions
             else:
@@ -777,7 +776,7 @@ Next, we overload the ``Game.step(i)`` method so that we do not compute twice st
             children = [x for x in self.children if x is not None]
             successors = children + list(itertools.chain(*[x.successors for x in children]))
             return successors
-        
+    
         @property
         def unvisited_actions(self):
             return [i for i, x in enumerate(self.children) if x is None]
@@ -785,17 +784,17 @@ Next, we overload the ``Game.step(i)`` method so that we do not compute twice st
         @property
         def legal_unvisited_actions(self):
             return list(set(self.unvisited_actions).intersection(set(self.legal_actions)))
-        
+    
         @property
         def expanded_children(self):
             return [x for x in self.children if x is not None]
-        
+    
         @property
         def is_fully_expanded(self):
             legal_actions = set(self.legal_actions)
             unvisited_actions = set(self.unvisited_actions)
             return len(legal_actions.intersection(unvisited_actions)) == 0
-        
+    
         @property
         def is_leaf_game(self):
             return self.children == [None] * 6
@@ -812,9 +811,9 @@ Artificial Intelligence approaches to play Awale
 
 Many algorithms have been proposed and studied to play [sequential perfect information XXX] games.
 A few examples detailed here are retrograde analysis, Minimax, :math:`\alpha-\beta` pruning,
-Monte Carlo tree search (MCTS) and the new approch from Deepmind: Alpha Zero :cite:`AlphaGoZero`.
+Monte Carlo tree search (MCTS) and the new approach from Deepmind: Alpha Zero :cite:`AlphaGoZero`.
 
-We will quickly present those and then focus on MCTS and its variants as they are computationaly feasible and do not require expert knowledge about the given game to make reasonable decisions.
+We will quickly present those and then focus on MCTS and its variants as they are computationally feasible and do not require expert knowledge about the given game to make reasonable decisions.
 
 
 
@@ -855,9 +854,9 @@ exhaustive database, even if the agent is not capable of a perfect play.
 Monte Carlo Tree Search
 -----------------------
 
-In this subsection, we define Markov Decision Processes (MDP) and modelize Awale with this framework. We then describe and detail Monte Carlo Tree Search, a policy-optimization algorithm for finite-horizon, finite-size MDPs. 
+In this subsection, we define Markov Decision Processes (MDP) and model Awale with this framework. We then describe and detail Monte Carlo Tree Search, a policy-optimization algorithm for finite-horizon, finite-size MDPs.
 
-Markov descision processes
+Markov decision processes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In decision theory a Markov decision process (MDP) models sequential decision problems in fully observable environments.
@@ -872,7 +871,7 @@ Mathematically, an MDP consists of the following components:
  - a transition probability function, :math:`P : X × A × X \rightarrow [0, 1]`; and
  - a reward function, :math:`R : X × A \rightarrow [0, 1]`.
 
-If all transitions from a state have zero probability, the state is called a terminal state. By analogy, states that are not terminal are called nonterminal.
+If all transitions from a state have zero probability, the state is called a terminal state. By analogy, states that are not terminal are called non-terminal.
 
 Markov games
 ~~~~~~~~~~~~
@@ -913,7 +912,7 @@ The (partial) tree is constructed as follows:
   necessarily a terminal state}, create a child :math:`C`
 * Simulation: run a playout from :math:`C` until a terminal node :math:`T` is
   reached (play a full game)
-* Backpropagation: update the counters described below of each ancestor
+* Back-propagation: update the counters described below of each ancestor
   of :math:`T`.
 
 
@@ -945,8 +944,7 @@ sampling iteration (:math:`N`)
     class TreeStatsGame(TreeGame):
         wins: np.array = field(default_factory=lambda: np.zeros(2, dtype=int))
         n_playouts: int = 0
-        
-        
+    
         def update_stats(self, winner):
             if winner in [0, 1]:
                 self.wins[winner] += 1
@@ -989,7 +987,7 @@ Indeed, in step 1, selecting the node during the tree descent that maximizes the
 probability of winning is analogous to the multi-armed bandit problem in which a
 player has to choose the slot machine that maximizes the estimated reward.
 
-The UCB is 
+The UCB is
 
 .. math::
 
@@ -1000,7 +998,7 @@ parent node has been visited and :math:`c` is a parameter that can be tuned to b
 less visited nodes. Kocsis et al. [has shown XXX faux] that :math:`\frac{\sqrt{2}}{2}`
 :cite:`kocsis2006bandit` is a good value when rewards are in :math:`[0, 1]`.
 
-In step 3, the playouts are played by chosing an action from an uniform distribution since it is the first time these nodes
+In step 3, the playouts are played by choosing an action from an uniform distribution since it is the first time these nodes
 are seen and we do not have a generic evaluation function do direct the playout
 towards 'better' states.
 
@@ -1071,7 +1069,7 @@ MCTS
 ~~~~
 
 The MCTS agent has a parameter :math:`t` that states how much time the agent may spend on simulation during its turn.
-As (Kocsis and Szepesvári) XXX have shown that given enough time MCTS converges to the minimax tree and thus is optimal, we know that the higher is :math:`t`, the better the agent will be. However, since we are constrained by the capacity of our computation ressources, we have to choose a reasonable value of :math:`t`.
+As (Kocsis and Szepesvári) XXX have shown that given enough time MCTS converges to the minimax tree and thus is optimal, we know that the higher is :math:`t`, the better the agent will be. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
 
 Given our objective of producing an agent capable of playing against a human, choosing a value of :math:`t` higher than 1 minute is unrealistic as the human will not want to wait more than that at each turn of the game. While 1 minute is an upper bound, having a much smaller waiting time at each turn would be valuable. We think that  :math:`t = 5s` is a reasonable value.
 
@@ -1085,11 +1083,11 @@ While the results are noisy, we still see that the strength of MCTS does not inc
 UCT
 ~~~
 
-The UCT agent has 2 varibles that we can tune, :math:`t` as in MCTS and :math:`c` the balance between exploration and exploitation. We will fix :math:`t=5s` so that we can fairly compare MCTS and UTC later.
+The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`c` the balance between exploration and exploitation. We will fix :math:`t=5s` so that we can fairly compare MCTS and UTC later.
 Kocsis et al.:cite:`kocsis2006bandit` has shown that :math:`c=\frac{\sqrt{2}}{2}` is a good starting value. We thus play matches of MCTS(:math:`c=\frac{\sqrt{2}}{2}`) against a range of 11 values equaly spaced between 0.2 and 2.2
 
 
-.. todo:: :math:`c = \sqrt(2) / 2` is a good theoritical starting point (see aglo description) so we run matches with :math:`c = \sqrt(2) / 2` against a range of values, from 0.1 to 2. What we see is a bell curve with some noise. :math:`c = \sqrt(2) / 2` seems indeed the best value.
+.. todo:: :math:`c = \sqrt(2) / 2` is a good theoretical starting point (see aglo description) so we run matches with :math:`c = \sqrt(2) / 2` against a range of values, from 0.1 to 2. What we see is a bell curve with some noise. :math:`c = \sqrt(2) / 2` seems indeed the best value.
 
 
 
@@ -1107,9 +1105,9 @@ How to compare A and B
 ~~~~~~~~~~~~~~~~~~~~~~
 
 
-We wish to compare algorithms A and B. The probability that A wins is denoted by :math:`p` and is unknown (the probability that B wins is :math:`1-p`). Our nulhypothesis is that :math:`p=0.50` and the alternative hypothesis is that :math:`p \neq 0.50`. To compare algorithms A and B, we run :math:`N` simulations and A wins :math:`n` times (thus B wins :math:`N-n` times). Using the Python function xxx, we then compute the p-value. If it is lower than :math:`5\%`, we traditionally reject the nulhypothesis. This guarantees that, conditional on H0 being true, the probability of making an incorrect decision is :math:`5\%`. But if H1 is true, the probability of an incorrect decision is not necessarily :math:`5\%`: it depends on the number :math:`N` of simulations and on the true value of :math:`p`. To ensure that the probability of an incorrect decision, conditional on H1, be acceptable, we resort to the concept of statistical power.
+We wish to compare algorithms A and B. The probability that A wins is denoted by :math:`p` and is unknown (the probability that B wins is :math:`1-p`). Our null hypothesis is that :math:`p=0.50` and the alternative hypothesis is that :math:`p \neq 0.50`. To compare algorithms A and B, we run :math:`N` simulations and A wins :math:`n` times (thus B wins :math:`N-n` times). Using the Python function xxx, we then compute the p-value. If it is lower than :math:`5\%`, we traditionally reject the null hypothesis. This guarantees that, conditional on H0 being true, the probability of making an incorrect decision is :math:`5\%`. But if H1 is true, the probability of an incorrect decision is not necessarily :math:`5\%`: it depends on the number :math:`N` of simulations and on the true value of :math:`p`. To ensure that the probability of an incorrect decision, conditional on H1, be acceptable, we resort to the concept of statistical power.
 
-Suppose the true proability p is :math:`0.75`. This is very far from the nulhypothesis. In that case, we want the probability of choosing H1 (not making an incorrect decision) to be high (for instance :math:`95\%`). This probability is the power and can be computed by means of the R function powerBinom implemented in the R package exactci:
+Suppose the true probability p is :math:`0.75`. This is very far from the null hypothesis. In that case, we want the probability of choosing H1 (not making an incorrect decision) to be high (for instance :math:`95\%`). This probability is the power and can be computed by means of the R function powerBinom implemented in the R package exactci:
 powerBinom(power = 0.95, p0 = 0.5, p1 = 0.75, sig.level = 0.05, alternative = "two.sided")
 The output of this command is the number :math:`N` of simulations needed to achieve the desired power and it is 49.
 
@@ -1135,13 +1133,13 @@ Run + result
 Limitations
 -----------
 
-.. todo:: As we only compare the champions of each algorithm, wa might have a non-champion that would still won against another algo. Then we would not have a complete pre-order. Wa can not do this due to compute limitation.
+.. todo:: As we only compare the champions of each algorithm, we might have a non-champion that would still won against another algo. Then we would not have a complete pre-order. We can not do this due to compute limitation.
 
 
 Ranking
 --------
 
-.. todo:: We might still want to rank our algorithms on a scale with total ordering. There are a lot of algorithms to do this (Elo ranking and others). Research is still developing on this subject and there is no consensus on the right method to use. This is beyond the topic, i won't go further. 
+.. todo:: We might still want to rank our algorithms on a scale with total ordering. There are a lot of algorithms to do this (Elo ranking and others). Research is still developing on this subject and there is no consensus on the right method to use. This is beyond the topic, i won't go further.
 https://www.researchgate.net/publication/287630111_A_Comparison_between_Different_Chess_Rating_Systems_for_Ranking_Evolutionary_Algorithms
 
 
@@ -1178,7 +1176,7 @@ Footnotes
 
 .. [#Fly08] Jennifer Flynn. Independent study quarterly reports.
  http://users.soe.ucsc.edu/~charlie/projects/SlugGo/, 2008
- 
+
 .. [#GS07] Sylvain Gelly and David Silver. Combining online and offline
  knowledge in uct. In ICML ’07: Proceedings of the 24th
  Internatinoal Conference on Machine Learning, pages 273–280.

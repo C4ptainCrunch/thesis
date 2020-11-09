@@ -84,7 +84,7 @@ Mancala
 The Mancala games are an ancient family of game that are played on many continents :cite:`deVoogt2008`, Awale being one of them.
 The word mancala comes from the Arabic word "نقلة", transliterated as "naqala" and literally meaning "to move". 
 
-Like Awale, Mancala games can consist of rows of pits, some of them having more than two rows and sometimes extra pits with a special role. Mancala games can sometimes be played by more than two players.
+Like Awale, Mancala games can consist of rows of pits, some of them having more than two rows (see Fig. XXX, a Bao board) and sometimes extra pits with a special role. Mancala games can sometimes be played by more than two players.
 
 .. _intro-kalah:
 
@@ -111,10 +111,10 @@ Mancala games have also been studied in Computer Science and Artificial Intellig
 Rules of the game
 -----------------
 
-The basic rules of Awale are the same everywhere but there are still minor differences around the globe and in the leterature.
+The basic rules of Awale are the same everywhere but there are some minor differences around the globe and in the literature.
 The rules presented here and implemented later in this thesis are inspired from :cite:`goot2001` and adapted by us.
 
-The goal for both players is to capture more seeds than its opponent. As the
+The goal for earch player is to capture more seeds than his opponent. Because the
 game has 48 seeds, capturing 25 is enough for a player to win and ends the game.
 
 Each player plays alternatively, without the right to pass his turn. A
@@ -123,13 +123,13 @@ contained in the pit and sowing them one by one in every consecutive pits on the
 (rotating counter-clockwise). The player thus has at most 6 possible moves at
 each turn (one per non-empty pit owned by him).
 
-Usually, the player that starts the game is the oldest player. In this work, South will always starts playing.
+Usually, the player that starts the game is the oldest player. In this work, South will always play first.
 
 In this work, the pits of a player are numbered left to right from his point of view as shown in Fig. YYY. :math:`1` being the leftmost pit of South, until :math:`6` at the far right. The same holds for North: :math:`1'` to :math:`6'`.
 
 .. todo:: Insert figure with the pit numbering
 
-As an example, if we are in the initial state (showed inf Fig. `initial_board` YYY), the first player to move is South (on the bottom) and he plays :math:`4` (highlighted in the figure in red), the board will then be in the  state shown in Fig. `first_move` YYY.
+As an example, in the initial state (showed inf Fig. `initial_board` YYY), the first player to move is South (on the bottom) and he plays :math:`4` (highlighted in the figure in red), the board will then be in the  state shown in Fig. `first_move` YYY.
 
 
 
@@ -165,8 +165,8 @@ next player's turn starts.
 Otherwise, when the last sowed seed is placed in a pit that, after sowing, contains one seed, more
 than 3 seeds or in the current player's own pits, the turn of the player is ended without
 any capture.
-For example, if South plays :math:`4` in the configuration shown in Fig. `pre_capture` YYY he will
-be able to capture the opponent's 2nd and 3rd pits (:math:`2'` and :math:`3'` highlighted in red in Fig. `post_capture` YYY).
+For example, if South plays :math:`4` in the configuration shown in Fig. `pre_capture` YYY, he will
+be able to capture the seeds in pits 2' and 3' (highlighted in red in Fig. post_capture YYYY).
 
 
 
@@ -219,7 +219,7 @@ and subsequent passes.
 If the current player's opponent has no seed left in his half board, the
 current player has to play a move that gives him seeds if such a move exists.
 This rule is called the "feed your opponent".
-In Fig. `feed` YYY, South has to play the fifth pit because playing the first would leave the opponent without any move to play.
+In Fig. `feed` YYY, South has to play pit 5 because playing pit 1 would leave the opponent without any move to play.
 
 
 
@@ -246,7 +246,7 @@ In Fig. `feed` YYY, South has to play the fifth pit because playing the first wo
 
   
 When a player has captured more than 25 seeds the game ends and he wins. If both
-players have captured 24 seeds, the game ends by a draw. If the current player
+players have captured 24 seeds, the game ends by a draw. If the current player's
 pits are all empty, the game ends and the player with the most captures wins.
 
 The last way to stop the game is when a position is encountered twice in the
@@ -266,7 +266,7 @@ In this subsection, we define in multiple steps a Python :code:`Game()` class ho
 
 We set the following encoding conventions:
  - :code:`0` is South, :code:`1` is North,
- - player's actions are numbered from :code:`0` to :code:`5`, :code:`0` being to play the leftmost pit in front of him, :code:`5` being playing the rightmost.
+ - player's actions are numbered from :code:`0` to :code:`5`, :code:`0` being the leftmost pit in front of him, :code:`5` being the rightmost.
 
 First, we define a dataclass with the minimal attributes needed to store a state of the game.
 
@@ -654,7 +654,7 @@ On the contrary, in some others the number of pieces on the board increases over
 
 Other games in this category are for example Chess, Go, Checkers or even
 Tic-tac-toe and Connect Four. Sequential perfect information games are particularly interesting
-in computer science and artificial intelligence as they are easy to simulate.
+in computer science and artificial intelligence because they are easy to simulate.
 
 
 
@@ -840,8 +840,8 @@ positions towards the initial position :cite:`goot2001`.
 First, Retrograde Analysis identifies all final positions in which the game value is known.
 By making reverse moves from these final positions the game value of some non-final positions can be deduced. And by making reverse moves from these newly proven non-final positions, the game value of other non-final positions can be deduced. This can continue either by running of available memory or by having enumerated all the legal positions in the game.
 
-Ströhlein was the first researcher who came up with the idea to create endgame databases and applied his idea to chess :cite:`endgame1970`.
-The first endgame database for Awale was created by :cite:`allis1995` and was followed by many others, while the quest was ended by :cite:`romein2003solving` publishing a database for all legal positions.
+Ströhlein is the first researcher who came up with the idea to create endgame databases and applied his idea to chess :cite:`endgame1970`.
+The first endgame database for Awale has been created by :cite:`allis1995` and was followed by many others, while the quest was ended by :cite:`romein2003solving` publishing a database for all legal positions.
 
 
 The above-mentioned results for Kalah and Awale both use an almost brute-force
@@ -860,7 +860,7 @@ In this subsection, we define Markov Decision Processes (MDP) and modelize Awale
 Markov descision processes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In decision theoryn a Markov decision process (MDP) models sequential decision problems in fully observable environments.
+In decision theory a Markov decision process (MDP) models sequential decision problems in fully observable environments.
 In this model, an agent iteratively observes the
 current state, selects an action, observes a consequential probabilistic state transition, and receives a reward
 according to the outcome.
@@ -893,7 +893,7 @@ the minimax principle. This optimal policy is a bit pessimistic since you won’
 Monte Carlo Tree Search
 ~~~~~~~~~~~~~~~
 
-As Awale can be represented as an MDP, we could be tempted to use the usual framework of Q-Learning [Cite XXX] to find the best policy to maximise our reward. But as the state space is huge, this is computationally difficult or even impossible in memory and time constrained cases.
+As Awale can be represented as an MDP, we could be tempted to use the usual framework of Q-Learning [Cite XXX] to find the best policy to maximise our reward. But since the state space is huge, this is computationally difficult or even impossible in memory and time constrained cases.
 To overcome this computational problem, the MCTS method constructs only a part of game the tree by sampling and tries to estimate the chance of winning based on this information.
 
 Algorithm
@@ -971,7 +971,7 @@ In step 1 and 3 of the algorithm, we have to choose nodes.
 There are multiples ways to choose those.
 
 In the original MCTS we take a child at random each time.
-This is easy to implement but it is not effective as it explores every part of the tree even if a part has no chance of leading to a win for the player.
+This is easy to implement but it is not effective since it explores every part of the tree even if a part has no chance of leading to a win for the player.
 
 
 
@@ -1000,7 +1000,7 @@ parent node has been visited and :math:`c` is a parameter that can be tuned to b
 less visited nodes. Kocsis et al. [has shown XXX faux] that :math:`\frac{\sqrt{2}}{2}`
 :cite:`kocsis2006bandit` is a good value when rewards are in :math:`[0, 1]`.
 
-In step 3, the playouts are played at random as it is the first time these nodes
+In step 3, the playouts are played by chosing an action from an uniform distribution since it is the first time these nodes
 are seen and we do not have a generic evaluation function do direct the playout
 towards 'better' states.
 
@@ -1043,8 +1043,65 @@ Empirical results
 =================
 
 
-Comparison method
+Experimental setup
 ------------------
+
+.. todo:: As an algorithm might have an advantage we will always play A vs B and then B vs A. We thus have an even number or matches so we pick 50 and not 49 matches. Here we should also explain where we run the simulations (hardware setup) some explanation of the software distribution of the computation and then describe the simulation in itself and the limit to 500 steps.
+
+
+
+Algorithm tuning
+----------------
+
+
+
+:math:`\varepsilon`-Greedy
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The first agent we have to tune is :math:`\varepsilon`-Greedy and it has one parameter, :math:`\varepsilon` that can very in the interval :math:`[0, 1]`. As running a match between two :math:`\varepsilon`-Greedy agents takes less than 100ms, playing thousands of matches is computaionaly feasible.
+
+We thus pick 21 evenly spaced values of :math:`\varepsilon` in the interval :math:`[0, 1]` and play 50 matches for each pair of values of :math:`\varepsilon`. The results of these matches is shown in Fig. XXX below.
+
+
+.. figure:: /notebooks/plot-eps.png
+
+
+
+MCTS
+~~~~
+
+The MCTS agent has a parameter :math:`t` that states how much time the agent may spend on simulation during its turn.
+As (Kocsis and Szepesvári) XXX have shown that given enough time MCTS converges to the minimax tree and thus is optimal, we know that the higher is :math:`t`, the better the agent will be. However, since we are constrained by the capacity of our computation ressources, we have to choose a reasonable value of :math:`t`.
+
+Given our objective of producing an agent capable of playing against a human, choosing a value of :math:`t` higher than 1 minute is unrealistic as the human will not want to wait more than that at each turn of the game. While 1 minute is an upper bound, having a much smaller waiting time at each turn would be valuable. We think that  :math:`t = 5s` is a reasonable value.
+
+As stated earlier, we know that the strength of the agent is an increasing function of :math:`t`. However, we don't know the shape of this function. We play compare the strength of MCTS(t=5) against a range of values of :math:`t' \in \{0.5, 1, 1.5, 2, 3, 5, 7, 10, 15, 20, 30, 40\}` by playing 10 matches for each value of :math:`t'`.
+
+..  figure:: notebooks/mcts-time.png
+
+While the results are noisy, we still see that the strength of MCTS does not increase quickly after :math:`t=5s` so we decide that :math:`t=5s` is a good compromise between strength and waiting time.
+
+
+UCT
+~~~
+
+The UCT agent has 2 varibles that we can tune, :math:`t` as in MCTS and :math:`c` the balance between exploration and exploitation. We will fix :math:`t=5s` so that we can fairly compare MCTS and UTC later.
+Kocsis et al.:cite:`kocsis2006bandit` has shown that :math:`c=\frac{\sqrt{2}}{2}` is a good starting value. We thus play matches of MCTS(:math:`c=\frac{\sqrt{2}}{2}`) against a range of 11 values equaly spaced between 0.2 and 2.2
+
+
+.. todo:: :math:`c = \sqrt(2) / 2` is a good theoritical starting point (see aglo description) so we run matches with :math:`c = \sqrt(2) / 2` against a range of values, from 0.1 to 2. What we see is a bell curve with some noise. :math:`c = \sqrt(2) / 2` seems indeed the best value.
+
+
+
+.. figure:: /notebooks/plot-c.png
+
+.. todo:: Interpretation of the curve: The curve has a lot of noise on the right, not much on the left. An explanation for this could be that on the left, there is not much exploration so the algorithm is more deterministic while it's the opposite on the right and each simulation could be really good or really bad depending on luck.
+
+
+
+
+Comparing algorithms
+--------------------
 
 How to compare A and B
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -1056,11 +1113,8 @@ Suppose the true proability p is :math:`0.75`. This is very far from the nulhypo
 powerBinom(power = 0.95, p0 = 0.5, p1 = 0.75, sig.level = 0.05, alternative = "two.sided")
 The output of this command is the number :math:`N` of simulations needed to achieve the desired power and it is 49.
 
+.. todo:: Compute critical value to decide an algorithm is better than an other. If we have 50 matches, and one algorithm wins strictly more than 31
 
-Experimental setup
-~~~~~~~~~~~~~~~~~~
-
-.. todo:: As an algorithm might have an advantage we will always play A vs B and then B vs A. We thus have an even number or matches so we pick 50 and not 49 matches. Here we should also explain where we run the simulations (hardware setup) some explanation of the software distribution of the computation and then describe the simulation in itself and the limit to 500 steps.
 
 How to compare more than 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1070,39 +1124,18 @@ In fact, we can prove that this relation is not always transitive in a mind expe
 
 .. todo:: Transitivity can not be assumed in all cases. However, we can hope that if we optimize a parameter in an algorithm, transitivity exists. (We can show experimental clues that it is the case). If we want to compare different algorithms, we will have to use a full tournament.
 
-Algorithm tuning
-----------------
-
-
-Eps-greedy
-~~~~~~~~~~
-
-.. todo:: As eps-greedy is really quick, we can still do a full tournament. With the results we see that we indeed have something that looks transitive
-
-
-.. figure:: /notebooks/plot-eps.png
-
-MCTS
-~~~~~~~~~~
-
-.. todo:: We have to choose a time limit for the MCTS iterations. THe optimal value would be infinite as we know that MCTS converges after an infinite number of iterations. But we have to be practical as our goal is to play against a human. So 3s seems a reasonable time. Howerver, we do not know if the performance of the algorithm grows lineraly with time or not. So we will (not done yet) run simulations of MCTS(30s) against a list of opponents (0.5, 1, 1.5, 2, 3, 5s, 10s, 20s, 40s, 80s) and plot the performance to have an idea of the shape of the curve. If the curve is very steep around 3s, we might want to increase the time to 5 or 7s to reap the performance improvements withtout paying too much of a time penalty.
-
-UCT c-tuning
-~~~~~~~~~~
-
-.. todo:: :math:`c = \sqrt(2) / 2` is a good theoritical starting point (see aglo description) so we run matches with :math:`c = \sqrt(2) / 2` against a range of values, from 0.1 to 2. What we see is a bell curve with some noise. :math:`c = \sqrt(2) / 2` seems indeed the best value.
-
-
-
-.. figure:: /notebooks/plot-c.png
-
-.. todo:: Interpretation of the curve: The curve has a lot of noise on the right, not much on the left. An explanation for this could be that on the left, there is not much exploration so the algorithm is more deterministic while it's the opposite on the right and each simulation could be really good or really bad depending on luck.
+.. todo:: We transform the valued tournament in a binary tournament. The check if the tournament a complete pre-order.
 
 
 Run + result
 ------------
 
 .. todo:: Here we run the big tournament with all the algorithms against the others
+
+Limitations
+-----------
+
+.. todo:: As we only compare the champions of each algorithm, wa might have a non-champion that would still won against another algo. Then we would not have a complete pre-order. Wa can not do this due to compute limitation.
 
 
 Ranking
@@ -1117,7 +1150,7 @@ https://www.researchgate.net/publication/287630111_A_Comparison_between_Differen
 
   
 ==========
-Conculsion
+Conclusion
 ==========
 
 

@@ -1,9 +1,24 @@
 /* Document width */
+@media screen {
+  div.document {
+      width: 90vw !important;
+      max-width: 1000px;
+  }
+}
 
-div.document {
-    /* min-width: 940px !important; */
-    width: 90vw !important;
-    max-width: 1000px;
+@media print {
+  div.document {
+      width: 100%;
+  }
+
+  body {
+    font-size: 12px;
+  }
+
+  h1 {
+    break-before: page;
+  }
+
 }
 
 div.body {
@@ -16,6 +31,10 @@ div.body p.caption {
     text-align: center;
     width: 100%;
     opacity: 0.8;
+}
+
+.sphinxsidebar {
+  display: none;
 }
 
 /* Citations but conflicts with code

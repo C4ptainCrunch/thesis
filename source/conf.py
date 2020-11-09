@@ -89,7 +89,7 @@ html_theme = "alabaster"
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-html_theme_options = {"show_powered_by": False}
+html_theme_options = {"show_powered_by": False, "sidebar_width": 0}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -147,9 +147,9 @@ latex_documents = [
 # -- Extension configuration -------------------------------------------------
 
 
+from pybtex.plugin import register_plugin  # noqa
 from pybtex.style.formatting.unsrt import Style as UnsrtStyle  # noqa
 from pybtex.style.labels.alpha import LabelStyle as AlphaLabelStyle  # noqa
-from pybtex.plugin import register_plugin  # noqa
 
 
 class CustomLabelStyle(AlphaLabelStyle):

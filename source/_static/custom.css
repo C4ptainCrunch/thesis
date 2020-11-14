@@ -6,6 +6,21 @@
   }
 }
 
+section.first-page {
+  margin-top: 6em;
+  margin-bottom: 9em;
+}
+
+section.first-page h1 {
+  font-size: 3.5em;
+  margin-top: 2em;
+}
+
+section.first-page h2 {
+  font-size: 120%;
+  width: 70%;
+}
+
 @media print {
   div.document {
       width: 100%;
@@ -19,7 +34,14 @@
     break-before: page;
   }
 
+  section.first-page {
+    margin-top: 55vh;
+    page-break-after: always;
+  }
+
 }
+
+
 
 div.body {
     max-width: none !important;

@@ -50,6 +50,12 @@ todo_include_todos = True
 nbsphinx_allow_errors = True
 nbsphinx_execute = "never"
 numfig = True
+numfig_format = {
+    "figure": "Figure %s",
+    "table": "Table %s",
+    "code-block": "Listing %s",
+    "section": "Section %s",
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

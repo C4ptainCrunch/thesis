@@ -1,4 +1,19 @@
   
+.. raw:: html
+
+    <section class="first-page">
+        <h1>Playing Awale with MCTS</h1>
+        <h2>Master thesis submitted in partial fulfilment of the requirements
+        for the degree of Master of Science in Applied Sciences and Engineering:&nbsp;Computer Science
+        </h2>
+
+        2020-2021
+    </section>
+
+
+
+
+  
 .. contents:: Table of Contents
    :depth: 3
 
@@ -14,19 +29,21 @@ Introduction
 
 Awale is a popular board game played mainly in Africa. The board has two rows of six pits, each containing four seeds in the initial state.
 
-
-.. figure:: /_static/awale.jpg
-
-   A typical Awalé board in the initial state.
-
 At each turn, the players move some seeds and can potentially capture some of them, according to deterministic rules. The goal of the game is to capture more seeds than one's opponent.
+
+.. _board:
+
+.. figure:: /_static/initial.jpg
+
+   A typical Awalé board in the initial state with both players on their side of the board.
+   
 
 .. todo:: Explain here what i'm going to do in my thesis, why it is interesting and why it is new.
 
-In Section 2, we present Awale in detail.
-Section 3 reviews various approaches to solve Awale: retrograde analysis, Minimax, and basic Monte Carlo Tree Search.
-In Section 4, we described more advanced versions of MCTS and in particular UCT.
-Section 5 presents some empirical results (simulations) allowing to compare several MCTS algorithms and Section 6 concludes.
+In Section 2, we present Awale in detail. We then introduce Game Theory frameworks in Section 3.
+Section 4 reviews various approaches to solve Awale: retrograde analysis, :math:`\alpha-\beta`-pruning Minimax, and basic Monte Carlo Tree Search.
+In Section 5, we describe more advanced versions of MCTS and in particular UCT.
+Section 6 presents some empirical results (simulations) allowing to compare several MCTS algorithms and Section 7 concludes.
 
 
 
@@ -41,15 +58,15 @@ This game is also sometimes called Awele, Oware, Owari or Ayo in the neighboring
 
 Originally, the game is played on the ground, by digging two rows of six small pits, each containing
 stones, seeds or shells. In the present document, we will name them seeds. The game is also often played on a wooden board symbolizing the original dirt pits.
-The board can be schematized as in Fig. YYY, every big circle representing a pit and every small disc representing a seed.
+The board can be schematized as in :numref:`Figure %s <fig:initial_board>`, every big circle representing a pit and every small disc representing a seed.
 Numbers at the bottom right of each pit are the counts of seeds in each pit for better readability.
-Each row of pits is owned by a player that sits in front of it (:numref:`see Fig. %s <intro-kalah>`).
+Each row of pits is owned by a player that sits in front of it (:numref:`see Fig. %s <board>`).
 For the sake of convenience, the players are named North and South.
 The 6 pits from the top row belong to North and the 6 from the bottom to South.
 
 The players take turns, a player removing all the seeds from a pit and placing them in other pits following the rules. This is called sowing the seeds. This can result in a configuration in which the player is allowed to capture some seeds according to the rules.
 The goal for each player is to capture more seeds than his opponent.
-The rules vary slightly across countries and will be detailed in Section XXX.
+The rules vary slightly across countries and will be detailed in :ref:`sec:rules`. 
 
 
 
@@ -67,12 +84,26 @@ The rules vary slightly across countries and will be detailed in Section XXX.
 
 
 
-.. raw:: html
-    :file: index_files/index_4_0.svg
+
+
+    
+
+    
+.. _fig:initial_board:
+    
+
+
+.. figure:: index_files/index_5_0.svg
 
 
 
 
+
+
+
+
+  
+  A schematized view of the initial state of the board.
 
 
 
@@ -84,30 +115,33 @@ Mancala
 The Mancala games are an ancient family of game that are played on many continents :cite:`deVoogt2008`, Awale being one of them.
 The word mancala comes from the Arabic word "نقلة", transliterated as "naqala" and literally meaning "to move".
 
-Like Awale, Mancala games can consist of rows of pits, some of them having more than two rows (see Fig. XXX, a Bao board) and sometimes extra pits with a special role. Mancala games can sometimes be played by more than two players.
+Like Awale, Mancala games can consist of rows of pits, some of them having more than two rows (:numref:`see Fig. %s <bao>`) and sometimes extra pits with a special role. Mancala games can sometimes be played by more than two players.
+ 
+.. _bao:
 
-.. _intro-kalah:
+.. figure:: _static/bao.jpg
 
-.. figure:: _static/intro-kalah.jpg
-
-  A wooden Mancala game [#source_kalah]_
+  A wooden Bao game [#source_bao]_
 
 There are too many variants of the Mancala games to list them all here, but a
 few notable ones are Awale, Wari, Bao, Congkak and Kalah.
 
-In particular, Kalah is a commercial, modern variant of Mancala, introduced in the 1950s by William Julius Champion Jr., that is widespread in the United States. :cite:`irving2000solving`. This variant has been studied in Artifical Intelligence as early as 1964 by :cite:`russel1964`.
-Nowadays, Kalah is often used as an example game in computer-science courses.
-
 Mancala games in general, while less known than Chess or Go, are quite popular and
 are played in tournaments around the world, both in offline and online competitions :cite:`owaresociety,fandom_tournaments`.
 
-Mancala games have also been studied in Computer Science and Artificial Intelligence :cite:`deVoogt2008`. Tournaments opposing computers on both sides have been organised multiple times, notably in the Computer Olympiad organized by the International Computer Games Association :cite:`icga_olympiad`.
+
+
+In particular, Kalah is a commercial, modern variant of Mancala, introduced in the 1950s by William Julius Champion Jr., that is widespread in the United States. :cite:`irving2000solving`. This variant has been studied in Artifical Intelligence as early as 1964 by :cite:`russel1964`.
+Nowadays, Kalah is often used as an example game in computer-science courses.
+Other Mancala games have been studied in Computer Science and Artificial Intelligence :cite:`deVoogt2008`. Tournaments opposing computers on both sides have been organised multiple times, notably in the Computer Olympiad organized by the International Computer Games Association :cite:`icga_olympiad`.
 
 
 
 
 
   
+.. _sec:rules:
+
 Rules of the game
 -----------------
 
@@ -125,11 +159,7 @@ each turn (one per non-empty pit owned by him).
 
 Usually, the player that starts the game is the oldest player. In this work, South will always play first.
 
-In this work, the pits of a player are numbered left to right from his point of view as shown in Fig. YYY. :math:`1` being the leftmost pit of South, until :math:`6` at the far right. The same holds for North: :math:`1'` to :math:`6'`.
-
-.. todo:: Insert figure with the pit numbering
-
-As an example, in the initial state (showed inf Fig. `initial_board` YYY), the first player to move is South (on the bottom) and he plays :math:`4` (highlighted in the figure in red), the board will then be in the  state shown in Fig. `first_move` YYY.
+In this work, the pits of a player are numbered left to right from his point of view as shown in :numref:`Figure %s <fig:pit_numbering>`. :math:`1` being the leftmost pit of South, until :math:`6` at the far right. The same holds for North: :math:`1'` to :math:`6'`.
 
 
 
@@ -144,12 +174,67 @@ As an example, in the initial state (showed inf Fig. `initial_board` YYY), the f
 
 
 
-.. raw:: html
-    :file: index_files/index_7_0.svg
+
+
+    
+
+    
+.. _fig:pit_numbering:
+    
+
+
+.. figure:: index_files/index_9_0.svg
 
 
 
 
+
+
+
+
+  
+  Pit numbering convention: the pits of a player are numbered left to right from his point of view.
+
+
+
+
+  
+
+As an example, in the initial state (:numref:`See Fig. %s <fig:initial_board>`), the first player to move is South (on the bottom) and he plays :math:`4` (highlighted in the figure in red), the board will then be in the  state shown in :numref:`Figure %s <fig:first_move>`.
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+.. _fig:first_move:
+    
+
+
+.. figure:: index_files/index_12_0.svg
+
+
+
+
+
+
+
+
+  
+  The board after the forst move, where South played pit 4.
 
 
 
@@ -165,8 +250,8 @@ next player's turn starts.
 Otherwise, when the last sowed seed is placed in a pit that, after sowing, contains one seed, more
 than 3 seeds or in the current player's own pits, the turn of the player is ended without
 any capture.
-For example, if South plays :math:`4` in the configuration shown in Fig. `pre_capture` YYY, he will
-be able to capture the seeds in pits 2' and 3' (highlighted in red in Fig. post_capture YYYY).
+For example, if South plays :math:`4` in the configuration shown in :numref:`Figure %s <fig:pre_capture>`, he will
+be able to capture the seeds in pits 2' and 3' (highlighted in red in :numref:`Figure %s <fig:post_capture>`).
 
 
 
@@ -181,12 +266,26 @@ be able to capture the seeds in pits 2' and 3' (highlighted in red in Fig. post_
 
 
 
-.. raw:: html
-    :file: index_files/index_9_0.svg
+
+
+    
+
+    
+.. _fig:pre_capture:
+    
+
+
+.. figure:: index_files/index_15_0.svg
 
 
 
 
+
+
+
+
+  
+  An example of a board configuration where South is to play pit 4.
 
 
 
@@ -201,12 +300,26 @@ be able to capture the seeds in pits 2' and 3' (highlighted in red in Fig. post_
 
 
 
-.. raw:: html
-    :file: index_files/index_10_0.svg
+
+
+    
+
+    
+.. _fig:post_capture:
+    
+
+
+.. figure:: index_files/index_17_0.svg
 
 
 
 
+
+
+
+
+  
+  The resulting board after South played 4 in :numref:`Fig %s <fig:pre_capture>`. Pits 2' and 3' will be captured.
 
 
 
@@ -219,7 +332,7 @@ and subsequent passes.
 If the current player's opponent has no seed left in his half board, the
 current player has to play a move that gives him seeds if such a move exists.
 This rule is called the "feed your opponent".
-In Fig. `feed` YYY, South has to play pit 5 because playing pit 1 would leave the opponent without any move to play.
+In :numref:`Figure %s <fig:feed>`, South has to play pit 5 because playing pit 1 would leave the opponent without any move to play.
 
 
 
@@ -234,12 +347,26 @@ In Fig. `feed` YYY, South has to play pit 5 because playing pit 1 would leave th
 
 
 
-.. raw:: html
-    :file: index_files/index_12_0.svg
+
+
+    
+
+    
+.. _fig:feed:
+    
+
+
+.. figure:: index_files/index_20_0.svg
 
 
 
 
+
+
+
+
+  
+  South is forced to play pit 5 because playing pit 1 would leave North without any seed to play.
 
 
 
@@ -516,7 +643,7 @@ As the game rules are now implemented, we can add some methods to display the cu
         def _repr_svg_(self):
             """Return a SVG file representing the current state to be displayed in a notebook"""
             board = np.array([list(reversed(self.pits[6:])), self.pits[:6]])
-            return board_to_svg(board, True)
+            return board_to_svg(board, True) 
 
 
 
@@ -545,8 +672,10 @@ To show a minimal example of the implementation, we can now play a move and have
 
 
 
-.. raw:: html
-    :file: index_files/index_26_0.svg
+
+
+
+.. figure:: index_files/index_35_0.svg
 
 
 
@@ -560,119 +689,10 @@ To show a minimal example of the implementation, we can now play a move and have
 Awale and Game Theory
 =====================
 
+.. warning::
+  Previouosly, this section contained text about perfect information games, strongly solved games, then represented perfect information games as finite state machines and trees. After reading more litterature, i decided to remove an rewrite it.
+  I plan to rewrite it with the following: Set the basics of Game Theory and the concept of a "solution" to a game, talk about the minimax, define perfect information/combinatorial games then their tree representation.
 
-
-Solving games
--------------
-
-**Theorem** :cite:`neumann1928` In every two-player game (with perfect information) in which the set of outcomes is :math:`0 = \{I \, wins, II \, wins, Draw\}`, one and only one of the following three alternatives holds:
- 1. Player :math:`I` has a winning strategy
- 2. Player :math:`II` has a winning strategy
- 3. Each of the two players has a strategy guaranteeing at least a draw.
-
-Solve a position.
-
-A game where all positions are solved is a solved game
-
-Define:
- - agent policy
-
-As stated in Section XXX, the branching factor of Awale is 6. This is very small compared to the branching factor of 19 for the game of Go and makes Awale much easier to explore and play.
-
-If we build the complete tree, we compute every possible state in the game and every
-leaf of the tree is a final state (end of a game). As said, previously, computing the complete tree is not
-ideal for Awale (it has :math:`\approx 8 \times 10^{11}` nodes) and
-computationally impossible for games with a high branching factor (unless very shallow).
-
-
-
-A strongly solved game is defined by Allis :cite:`Allis94searchingfor` as:
-
-    For all legal positions, a strategy has been determined to
-    obtain the game-theoretic value of the position, for both players, under
-    reasonable resources.
-
-A solved game is, of course, much less interesting to study than an
-unsolved one as we could just create an agent that has the knowledge of each
-game-theoretic position values and can thus perfectly play.
-
-(:math:`m,n`)-Kalah is a game in the Mancala family with :math:`m` pits per
-side and :math:`n` seeds in each pit plus two extra pits with a special role.
-It has been solved in 2000 for :math:`m \leq 6`  and :math:`n
-\leq 6` except (:math:`6,6`) by :cite:`irving2000solving` and in
-2011 for :math:`n = 6, m=6` by :cite:`kalah66`.
-
-
-
-
-
-Now that we know the rules, we can see that Awale
-
-* is sequential: the opponents play one after the other;
-* hold no secret information: each player has the same information about
-  the game;
-* do not rely on randomness: the state of the game depends only on the actions
-  taken sequentially by each player and an action has a deterministic result.
-
-This type of game is called a sequential perfect information game
-:cite:`osborne1994course`.
-
-We can also see that the game is a two player zero-sum game.
-
-
-.. todo:: This section is not done and will be heavily reworked. The following block of text is copied from "A Survey of Monte Carlo Tree Search Methods" and should not be in the finished document.
-
-> 1) Combinatorial Games: Games are classified by the fol-
-lowing properties:
-• zero sum: whether the reward to all players sums to zero
-(in the two-player case, whether players are in strict com-
-petition with each other);
-information: whether the state of the game is fully or par-
-tially observable to the players;
-• determinism: whether chance factors play a part (also
-known as completeness, i.e., uncertainty over rewards);
-• sequential: whether actions are applied sequentially or si-
-multaneously;
-• discrete: whether actions are discrete or applied in real
-time.
-Games with two players that are zero sum, perfect informa-
-tion, deterministic, discrete, and sequential are described as
-combinatorial games.
-
-^ "A Survey of Monte Carlo Tree Search Methods"
-
-Convergence.
-We consider a game to be convergent when the size of the state space decreases as the game progresses. If the size of the state space increases, the game is said to be divergent.
-In some games games like Chess, Checkers and Awari the players may capture pieces in the course of the game and may never add them back these are called convergent games :cite:`vandenherik2002`.
-On the contrary, in some others the number of pieces on the board increases over time as a player’s move consists of putting a piece on the board. Examples of these games are Tic-Tac-Toe, Connect Four and Go. Those are divergent.
-
-
-Other games in this category are for example Chess, Go, Checkers or even
-Tic-tac-toe and Connect Four. Sequential perfect information games are particularly interesting
-in computer science and artificial intelligence because they are easy to simulate.
-
-
-
-
-  
-Perfect information games as finite state machines
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-When viewed from an external point of view, these types of games can be
-modeled as finite states machines with boards being states (the initial board
-is the initial state), each player's action being a transition and wins and draws
-being terminal states.
-
-It might be tempting to try to enumerate every possible play of those games by
-starting a game and recursively trying each legal action until the end of the game
-to find the best move for each state.
-
-Unfortunately, most of the time, this is not a feasible approach due to the size
-of the state space. As an example, Romein et al. claims that Awale has
-889,063,398,406 legal positions :cite:`romein2003solving` and the exact number
-(:math:`\approx 2.08 \times 10^{170}`) of legal positions in Go (another popular perfect information game)
-is so big that it has only recently been determined :cite:`tromp2016`. Such state space are too
-big to be quickly enumerated.
 
 
 
@@ -681,7 +701,7 @@ big to be quickly enumerated.
 Tree representation
 ~~~~~~~~~~~~~~~~~~~
 
-A [combinatorial game XXX] like Awale can be represented as a tree in a straightforward way where every node is a state of the game.
+A combinatorial game like Awale can be represented as a tree in a straightforward way where every node is a state of the game.
 The root of the tree represents the initial state.
 If in a state :math:`s` the current player plays action :math:`i` resulting in state :math:`s'` then :math:`s'` will be the i-th child of the node representing :math:`s`.
 
@@ -809,7 +829,7 @@ Next, we overload the ``Game.step(i)`` method so that we do not compute twice st
 Artificial Intelligence approaches to play Awale
 ================================================
 
-Many algorithms have been proposed and studied to play [sequential perfect information XXX] games.
+Many algorithms have been proposed and studied to play sequential perfect information games.
 A few examples detailed here are retrograde analysis, Minimax, :math:`\alpha-\beta` pruning,
 Monte Carlo tree search (MCTS) and the new approach from Deepmind: Alpha Zero :cite:`AlphaGoZero`.
 
@@ -817,9 +837,47 @@ We will quickly present those and then focus on MCTS and its variants as they ar
 
 
 
+
+
+
+  
+First we implement a player class. A player keeps track of the game state internaly.
+At each turn of the game, a player is called with the method `play()` to get the action played by the opponent
+(and thus update it's internal state) and then chooses an action with `get_action()`,
+updates once more it's internal state and then outputs it's action for the other player.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class Player:
+        def play(self, their_action):
+            # If we are the first player, there is no previous action
+            if their_action != -1:
+                # Play the opponent's move
+                self.root, _, _ = self.root.step(their_action)
+            else:
+                assert self.player_id == 0, "Only the first player can have their_action=-1"
+            
+            action = self.get_action()
+            self.root, _, _ = self.root.step(action)
+            
+            return action
+
+
+
+
+
+
+  
 Alpha-Beta pruning Minimax
 --------------------------
 
+.. todo:: Describe the algorithm and implement an agent for Awale
 
 
 
@@ -854,43 +912,10 @@ exhaustive database, even if the agent is not capable of a perfect play.
 Monte Carlo Tree Search
 -----------------------
 
+.. todo:: This section and the next should be more detailed
+
 In this subsection, we define Markov Decision Processes (MDP) and model Awale with this framework. We then describe and detail Monte Carlo Tree Search, a policy-optimization algorithm for finite-horizon, finite-size MDPs.
 
-Markov decision processes
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-In decision theory a Markov decision process (MDP) models sequential decision problems in fully observable environments.
-In this model, an agent iteratively observes the
-current state, selects an action, observes a consequential probabilistic state transition, and receives a reward
-according to the outcome.
-Importantly, the agent decides each action based on the current state alone and not the full history of past states, providing a Markov independence property :cite:`markov1954`.
-
-Mathematically, an MDP consists of the following components:
- - a state space, :math:`X` ;
- - an action space, :math:`A`;
- - a transition probability function, :math:`P : X × A × X \rightarrow [0, 1]`; and
- - a reward function, :math:`R : X × A \rightarrow [0, 1]`.
-
-If all transitions from a state have zero probability, the state is called a terminal state. By analogy, states that are not terminal are called non-terminal.
-
-Markov games
-~~~~~~~~~~~~
-
-A Markov game can be thought of an extension of MDP environments
-where a player may take an action from a state, but the reward and state transitions are uncertain as they depend on the adversary’s strategy [2].
-
-[2] Michael Littman. Markov games as a framework for multi-agent reinforcement learning, 1994
-
-For most common games like Go and Chess the transition and reward functions are deterministic given the actions of the player and the opponent, but we consider them non-deterministic values sine the player and opponent may use randomized strategies.
-Finding an optimal policy in this scenario seems impossible since it depends critically on which adversary is used. The way this is resolved is by evaluating a policy with respect to the worst opponent for that policy.
-The goal now is to find a policy that will maximize the reward knowing that this worst case opponent will then minimize the reward after the action is played (the fact that this is a zero-sum game makes it so the opponent will maximizes your negative reward); this idea is used widely in practice in what is known as
-the minimax principle. This optimal policy is a bit pessimistic since you won’t always be playing against a worst-case opponent for that policy, but it does allow to construct a policy for a game that can be used against any adversary.
-
-^ Lecture 19: Monte Carlo Tree Search: : Kevin Jamieson
-^ https://pdfs.semanticscholar.org/574e/6872df3fe9b89afa98a7bdeef710a931da34.pdf
-
-Monte Carlo Tree Search
-~~~~~~~~~~~~~~~
 
 As Awale can be represented as an MDP, we could be tempted to use the usual framework of Q-Learning [Cite XXX] to find the best policy to maximise our reward. But since the state space is huge, this is computationally difficult or even impossible in memory and time constrained cases.
 To overcome this computational problem, the MCTS method constructs only a part of game the tree by sampling and tries to estimate the chance of winning based on this information.
@@ -936,6 +961,13 @@ sampling iteration (:math:`N`)
 
 
   
+Implementation
+~~~~~~~~~~~~~~
+
+
+
+
+  
 
 
   .. code:: ipython3
@@ -951,6 +983,155 @@ sampling iteration (:math:`N`)
             self.n_playouts += 1
             if self.parent and self.parent():
                 self.parent().update_stats(winner)
+
+
+
+
+
+
+  
+The MCTS first chooses a node to expand with the `tree_policy()` when the node is found, it is expanded with the `default_policy()`. When reaching a terminal node, the counters are updated. This is repeated `BUDGET` times and then the final action is chosen as the action that has the highest amount of wins.
+
+Both policies in this implementation are random walks.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class MCTSPlayer(Player):
+        def __init__(self, player_id, budget: Union[int, timedelta]):
+            self.root = TreeStatsGame()
+            self.player_id = player_id
+            self.budget = budget
+    
+        def tree_policy(self, node):
+            while not node.is_leaf_game:
+                if node.is_fully_expanded:
+                    node = random.choice(node.expanded_children)
+                else:
+                    action = random.choice(node.legal_unvisited_actions)
+                    node, _, _ = node.step(action)
+            return node
+        
+        def explore_tree(self):
+            # Choose a starting node
+            node = self.tree_policy(self.root)
+    
+            # Run a simulation on that node
+            finished = node.game_finished
+            while not finished:
+                action = self.default_policy(node)
+                node, _, finished = node.step(action)
+    
+            # Backtrack stats
+            node.update_stats(node.winner)
+        
+        def default_policy(self, node):
+            # Random walk
+            return random.choice(node.legal_actions)
+        
+        def action_score(self, x):
+            node = self.root.children[x]
+            if node is None:
+                return -random.random()
+    
+            assert self.root.current_player == self.player_id
+            assert node.current_player != self.player_id
+    
+            return node.wins[self.player_id]
+            
+        
+        def get_action(self):
+            if isinstance(self.budget, int):
+                for _ in range(self.budget):
+                    self.explore_tree()
+            elif isinstance(self.budget, timedelta):
+                start = datetime.now()
+                end = start + self.budget
+                while datetime.now() < end:
+                    self.explore_tree()
+            else:
+                raise TypeError("budget should be Union[int, timedelta], not %s" % type(budget))
+            
+            possible_actions = self.root.legal_actions
+            return max(possible_actions, key=self.action_score)
+
+
+
+
+
+
+  
+Naive agents
+------------
+
+To be able to benchmark our agents, we also implement two naive agents.
+The first is a random player thatchooses an action at random between all the legal actions
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class RandomPlayer(Player):
+        def __init__(self, player_id):
+            self.root = Game()
+            self.player_id = player_id
+        
+        def get_action(self):
+            return random.choice(self.root.legal_actions)
+
+
+
+
+
+
+  
+The second is :math:`\varepsilon`-Greedy: an agent that tries to maximise an immediate reward at each turn: the number of seeds captured during that turn. The :math:`\varepsilon` parameter introduces randomness: at each turn, the agent draws an number between 0 and 1, if it is geater than :math:`\varepsilon`, the agent plays at random.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class GreedyPlayer(Player):
+        def __init__(self, player_id, eps=0):
+            self.root = Game()
+            self.player_id = player_id
+            self.eps = eps
+        
+        def get_action(self):
+            # Choose a move
+            children = []
+            
+            for legal_action in self.root.legal_actions:
+                new_state, captures, finished = self.root.step(legal_action)
+                if new_state.winner is None:
+                    win = 0
+                elif new_state.winner == self.player_id:
+                    win = 1
+                else:
+                    win = -1
+                children.append((legal_action, captures, win))
+            
+            # order wins first, then by captures, then random
+            sorted_children = sorted(children, key=lambda a_c_w: (-a_c_w[2], -a_c_w[1], random.random()))
+            if random.random() < self.eps:
+                action = random.choice(self.root.legal_actions)
+            else:
+                action = sorted_children[0][0]
+                
+            return action
 
 
 
@@ -995,7 +1176,7 @@ The UCB is
 
 where :math:`N'` is the number of times the
 parent node has been visited and :math:`c` is a parameter that can be tuned to balance exploitation of known wins and exploration of
-less visited nodes. Kocsis et al. [has shown XXX faux] that :math:`\frac{\sqrt{2}}{2}`
+less visited nodes. Kocsis et al. has shown that :math:`\frac{\sqrt{2}}{2}`
 :cite:`kocsis2006bandit` is a good value when rewards are in :math:`[0, 1]`.
 
 In step 3, the playouts are played by choosing an action from an uniform distribution since it is the first time these nodes
@@ -1006,19 +1187,64 @@ towards 'better' states.
 
 
   
+
+`UCTPlayer` reuses the MCTS agent but subclasses the `tree_policy` and uses UCT
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class UCTPlayer(MCTSPlayer):
+        def __init__(self, player_id, budget: Union[int, timedelta], c: float):
+            super().__init__(player_id, budget)
+            self.c = c
+            
+        def node_score(self, node):
+            exporation = node.wins[node.current_opponent] / (node.n_playouts + 1)
+            exploitation = math.sqrt(math.log(node.parent().n_playouts) / (node.n_playouts + 1))
+            return exporation + self.c * exploitation
+    
+        def tree_policy(self, node):
+            while not node.is_leaf_game:
+                if node.is_fully_expanded:
+                    node = max_rand(node.expanded_children, key=self.node_score)
+                else:
+                    action = random.choice(node.legal_unvisited_actions)
+                    node, _, _ = node.step(action)
+            return node
+
+
+
+
+
+
+  
 Informed UCT
 ------------
 
-Citation:
+ `GreedyUCTPlayer` subclasses `UCTPlayer` and changes the `default_policy` to weigh more the actions that will give more immediate rewards.
 
-> Surprisingly,
-> increasing the bias in the random play-outs can
-> occasionally weaken the strength of a program using the
-> UCT algorithm even when the bias is correlated with Go
-> playing strength. One instance of this was reported by Gelly
-> and Silver [#GS07]_, and our group observed a drop in strength
-> when the random play-outs were encouraged to form patterns
-> commonly occurring in computer Go games [#Fly08]_.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class GreedyUCTPlayer(UCTPlayer):    
+        def default_policy(self, node):
+            # Greedy walk
+            assert len(node.legal_actions) != 0
+            captures = [node.step(action)[1] + 1 for action in node.legal_actions]
+            return random.choices(node.legal_actions, weights=captures)[0]
+
+
 
 
 
@@ -1090,10 +1316,15 @@ Kocsis et al.:cite:`kocsis2006bandit` has shown that :math:`c=\frac{\sqrt{2}}{2}
 .. todo:: :math:`c = \sqrt(2) / 2` is a good theoretical starting point (see aglo description) so we run matches with :math:`c = \sqrt(2) / 2` against a range of values, from 0.1 to 2. What we see is a bell curve with some noise. :math:`c = \sqrt(2) / 2` seems indeed the best value.
 
 
+.. figure:: notebooks/uct-value.png
 
-.. figure:: /notebooks/plot-c.png
+
 
 .. todo:: Interpretation of the curve: The curve has a lot of noise on the right, not much on the left. An explanation for this could be that on the left, there is not much exploration so the algorithm is more deterministic while it's the opposite on the right and each simulation could be really good or really bad depending on luck.
+
+We can also run the same but with c = 1.5 to see if we were not luck by using :math:`c = \sqrt(2) / 2` the first time. We see the peak at the same place, it was not luck.
+
+.. figure:: notebooks/uct-c-15.png
 
 
 
@@ -1130,6 +1361,11 @@ Run + result
 
 .. todo:: Here we run the big tournament with all the algorithms against the others
 
+
+.. figure:: notebooks/matrix.png
+
+We see that UCT and GreedyUCT beat every other agent. There is no clear winner between those 2 champions though.
+
 Limitations
 -----------
 
@@ -1162,6 +1398,9 @@ Appendix
 Bibliography
 ------------
 
+.. warning::
+   Some papers are currently wrongly cited. 
+
 .. bibliography:: refs.bib
    :style: custom
 
@@ -1172,7 +1411,7 @@ Bibliography
 Footnotes
 ---------
 
-.. [#source_kalah] Picture by Adam Cohn under Creative Commonds license https://www.flickr.com/photos/adamcohn/3076571304/
+.. [#source_bao] Picture by Yintan under Creative Commons SA license https://commons.wikimedia.org/wiki/File:Bao_europe.jpg
 
 .. [#Fly08] Jennifer Flynn. Independent study quarterly reports.
  http://users.soe.ucsc.edu/~charlie/projects/SlugGo/, 2008
@@ -1180,6 +1419,6 @@ Footnotes
 .. [#GS07] Sylvain Gelly and David Silver. Combining online and offline
  knowledge in uct. In ICML ’07: Proceedings of the 24th
  Internatinoal Conference on Machine Learning, pages 273–280.
- ACM, 2007.
+ ACM, 2007. 
 
 

@@ -23,6 +23,12 @@
 {% endblock execute_result %}
 
 {% block data_svg %}
-.. raw:: html
-    :file: {{ output.metadata.filenames['image/svg+xml'] | urlencode }}
+
+{% for tag in cell['metadata'].get('tags', []) %}
+    {% if tag.startswith("fig:") %}
+.. _{{tag}}:
+    {% endif %}
+{% endfor %}
+
+.. figure:: {{ output.metadata.filenames['image/svg+xml'] | urlencode }}
 {% endblock data_svg %}

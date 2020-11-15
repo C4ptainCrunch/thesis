@@ -91,6 +91,10 @@ pre {
     font-size: 0.75em
 }
 
+dl pre, blockquote pre, li pre {
+  padding-left: 0.7em;
+}
+
 .highlight-ipython3:before {
    content: "[In]:";
    font-family: monospace;

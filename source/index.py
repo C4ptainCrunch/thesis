@@ -877,6 +877,7 @@ class GreedyUCTPlayer(UCTPlayer):
         captures = [node.step(action)[1] + 1 for action in node.legal_actions]
         return random.choices(node.legal_actions, weights=captures)[0]
 
+
 # + active=""
 # Alpha Zero
 # ----------
@@ -892,15 +893,97 @@ class GreedyUCTPlayer(UCTPlayer):
 # =================
 #
 #
+# This section first describes the experimental setup in wich the games between agents are played as well as the method used to run the experiments in a massively parallel setup to be able to record enough game to have statistically strong results. Next, we individually tune variables of the different agents to create a champion agent for each algorithm. Those champions are then opposed against each other in a final round of matches used to rank them.
+#
 # Experimental setup
 # ------------------
 #
-# .. todo:: As an algorithm might have an advantage we will always play A vs B and then B vs A. We thus have an even number or matches so we pick 50 and not 49 matches. Here we should also explain where we run the simulations (hardware setup) some explanation of the software distribution of the computation and then describe the simulation in itself and the limit to 500 steps.
+# A match between two agents is played with the following code, where the variables `player` and `opponent` contain an instance of an agent (a class derived from `Player`).
+# Because most games finish in less than 200 moves, we limit games to 500 moves to avoid agents playing infinite games. A game that goes over the threshold of 500 moves is considered a draw, regardles of the score of both players.
+
+# + tags=["ha"]
+import time
+import random
+
+player = RandomPlayer(0)
+opponent = RandomPlayer(1)
+
+# +
+game = Game()
+opponent_action = -1
+depth = 0
+
+start = time.perf_counter()
+
+while not game.game_finished and depth < 500:
+    player_action = player.play(opponent_action)
+    game, captures, finished = game.step(player_action)
+
+    player, opponent = opponent, player
+    opponent_action = player_action
+    depth += 1
+
+duration = round(time.perf_counter() - start, 4)
+
+# + active=""
+# Relevant data from the match can then be recorded in a dictionary like this:
+# -
+
+{
+    "duration": duration,
+    "depth": depth,
+    "score": game.captures.tolist(),
+    "winner": game.winner,
+}
+
+# + active=""
+# Because the number of matches we expect to play is quite high and a match between two agents might take a few minutes, we have to be able to run matches in a massively parralel setup.
 #
+# To this effect, we placed the code to run a match in a standalone Python script that accepts the match parameters via environment variables and packaged it in a Docker container. The dictionary showed above is then outputed to the standard output.
 #
+# This Docker container is then used to launch hundreds of AWS Batch tasks in parallel, their standard output being sent to AWS Cloudwatch to be analyzed later.
+# Each AWS Batch tasks are allowed 1 vCPU each with 500MB of RAM and are running on C5 compute optimized EC2 instances [#aws_c5]_. 
 #
+# AWS Batch tasks can be launched with the following function:
+
+# +
+import boto3
+client = boto3.client('batch')
+
+def submit_match(a, b, pool, side, timeout=600):
+    return client.submit_job(
+        jobDefinition='run-match',
+        jobName=pool,
+        jobQueue='match-queue',
+        containerOverrides={
+            'command': ["python", "simulate.py"],
+            'environment': [
+                {'name': 'PLAYER_A', 'value': a % 0},
+                {'name': 'PLAYER_B', 'value': b % 1},
+                {'name': 'POOL','value': pool},
+                {'name': 'SIDE', 'value': str(side)},
+            ]
+        },
+        timeout={'attemptDurationSeconds': timeout},
+    )
+
+
+# + active=""
+# Because we can not be sure an agent has the same strength if it is allowed to be the first player as if it is the second to play, each time we play a match between two agents (A and B), we play the match A vs B and B vs A.
+# -
+
+def sumbit_symmetric_match(a, b, pool, timeout=600):
+    submit_job(a, b, pool, side=0, timeout=timeout)
+    submit_job(b, a, pool, side=1, timeout=timeout)
+
+
+# + active=""
 # Algorithm tuning
 # ----------------
+#
+# Now that we have a way to run a match between two agents of our choice and record the result, we can start tuning each algorithm individually to create be best agent possible for a given algorithm.
+#
+# .. todo:: Insert here a paragraph about the (non-)transitivity of the relation "A wins against B". The best way to avoid this problem would be to play a full tournament for each possible value of a variable. But this is not feasible. However, we think that the relation is fairly transitive inside a single algorithm family. This enables us to play a much smaller amount of matches.
 #
 #
 #
@@ -909,74 +992,179 @@ class GreedyUCTPlayer(UCTPlayer):
 #
 # The first agent we have to tune is :math:`\varepsilon`-Greedy and it has one parameter, :math:`\varepsilon` that can very in the interval :math:`[0, 1]`. As running a match between two :math:`\varepsilon`-Greedy agents takes less than 100ms, playing thousands of matches is computaionaly feasible.
 #
-# We thus pick 21 evenly spaced values of :math:`\varepsilon` in the interval :math:`[0, 1]` and play 50 matches for each pair of values of :math:`\varepsilon`. The results of these matches is shown in Fig. XXX below.
+# We thus pick evenly spaced values of :math:`\varepsilon` in the interval :math:`[0, 1]` and play 50 matches for each pair of values of :math:`\varepsilon`.
+
+# +
+search_space = np.linspace(0, 1, 21)
+
+for i in range(25):
+    for eps1 in search_space:
+        for eps2 in search_space:
+            player = f"GreedyPlayer(%s, {eps1})"
+            opponent = f"GreedyPlayer(%s, {eps2})"
+            sumbit_symmetric_match(player, opponent, "epsilon-greedy-tuning")
+
+# + active=""
+# The results of these matches is shown in :numref:`Figure %s <eps-matrix>` below in wich we can see despite the noise that a higher value of :math:`\varepsilon` (meaning the agent choses most often the greedy approach) is stronger than a lower value. Due to the noise in the data despite the high number of games played it is hard to know for sure if :math:`\varepsilon = 1` is the optimium or if it is a bit lower. We will keep a value of :math:`\varepsilon = 0.95` for the rest of this work.
 #
+# .. _eps-matrix:
 #
 # .. figure:: /notebooks/plot-eps.png
 #
+#   Heatmap of the win ratio of the row player against the column player.
 #
-#
+
+# + active=""
 # MCTS
 # ~~~~
 #
 # The MCTS agent has a parameter :math:`t` that states how much time the agent may spend on simulation during its turn.
-# As (Kocsis and Szepesvári) XXX have shown that given enough time MCTS converges to the minimax tree and thus is optimal, we know that the higher is :math:`t`, the better the agent will be. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
+# As :cite:`kocsis2006bandit` have shown that given enough time MCTS converges to the minimax tree and thus is optimal, we know that the higher is :math:`t`, the better the agent will be. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
 #
 # Given our objective of producing an agent capable of playing against a human, choosing a value of :math:`t` higher than 1 minute is unrealistic as the human will not want to wait more than that at each turn of the game. While 1 minute is an upper bound, having a much smaller waiting time at each turn would be valuable. We think that  :math:`t = 5s` is a reasonable value.
 #
-# As stated earlier, we know that the strength of the agent is an increasing function of :math:`t`. However, we don't know the shape of this function. We play compare the strength of MCTS(t=5) against a range of values of :math:`t' \in \{0.5, 1, 1.5, 2, 3, 5, 7, 10, 15, 20, 30, 40\}` by playing 10 matches for each value of :math:`t'`.
+# As stated earlier, we know that the strength of the agent is an increasing function of :math:`t`. However, we don't know the shape of this function. We compare the strength of MCTS(t=5) against a range of values of :math:`t' \in \{0.5, 1, 1.5, 2, 3, 5, 7, 10, 15, 20, 30, 40\}` by playing 10 matches for each value of :math:`t'`.
+
+# +
+search_space = [0.5, 1, 1.5, 2, 3, 5, 7, 10, 15, 20, 30, 40]
+
+for i in range(5):
+    for time in search_space:
+            player = "MCTSPlayer(%s, td(seconds=5))"
+            opponent = f"MCTSPlayer(%s, td(seconds={time}))"
+
+            sumbit_symmetric_match(player, opponent, "mcts-5s-time-compare", timeout=60*100)
+
+# + active=""
+# While the results showin in :numref:`Figure %s <mcts-time_5s>` are also noisy, we indeed see that the strength of MCTS increases with :math:`t` but the slope of the curve is not very important after :math:`t=5s` so we decide that :math:`t=5s` is a good compromise between strength and waiting time.
+#
+#
+# .. _mcts-time_5s:
 #
 # ..  figure:: notebooks/mcts-time.png
 #
-# While the results are noisy, we still see that the strength of MCTS does not increase quickly after :math:`t=5s` so we decide that :math:`t=5s` is a good compromise between strength and waiting time.
-#
-#
+#   Strength of MCTS related to the allowed simulation time budget
+
+# + active=""
 # UCT
 # ~~~
 #
 # The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`c` the balance between exploration and exploitation. We will fix :math:`t=5s` so that we can fairly compare MCTS and UTC later.
-# Kocsis et al.:cite:`kocsis2006bandit` has shown that :math:`c=\frac{\sqrt{2}}{2}` is a good starting value. We thus play matches of MCTS(:math:`c=\frac{\sqrt{2}}{2}`) against a range of 11 values equaly spaced between 0.2 and 2.2
+# :cite:`kocsis2006bandit` has shown that :math:`c=\frac{\sqrt{2}}{2}` is a good starting value. We thus play matches of UCT(:math:`c=\frac{\sqrt{2}}{2}`) against a range of 11 values equaly spaced between 0.2 and 2.2
+
+# +
+search_space = np.linspace(0, 2, 11) + 0.2
+
+for i in range(25):
+    for c in search_space:
+            player = "UCTPlayer(%s, td(seconds=5), c=math.sqrt(2)/2)"
+            opponent = f"UCTPlayer(%s, td(seconds=5), c={c:.2f})"
+
+            sumbit_symmetric_match(player, opponent, "uct-tuning-c")
+
+# + active=""
+# What we see in :numref:`Figure %s <utc-tuning-c>` is a bell curve with some noise and a plateau around :math:`c = \sqrt(2) / 2`. The noise is louder on the right than on on the left of its maximum. An explanation for this could be that on the left, as :math:`c` is lower, there is not much exploration so the algorithm is more deterministic while it's the opposite on the right and each simulation could be either really good or really bad depending on luck.
 #
+# As the maximum of the bell curve is around :math:`c = \sqrt(2) / 2` it seems to confirm that it is the optimum value for UCT.
 #
-# .. todo:: :math:`c = \sqrt(2) / 2` is a good theoretical starting point (see aglo description) so we run matches with :math:`c = \sqrt(2) / 2` against a range of values, from 0.1 to 2. What we see is a bell curve with some noise. :math:`c = \sqrt(2) / 2` seems indeed the best value.
-#
+# .. _utc-tuning-c:
 #
 # .. figure:: notebooks/uct-value.png
 #
+#   Strength of UCT(:math:`c=\frac{\sqrt{2}}{2}`) against other values of :math:`c`.
+
+# + active=""
+# Under the assumption that the curve is smooth, we know that :math:`c = \sqrt(2) / 2` is will win against any value of :math:`c \in [0.2, 2.2]`. While this result might be convenient, we don't know if the relation of one agent winning against another is transitive, so while :math:`c = \sqrt(2) / 2` beats every value, we might have another value of :math:`c = \sqrt(2) / 2` that beats every :math:`c \neq \sqrt(2) / 2` by a bigger margin. To have a better intuition it is the case or not, we can also run the same experiment as above but with :math:`c = 1.5` to see if we were not lucky by using :math:`c = \sqrt(2) / 2` the first time. 
+
+# +
+search_space = np.linspace(0, 2, 11) + 0.2
+
+for i in range(25):
+    for c in space:
+            player = "UCTPlayer(%s, td(seconds=5), c=1.5)"
+            opponent = f"UCTPlayer(%s, td(seconds=5), c={c:.2f})"
+
+            sumbit_double(player, opponent, "uct-tuning-c-15")
+
+# + active=""
+# While the curve in :numref:`Figure %s <uct-tuning-c-15>` is not as smooth as in the first experiment, the result of the matches against :math:`c = 1.5` seem to show the same curve with a maximum at :math:`c = \sqrt(2) / 2`.
 #
-#
-# .. todo:: Interpretation of the curve: The curve has a lot of noise on the right, not much on the left. An explanation for this could be that on the left, there is not much exploration so the algorithm is more deterministic while it's the opposite on the right and each simulation could be really good or really bad depending on luck.
-#
-# We can also run the same but with c = 1.5 to see if we were not luck by using :math:`c = \sqrt(2) / 2` the first time. We see the peak at the same place, it was not luck.
+# .. _uct-tuning-c-15:
 #
 # .. figure:: notebooks/uct-c-15.png
 #
+#   Strength of UCT(:math:`c=1.5`) against other values of :math:`c`.
 #
-#
-#
+
+# + active=""
 # Comparing algorithms
 # --------------------
+#
+# Now that we have found the best values of each variable for each algorithm, we have a small (:math:`N = 5`) set of agents to compare to each other. As the assumptions of smoothness and transitivity we placed in the previous section might not hold when comparing agents using different algorithms, we need to define a stronger framework to find the best agent.
+#
 #
 # How to compare A and B
 # ~~~~~~~~~~~~~~~~~~~~~~
 #
 #
-# We wish to compare algorithms A and B. The probability that A wins is denoted by :math:`p` and is unknown (the probability that B wins is :math:`1-p`). Our null hypothesis is that :math:`p=0.50` and the alternative hypothesis is that :math:`p \neq 0.50`. To compare algorithms A and B, we run :math:`N` simulations and A wins :math:`n` times (thus B wins :math:`N-n` times). Using the Python function xxx, we then compute the p-value. If it is lower than :math:`5\%`, we traditionally reject the null hypothesis. This guarantees that, conditional on H0 being true, the probability of making an incorrect decision is :math:`5\%`. But if H1 is true, the probability of an incorrect decision is not necessarily :math:`5\%`: it depends on the number :math:`N` of simulations and on the true value of :math:`p`. To ensure that the probability of an incorrect decision, conditional on H1, be acceptable, we resort to the concept of statistical power.
+# The first step is to define a way to compare agent A and B. The probability that A wins is denoted by :math:`p` and is unknown (the probability that B wins is :math:`1-p`).
+# Our null hypothesis is that both agents are equaly strong (:math:`p=0.50`) and the alternative hypothesis is that they are of different strength (:math:`p \neq 0.50`).
+# To compare agents A and B, we run :math:`N` matches and A wins :math:`n` times (thus B wins :math:`N-n` times).
 #
-# Suppose the true probability p is :math:`0.75`. This is very far from the null hypothesis. In that case, we want the probability of choosing H1 (not making an incorrect decision) to be high (for instance :math:`95\%`). This probability is the power and can be computed by means of the R function powerBinom implemented in the R package exactci:
-# powerBinom(power = 0.95, p0 = 0.5, p1 = 0.75, sig.level = 0.05, alternative = "two.sided")
-# The output of this command is the number :math:`N` of simulations needed to achieve the desired power and it is 49.
+# Using the SciPy function `scipy.stats.binom_test`, we then compute the p-value.
+# If it is lower than :math:`5\%`, we traditionally reject the null hypothesis.
+# This guarantees that, conditional on H0 being true, the probability of making an incorrect decision is :math:`5\%`.
+# But if H1 is true, the probability of an incorrect decision is not necessarily :math:`5\%`: it depends on the number :math:`N` of matches and on the true value of :math:`p`.
+# To ensure that the probability of an incorrect decision, conditional on H1, be acceptable, we resort to the concept of statistical power.
 #
-# .. todo:: Compute critical value to decide an algorithm is better than an other. If we have 50 matches, and one algorithm wins strictly more than 31
+# Suppose the true probability :math:`p` is :math:`0.75`. This is very far from the null hypothesis. In that case, we want the probability of choosing H1 (not making an incorrect decision) to be high (for instance :math:`95\%`). This probability is the power and can be computed by means of the R function powerBinom implemented in the R package exactci:
+
+# +
+import scipy.stats
+
+#powerBinom(power = 0.95, p0 = 0.5, p1 = 0.75, sig.level = 0.05, alternative = "two.sided")
+
+# + active=""
+# The output of this command is the number :math:`N` of matches needed to achieve the desired power and it is 49. As we always play a even number of matches between two agents (A vs. B and B vs. A), we decide that we need :math:`N=50` matches.
 #
-#
+# Now that we know the amount of matches we need to play to be able to assertain that H1 is probable enough, we still need to know how many matches of the 50 an agent needs to win so we may declare H1 true. This can be done with the `scipy.stats.binom_test` function.
+# -
+
+for wins in range(50):
+    pvalue = scipy.stats.binom_test(wins, 50, p=0.5, alternative="greater")
+    if pvalue < 0.05:
+        print("If a agent wins", wins, "matches, we can reject H0 with a p-value of", round(pvalue, 4))
+        break
+
+# + active=""
 # How to compare more than 2
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-# .. todo:: Now that we can compare 2 algorithms, we can ask ourselves if this relation is transitive.
-# In fact, we can prove that this relation is not always transitive in a mind experiment with 3 algorithms and a cycle. (I will write the proof later)
+# We now have a way to determine if an agent is stronger than another but we don't have a way to order all our agents regarding to their strength. In the following, we prove that a total order between all agents does not exist by showing that the relation between two agents is not transitive.
 #
-# .. todo:: Transitivity can not be assumed in all cases. However, we can hope that if we optimize a parameter in an algorithm, transitivity exists. (We can show experimental clues that it is the case). If we want to compare different algorithms, we will have to use a full tournament.
+# Lets define 3 theoretical algorithms: each of them play the first move at random and the next moves of the match depending on the first move in three different ways: always playing the best move (noted :math:`+`), never playing the best move (noted :math:`-`) or playing at random (noted :math:`r`).
+#
+# .. table:: Moves of the theoretical algorithms depending on the first move of the game.
+#
+#     +------------+-----------+-----------+-----------+
+#     | First move | A         | B         | C         |
+#     +------------+-----------+-----------+-----------+
+#     | 1, 2       | :math:`+` | :math:`r` | :math:`-` |
+#     +------------+-----------+-----------+-----------+
+#     | 3, 4       | :math:`r` | :math:`-` | :math:`+` |
+#     +------------+-----------+-----------+-----------+
+#     | 5, 6       | :math:`-` | :math:`+` | :math:`r` |
+#     +------------+-----------+-----------+-----------+
+#
+#
+# If A and B are playing matches, if the match starts with move:
+#  - 1 or 2: A wins all the time,
+#  - 3 or 4: A wins more than half the matches,
+#  - 5 or 6: B wins all the matches.
+# So A wins more matches than B and we can say :math:`A > B`. By doing the same with B vs. C and C vs. A we have :math:`B > C` and :math:`C > A`. Thus the relation between these 3 theoretical algorithms is not transitive.
+#
+#
+# As proved above, transitivity can not be assumed in all cases so if we want to compare different algorithms, we do have to use a full tournament.
 #
 # .. todo:: We transform the valued tournament in a binary tournament. The check if the tournament a complete pre-order.
 #
@@ -1036,3 +1224,6 @@ class GreedyUCTPlayer(UCTPlayer):
 #  knowledge in uct. In ICML ’07: Proceedings of the 24th
 #  Internatinoal Conference on Machine Learning, pages 273–280.
 #  ACM, 2007. 
+#  
+#  .. [#aws_c5] C5 instances contain a 2nd generation Intel Xeon Scalable Processor (Cascade Lake) with a sustained all core Turbo frequency of 3.6GHz.
+#

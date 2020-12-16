@@ -132,3 +132,12 @@ a.toc-backref {
   color: #3E4349;
   text-decoration: none;
 }
+
+table.docutils {
+  margin-top: 1em;
+  margin-bottom: 1.5em;
+}
+
+table.docutils.caption {
+  margin-bottom: 1em;
+}

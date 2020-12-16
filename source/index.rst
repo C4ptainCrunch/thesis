@@ -946,7 +946,7 @@ As Awale can be represented as an MDP, we could be tempted to use the usual fram
 To overcome this computational problem, the MCTS method constructs only a part of game the tree by sampling and tries to estimate the chance of winning based on this information.
 
 Algorithm
-~~~~~~~~
+~~~~~~~~~
 
 .. figure:: _static/mcts-algorithm.png
 
@@ -1590,7 +1590,7 @@ Under the assumption that the curve is smooth, we know that :math:`c = \sqrt(2) 
                 player = "UCTPlayer(%s, td(seconds=5), c=1.5)"
                 opponent = f"UCTPlayer(%s, td(seconds=5), c={c:.2f})"
     
-                sumbit_double(player, opponent, "uct-tuning-c-15")
+                sumbit_symmetric_match(player, opponent, "uct-tuning-c-15")
 
 
 
@@ -1625,7 +1625,7 @@ The first step is to define a way to compare agent A and B. The probability that
 Our null hypothesis is that both agents are equaly strong (:math:`p=0.50`) and the alternative hypothesis is that they are of different strength (:math:`p \neq 0.50`).
 To compare agents A and B, we run :math:`N` matches and A wins :math:`n` times (thus B wins :math:`N-n` times).
 
-Using the SciPy function `scipy.stats.binom_test`, we then compute the p-value.
+Using the SciPy function :code:`scipy.stats.binom_test`, we then compute the p-value.
 If it is lower than :math:`5\%`, we traditionally reject the null hypothesis.
 This guarantees that, conditional on H0 being true, the probability of making an incorrect decision is :math:`5\%`.
 But if H1 is true, the probability of an incorrect decision is not necessarily :math:`5\%`: it depends on the number :math:`N` of matches and on the true value of :math:`p`.
@@ -1653,7 +1653,7 @@ Suppose the true probability :math:`p` is :math:`0.75`. This is very far from th
   
 The output of this command is the number :math:`N` of matches needed to achieve the desired power and it is 49. As we always play a even number of matches between two agents (A vs. B and B vs. A), we decide that we need :math:`N=50` matches.
 
-Now that we know the amount of matches we need to play to be able to assertain that H1 is probable enough, we still need to know how many matches of the 50 an agent needs to win so we may declare H1 true. This can be done with the `scipy.stats.binom_test` function.
+Now that we know the amount of matches we need to play to be able to assertain that H1 is probable enough, we still need to know how many matches of the 50 an agent needs to win so we may declare H1 true. This can be done with the :code:`scipy.stats.binom_test` function.
 
 
 
@@ -1681,10 +1681,10 @@ Now that we know the amount of matches we need to play to be able to assertain t
 
 
   
-How to compare more than 2
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Proof of non-transitivity
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We now have a way to determine if an agent is stronger than another but we don't have a way to order all our agents regarding to their strength. In the following, we prove that a total order between all agents does not exist by showing that the relation between two agents is not transitive.
+We now have a way to determine if an agent is stronger than another but we don't have a way to order all our agents regarding to their strength. In the following, we prove that a total order between all agents does not exist by showing that the relation of strength between two agents is not transitive.
 
 Lets define 3 theoretical algorithms: each of them play the first move at random and the next moves of the match depending on the first move in three different ways: always playing the best move (noted :math:`+`), never playing the best move (noted :math:`-`) or playing at random (noted :math:`r`).
 
@@ -1705,35 +1705,77 @@ If A and B are playing matches, if the match starts with move:
  - 1 or 2: A wins all the time,
  - 3 or 4: A wins more than half the matches,
  - 5 or 6: B wins all the matches.
+ 
 So A wins more matches than B and we can say :math:`A > B`. By doing the same with B vs. C and C vs. A we have :math:`B > C` and :math:`C > A`. Thus the relation between these 3 theoretical algorithms is not transitive.
 
+How to compare more than two agents
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As proved above, transitivity can not be assumed in all cases so if we want to compare different algorithms, we do have to use a full tournament.
+As described above, transitivity can not be proved in all cases.
+Because we want to compare agents using different algorithms, we think that we can not make the assumption
+(made previously inside an algorithm family) that strength is transitive.
+We thus resort to playing a full tournament between the agents we want to compare.
 
-.. todo:: We transform the valued tournament in a binary tournament. The check if the tournament a complete pre-order.
+We can play a trounament of 50 matches between every pair of agents. This is a values tournament as each pair has a score contained in :math:`[0, 50]`. 
+We then transfrom this valued tournament in a binary tournament by deciding that :math:`A > B`, :math:`A < B` or :math:`A = B` if respectively :math:`A` wins more than 31 matches , A loses more than 31 matches or neither wins more than 31 matches.
+
+This in turn enables us to use the framework of tournament solutions :cite:`laslier` to analyze the results and eventualy find a total order.
+
+.. todo:: We might still want to rank our algorithms on a scale with total ordering. There are a lot of algorithms to do this (Elo ranking and others). Research is still developing on this subject and there is no consensus on the right method to use. This is beyond the topic, i won't go further.
+
+https://www.researchgate.net/publication/287630111_A_Comparison_between_Different_Chess_Rating_Systems_for_Ranking_Evolutionary_Algorithms
 
 
-Run + result
-------------
 
-.. todo:: Here we run the big tournament with all the algorithms against the others
 
+
+  
+Tournament results
+------------------
+
+We select the best agent for every algorithm and make each of them play 50 match against each other.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    algos = [
+        "RandomPlayer(%i)",
+        "GreedyPlayer(%i, 0.95)",
+        "MCTSPlayer(%i, td(seconds=5))",
+        "UCTPlayer(%i, td(seconds=5), c=math.sqrt(2)/2)",
+        "GreedyUCTPlayer(%i, td(seconds=5), c=math.sqrt(2)/2)",
+    ]
+    
+    for i in range(25):
+        for a in algos:
+            for b in algos:
+                sumbit_symmetric_match(a, b, "tournament")
+
+
+
+
+
+
+  
+The results, displayed in a matrix in :numref:`Figure %s <matrix>`, show that UCT and GreedyUCT beat every other agent. There is no clear winner between those 2 champions though.
+
+.. _matrix:
 
 .. figure:: notebooks/matrix.png
 
-We see that UCT and GreedyUCT beat every other agent. There is no clear winner between those 2 champions though.
+  Matrix representation of the valued tournament between every algorithm
+  
+.. todo:: We still have to transform the values tournament in a binary one and then analyze it with the framework of tournament solutions.
 
 Limitations
 -----------
 
 .. todo:: As we only compare the champions of each algorithm, we might have a non-champion that would still won against another algo. Then we would not have a complete pre-order. We can not do this due to compute limitation.
-
-
-Ranking
---------
-
-.. todo:: We might still want to rank our algorithms on a scale with total ordering. There are a lot of algorithms to do this (Elo ranking and others). Research is still developing on this subject and there is no consensus on the right method to use. This is beyond the topic, i won't go further.
-https://www.researchgate.net/publication/287630111_A_Comparison_between_Different_Chess_Rating_Systems_for_Ranking_Evolutionary_Algorithms
 
 
 

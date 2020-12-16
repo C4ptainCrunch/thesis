@@ -387,9 +387,34 @@ wins.
 Implementation of the rules
 ---------------------------
 
-.. todo:: Insert here some text explaining that we are showing inline code as this document is in fact a big jupyter notebook that is executed.
+You might be reading this document in the form of a web page or a pdf file but its original form is a Jupyter Notebook :cite:`jupyter`. Jupyter Notebooks are documents mixing computer code (in this case Python code), the result of the execution of the code and text. These can be used to document experiments in the same place they are run.
 
-In this subsection, we define in multiple steps a Python :code:`Game()` class holding the state of the game and its rules. We will then successively inherit from it to add the rules and some convenience methods.
+Sections containing code are prefixed by :code:`In[]:` and the output of the code is showed immediately under it, prefixed by :code:`Out[]:`. An example is shown below.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    # This is Python code
+    print("This was executed by Python")
+
+
+
+
+.. parsed-literal::
+
+    This was executed by Python
+
+
+
+
+
+  
+In this subsection, we use the use th power of Jupyter Notebooks to define in multiple steps a Python :code:`Game()` class holding the state of the game and its rules. We will then successively inherit from it to add the rules and some convenience methods.
 
 We set the following encoding conventions:
  - :code:`0` is South, :code:`1` is North,
@@ -675,7 +700,7 @@ To show a minimal example of the implementation, we can now play a move and have
 
 
 
-.. figure:: index_files/index_35_0.svg
+.. figure:: index_files/index_37_0.svg
 
 
 

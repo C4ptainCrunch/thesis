@@ -1,0 +1,9 @@
+.ipynb_checkpoints/
+ve/
+build/
+source/data/
+source/nb_builds
+source/*_files
+ignore/
+*.pkl
+source/notebooks/*.png

@@ -1,0 +1,21 @@
+pandas
+numpy
+scipy
+jupyter
+ipython
+recordclass
+matplotlib
+
+# tensorflow
+# keras
+# sklearn
+
+git+https://github.com/C4ptainCrunch/import-ipynb.git@patch-1
+tqdm
+
+sphinx
+sphinxcontrib-bibtex<2.0.0
+boto3
+sphinx-autobuild
+nbsphinx
+nbconvert<6

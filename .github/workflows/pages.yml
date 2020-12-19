@@ -26,6 +26,9 @@ jobs:
       - name: Copy build in subdirectory
         run: cp -r build/html/ docs/
 
+      - name: Trick || Treat
+        run: touch docs/.nojekyll
+
       - name: Push to gh-pages branch
         run: |
           git config --global user.name 'GitHub bot'

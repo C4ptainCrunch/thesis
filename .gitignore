@@ -4,4 +4,3 @@ build/
 source/nb_builds
 ignore/
 *.pkl
-source/notebooks/*.png

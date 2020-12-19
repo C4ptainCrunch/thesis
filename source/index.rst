@@ -33,7 +33,7 @@ At each turn, the players move some seeds and can potentially capture some of th
 
 .. _board:
 
-.. figure:: /static/initial.jpg
+.. figure:: /_static/initial.jpg
 
    A typical Awalé board in the initial state with both players on their side of the board.
    
@@ -93,7 +93,7 @@ The rules vary slightly across countries and will be detailed in :ref:`sec:rules
     
 
 
-.. figure:: index_files/index_5_0.svg
+.. figure:: index_files/index_6_0.svg
 
 
 
@@ -119,7 +119,7 @@ Like Awale, Mancala games can consist of rows of pits, some of them having more 
  
 .. _bao:
 
-.. figure:: static/bao.jpg
+.. figure:: _static/bao.jpg
 
   A wooden Bao game [#source_bao]_
 
@@ -183,7 +183,7 @@ In this work, the pits of a player are numbered left to right from his point of 
     
 
 
-.. figure:: index_files/index_9_0.svg
+.. figure:: index_files/index_10_0.svg
 
 
 
@@ -224,7 +224,7 @@ As an example, in the initial state (:numref:`See Fig. %s <fig:initial_board>`),
     
 
 
-.. figure:: index_files/index_12_0.svg
+.. figure:: index_files/index_13_0.svg
 
 
 
@@ -275,7 +275,7 @@ be able to capture the seeds in pits 2' and 3' (highlighted in red in :numref:`F
     
 
 
-.. figure:: index_files/index_15_0.svg
+.. figure:: index_files/index_16_0.svg
 
 
 
@@ -309,7 +309,7 @@ be able to capture the seeds in pits 2' and 3' (highlighted in red in :numref:`F
     
 
 
-.. figure:: index_files/index_17_0.svg
+.. figure:: index_files/index_18_0.svg
 
 
 
@@ -356,7 +356,7 @@ In :numref:`Figure %s <fig:feed>`, South has to play pit 5 because playing pit 1
     
 
 
-.. figure:: index_files/index_20_0.svg
+.. figure:: index_files/index_21_0.svg
 
 
 
@@ -700,7 +700,7 @@ To show a minimal example of the implementation, we can now play a move and have
 
 
 
-.. figure:: index_files/index_37_0.svg
+.. figure:: index_files/index_38_0.svg
 
 
 
@@ -948,7 +948,7 @@ To overcome this computational problem, the MCTS method constructs only a part o
 Algorithm
 ~~~~~~~~~
 
-.. figure:: static/mcts-algorithm.png
+.. figure:: _static/mcts-algorithm.png
 
    The 4 steps of MCTS :cite:`chaslot2008monte`
 
@@ -1223,6 +1223,8 @@ towards 'better' states.
 
   .. code:: ipython3
 
+    from lib.utils import max_rand
+    
     class UCTPlayer(MCTSPlayer):
         def __init__(self, player_id, budget: Union[int, timedelta], c: float):
             super().__init__(player_id, budget)
@@ -1359,7 +1361,7 @@ Relevant data from the match can then be recorded in a dictionary like this:
 
 .. parsed-literal::
 
-    {'duration': 0.0265, 'depth': 81, 'score': [30, 14], 'winner': 0}
+    {'duration': 0.013, 'depth': 123, 'score': [23, 21], 'winner': 0}
 
 
 
@@ -1386,11 +1388,10 @@ AWS Batch tasks can be launched with the following function:
 
   .. code:: ipython3
 
-    import boto3
-    client = boto3.client('batch')
+    from lib.utils import submit_aws_job
     
     def submit_match(a, b, pool, side, timeout=600):
-        return client.submit_job(
+        return submit_aws_job(
             jobDefinition='run-match',
             jobName=pool,
             jobQueue='match-queue',
@@ -1423,9 +1424,33 @@ Because we can not be sure an agent has the same strength if it is allowed to be
   .. code:: ipython3
 
     def sumbit_symmetric_match(a, b, pool, timeout=600):
-        submit_job(a, b, pool, side=0, timeout=timeout)
-        submit_job(b, a, pool, side=1, timeout=timeout)
+        submit_match(a, b, pool, side=0, timeout=timeout)
+        submit_match(b, a, pool, side=1, timeout=timeout)
 
+
+
+
+
+
+  
+Results of the jobs submited to AWS Batch can then be found in AWS CloudWatch. They are downloaded with a script available in the Appendix and then stored in :code:`source/data/*.jsonl`. These results are then processed and normalised.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    from lib.results import results
+
+
+
+
+.. parsed-literal::
+
+    Populating the interactive namespace from numpy and matplotlib
 
 
 
@@ -1463,7 +1488,7 @@ We thus pick evenly spaced values of :math:`\varepsilon` in the interval :math:`
             for eps2 in search_space:
                 player = f"GreedyPlayer(%s, {eps1})"
                 opponent = f"GreedyPlayer(%s, {eps2})"
-                sumbit_symmetric_match(player, opponent, "epsilon-greedy-tuning")
+                sumbit_symmetric_match(player, opponent, "local-eps-matrix")
 
 
 
@@ -1517,13 +1542,34 @@ As stated earlier, we know that the strength of the agent is an increasing funct
 
 
   
-While the results showin in :numref:`Figure %s <mcts-time_5s>` are also noisy, we indeed see that the strength of MCTS increases with :math:`t` but the slope of the curve is not very important after :math:`t=5s` so we decide that :math:`t=5s` is a good compromise between strength and waiting time.
+While the results showin in :numref:`Figure %s <fig:mcts-time_5s>` are also noisy, we indeed see that the strength of MCTS increases with :math:`t` but the slope of the curve is not very important after :math:`t=5s` so we decide that :math:`t=5s` is a good compromise between strength and waiting time.
 
 
-.. _mcts-time_5s:
 
-..  figure:: notebooks/mcts-time.png
 
+  
+
+
+
+
+
+
+
+
+    
+
+    
+.. _fig:mcts-time_5s:
+    
+
+
+.. figure:: index_files/index_81_0.svg
+
+
+
+
+
+  
   Strength of MCTS related to the allowed simulation time budget
 
 
@@ -1586,7 +1632,7 @@ Under the assumption that the curve is smooth, we know that :math:`c = \sqrt(2) 
     search_space = np.linspace(0, 2, 11) + 0.2
     
     for i in range(25):
-        for c in space:
+        for c in search_space:
                 player = "UCTPlayer(%s, td(seconds=5), c=1.5)"
                 opponent = f"UCTPlayer(%s, td(seconds=5), c={c:.2f})"
     
@@ -1641,8 +1687,7 @@ Suppose the true probability :math:`p` is :math:`0.75`. This is very far from th
 
   .. code:: ipython3
 
-    import scipy.stats
-    
+    # This is R code and should be translated to the Python equivalent, probably using SciPy
     #powerBinom(power = 0.95, p0 = 0.5, p1 = 0.75, sig.level = 0.05, alternative = "two.sided")
 
 
@@ -1831,5 +1876,14 @@ Addidional code
 ---------------
 
 :doc:`removed`
+
+
+
+
+  
+
+
+  
+
 
 

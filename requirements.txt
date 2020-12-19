@@ -10,7 +10,7 @@ matplotlib
 # keras
 # sklearn
 
-import-ipynb
+git+https://github.com/C4ptainCrunch/import-ipynb.git@patch-1
 tqdm
 
 sphinx

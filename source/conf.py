@@ -100,7 +100,7 @@ html_theme_options = {"show_powered_by": False, "sidebar_width": 0}
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-htmlstatic_path = ["static", "static/custom.css"]
+html_static_path = ["_static", "_static/custom.css"]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.

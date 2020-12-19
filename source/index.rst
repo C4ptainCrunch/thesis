@@ -33,7 +33,7 @@ At each turn, the players move some seeds and can potentially capture some of th
 
 .. _board:
 
-.. figure:: /_static/initial.jpg
+.. figure:: /static/initial.jpg
 
    A typical Awalé board in the initial state with both players on their side of the board.
    
@@ -119,7 +119,7 @@ Like Awale, Mancala games can consist of rows of pits, some of them having more 
  
 .. _bao:
 
-.. figure:: _static/bao.jpg
+.. figure:: static/bao.jpg
 
   A wooden Bao game [#source_bao]_
 
@@ -948,7 +948,7 @@ To overcome this computational problem, the MCTS method constructs only a part o
 Algorithm
 ~~~~~~~~~
 
-.. figure:: _static/mcts-algorithm.png
+.. figure:: static/mcts-algorithm.png
 
    The 4 steps of MCTS :cite:`chaslot2008monte`
 
@@ -1822,5 +1822,14 @@ Footnotes
  
  .. [#aws_c5] C5 instances contain a 2nd generation Intel Xeon Scalable Processor (Cascade Lake) with a sustained all core Turbo frequency of 3.6GHz.
 
+
+
+
+
+  
+Addidional code
+---------------
+
+:doc:`removed`
 
 

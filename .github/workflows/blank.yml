@@ -1,0 +1,29 @@
+name: Publish on GitHub Pages
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        
+      - name: Install deps
+        run: pip install -r requirements.txt
+        
+      - name: Compile .ipynb to .rst
+        run: make -C source/ index.rst
+      
+      - name: Build sphinx
+        run: make html
+      
+      - name: Copy build in subdirectory
+        run: cp -r build/html/ docs/
+      
+      - name: Push to gh-pages branch
+        run: |
+          git config --global user.name 'GitHub bot'
+          git config --global user.email 'bot@users.noreply.github.com'
+          git commit -am "Automated build"
+          git push origin gh-pages

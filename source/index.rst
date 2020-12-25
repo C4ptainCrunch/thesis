@@ -1870,12 +1870,3 @@ Addidional code
 :doc:`removed`
 
 
-
-
-  
-
-
-  
-
-
-

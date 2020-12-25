@@ -158,3 +158,12 @@ Citation:
 > and Silver [#GS07]_, and our group observed a drop in strength
 > when the random play-outs were encouraged to form patterns
 > commonly occurring in computer Go games [#Fly08]_.
+
+
+.. [#Fly08] Jennifer Flynn. Independent study quarterly reports.
+ http://users.soe.ucsc.edu/~charlie/projects/SlugGo/, 2008
+
+.. [#GS07] Sylvain Gelly and David Silver. Combining online and offline
+ knowledge in uct. In ICML ’07: Proceedings of the 24th
+ Internatinoal Conference on Machine Learning, pages 273–280.
+ ACM, 2007. 

@@ -1856,14 +1856,6 @@ Footnotes
 ---------
 
 .. [#source_bao] Picture by Yintan under Creative Commons SA license https://commons.wikimedia.org/wiki/File:Bao_europe.jpg
-
-.. [#Fly08] Jennifer Flynn. Independent study quarterly reports.
- http://users.soe.ucsc.edu/~charlie/projects/SlugGo/, 2008
-
-.. [#GS07] Sylvain Gelly and David Silver. Combining online and offline
- knowledge in uct. In ICML ’07: Proceedings of the 24th
- Internatinoal Conference on Machine Learning, pages 273–280.
- ACM, 2007. 
  
  .. [#aws_c5] C5 instances contain a 2nd generation Intel Xeon Scalable Processor (Cascade Lake) with a sustained all core Turbo frequency of 3.6GHz.
 

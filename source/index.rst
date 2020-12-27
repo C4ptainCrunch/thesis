@@ -855,21 +855,21 @@ Artificial Intelligence approaches to play Awale
 ================================================
 
 Many algorithms have been proposed and studied to play sequential perfect information games.
-A few examples detailed here are retrograde analysis, Minimax, :math:`\alpha-\beta` pruning,
-Monte Carlo tree search (MCTS) and the new approach from Deepmind: Alpha Zero :cite:`AlphaGoZero`.
+A few examples detailed here are retrograde analysis, heuristic :math:`\alpha-\beta` pruning Minimax,
+Monte Carlo tree search (MCTS) and the most recent approach from Deepmind: Alpha Zero :cite:`AlphaGoZero`.
 
-We will quickly present those and then focus on MCTS and its variants as they are computationally feasible and do not require expert knowledge about the given game to make reasonable decisions.
-
+We will quickly present and implement those and then focus on MCTS and its variants as they are computationally feasible and do not require expert knowledge about the given game to make reasonable decisions.
+Before prensenting those, we describe a :code:`Player` class that every implementation will then reuse and implement two basic agents to be used as a baseline in our comparisons.
 
 
 
 
 
   
-First we implement a player class. A player keeps track of the game state internaly.
-At each turn of the game, a player is called with the method `play()` to get the action played by the opponent
-(and thus update it's internal state) and then chooses an action with `get_action()`,
-updates once more it's internal state and then outputs it's action for the other player.
+The :code:`Player` class keeps track of the game state internaly.
+At each turn of the game, the :code:`Player` is called with the method :code:`play()` to inform it of the action played by their opponent
+(and thus update their internal state) and then chooses an action with :code:`get_action()`,
+updates once more their internal state and then outputs their action for the opposing :code:`Player` to use.
 
 
 
@@ -899,203 +899,13 @@ updates once more it's internal state and then outputs it's action for the other
 
 
   
-Alpha-Beta pruning Minimax
---------------------------
-
-.. todo:: Describe the algorithm and implement an agent for Awale
-
-
-
-Retrograde analysis
--------------------
-
-
-For both divergent and convergent games search algorithms can prove the game result for positions near
-the end of a game. However, for divergent games the number of endgame
-positions is so big that enumerating all of them is computationally impossible (except for trivial
-games like Tic-Tac-Toe). However, for convergent games, the number of positions
-near the end of the game is small. Usually small enough to traverse them all, and collect
-their game values in a database, a so called endgame database.
-
-Retrograde Analysis computes endgame databases by going backward from values of final
-positions towards the initial position :cite:`goot2001`.
-First, Retrograde Analysis identifies all final positions in which the game value is known.
-By making reverse moves from these final positions the game value of some non-final positions can be deduced. And by making reverse moves from these newly proven non-final positions, the game value of other non-final positions can be deduced. This can continue either by running of available memory or by having enumerated all the legal positions in the game.
-
-Ströhlein is the first researcher who came up with the idea to create endgame databases and applied his idea to chess :cite:`endgame1970`.
-The first endgame database for Awale has been created by :cite:`allis1995` and was followed by many others, while the quest was ended by :cite:`romein2003solving` publishing a database for all legal positions.
-
-
-The above-mentioned results for Kalah and Awale both use an almost brute-force
-method to solve the game and use a database of all possible states. The database
-used by :cite:`romein2003solving` has 204 billion entries and weighs 178GiB.
-Such a huge database is of course not practical and  we thus think  there is still room for
-improvement if we can create an agent with a policy that does not need a
-exhaustive database, even if the agent is not capable of a perfect play.
-
-
-Monte Carlo Tree Search
------------------------
-
-.. todo:: This section and the next should be more detailed
-
-In this subsection, we define Markov Decision Processes (MDP) and model Awale with this framework. We then describe and detail Monte Carlo Tree Search, a policy-optimization algorithm for finite-horizon, finite-size MDPs.
-
-
-As Awale can be represented as an MDP, we could be tempted to use the usual framework of Q-Learning [Cite XXX] to find the best policy to maximise our reward. But since the state space is huge, this is computationally difficult or even impossible in memory and time constrained cases.
-To overcome this computational problem, the MCTS method constructs only a part of game the tree by sampling and tries to estimate the chance of winning based on this information.
-
-Algorithm
-~~~~~~~~~
-
-.. figure:: _static/mcts-algorithm.png
-
-   The 4 steps of MCTS :cite:`chaslot2008monte`
-
-
-The (partial) tree is constructed as follows:
-
-* Selection: starting at the root node, recursively choose a child until
-  a leaf :math:`L` is reached
-* Expansion: if :math:`L` is not a terminal node\footnote{As the tree is
-  not complete, a leaf could be a node that is missing its children, not
-  necessarily a terminal state}, create a child :math:`C`
-* Simulation: run a playout from :math:`C` until a terminal node :math:`T` is
-  reached (play a full game)
-* Back-propagation: update the counters described below of each ancestor
-  of :math:`T`.
-
-
-Each node holds 3 counters : (:math:`W_S`), the number of simulations using this node ended that
-with a win for South;  and North (:math:`W_N`). From this
-counters, a probability of North winning conditional on a given action can be computed
-immediately: :math:`\frac{W_N}{N}`.
-
-This sampling can be ran as many times as allowed (most of the
-time, the agent is time constrained). One can also stop the sampling earlier if
-
-each time refining the probability of
-winning when choosing a child of the root node. When we are done sampling, the
-agent chooses the child with the highest probability of winning and plays the
-corresponding action in the game.
-
-the total number of times a node has been played during a
-sampling iteration (:math:`N`)
-
-
-
-
-  
-Implementation
-~~~~~~~~~~~~~~
-
-
-
-
-  
-
-
-  .. code:: ipython3
-
-    @dataclass
-    class TreeStatsGame(TreeGame):
-        wins: np.array = field(default_factory=lambda: np.zeros(2, dtype=int))
-        n_playouts: int = 0
-    
-        def update_stats(self, winner):
-            if winner in [0, 1]:
-                self.wins[winner] += 1
-            self.n_playouts += 1
-            if self.parent and self.parent():
-                self.parent().update_stats(winner)
-
-
-
-
-
-
-  
-The MCTS first chooses a node to expand with the `tree_policy()` when the node is found, it is expanded with the `default_policy()`. When reaching a terminal node, the counters are updated. This is repeated `BUDGET` times and then the final action is chosen as the action that has the highest amount of wins.
-
-Both policies in this implementation are random walks.
-
-
-
-
-  
-
-
-  .. code:: ipython3
-
-    class MCTSPlayer(Player):
-        def __init__(self, player_id, budget: Union[int, timedelta]):
-            self.root = TreeStatsGame()
-            self.player_id = player_id
-            self.budget = budget
-    
-        def tree_policy(self, node):
-            while not node.is_leaf_game:
-                if node.is_fully_expanded:
-                    node = random.choice(node.expanded_children)
-                else:
-                    action = random.choice(node.legal_unvisited_actions)
-                    node, _, _ = node.step(action)
-            return node
-        
-        def explore_tree(self):
-            # Choose a starting node
-            node = self.tree_policy(self.root)
-    
-            # Run a simulation on that node
-            finished = node.game_finished
-            while not finished:
-                action = self.default_policy(node)
-                node, _, finished = node.step(action)
-    
-            # Backtrack stats
-            node.update_stats(node.winner)
-        
-        def default_policy(self, node):
-            # Random walk
-            return random.choice(node.legal_actions)
-        
-        def action_score(self, x):
-            node = self.root.children[x]
-            if node is None:
-                return -random.random()
-    
-            assert self.root.current_player == self.player_id
-            assert node.current_player != self.player_id
-    
-            return node.wins[self.player_id]
-            
-        
-        def get_action(self):
-            if isinstance(self.budget, int):
-                for _ in range(self.budget):
-                    self.explore_tree()
-            elif isinstance(self.budget, timedelta):
-                start = datetime.now()
-                end = start + self.budget
-                while datetime.now() < end:
-                    self.explore_tree()
-            else:
-                raise TypeError("budget should be Union[int, timedelta], not %s" % type(budget))
-            
-            possible_actions = self.root.legal_actions
-            return max(possible_actions, key=self.action_score)
-
-
-
-
-
-
-  
 Naive agents
 ------------
 
-To be able to benchmark our agents, we also implement two naive agents.
-The first is a random player thatchooses an action at random between all the legal actions
+In addition algorithms listed above, we also implement two most basic agents: a random and a greedy player.
+While not having any interest per se due to their simplicity and low strength, these wille serve us later as a baseline to compare their strength to some more advanced algorithms.
+
+The first agent is the most simple we can think of and does not use any intelligence at all: it lists all the legal actions it can take and chooses one uniformly at random.
 
 
 
@@ -1119,7 +929,8 @@ The first is a random player thatchooses an action at random between all the leg
 
 
   
-The second is :math:`\varepsilon`-Greedy: an agent that tries to maximise an immediate reward at each turn: the number of seeds captured during that turn. The :math:`\varepsilon` parameter introduces randomness: at each turn, the agent draws an number between 0 and 1, if it is geater than :math:`\varepsilon`, the agent plays at random.
+The second is :math:`\varepsilon`-Greedy: an agent that tries to maximise an immediate reward at each turn: the number of seeds captured during that turn.
+The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn, the agent draws an number :math:`e` in the uniform distribution :math:`\mathcal{U}(0, 1)`, if it is geater than :math:`\varepsilon`, the agent chooses an action uniformly at random else it maximises the reward.
 
 
 
@@ -1164,12 +975,254 @@ The second is :math:`\varepsilon`-Greedy: an agent that tries to maximise an imm
 
 
   
+Heuristic Minimax
+-----------------
+
+The minimax method presented before and used to find the value of a game state needs to generate the whole game tree, all the way down to the terminal states.
+In Awalé and other complex games, as shown before, generating the whole tree is computationaly very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to the depth :math:`d`. Nodes at depth :math:`d` are then considered as leafs and their value are estimated using an heuristic instead of being computed by looking at the values of their children. 
+
+The heuristic used should try to estimate the value of the node only by inspecting the state of the game and can be of varying complexity. A simple approach as taken here is to count the difference of the amount of seeds each player has captured. As heuristics are most often crafted by hand using human knowledge of the game, exploring more complex ones are beyond the scope of this work.
+
+The complexity of the heuristic minimax algorithm is :math:`O(b^d)` where :math:`b` is the average branching factor. A well known optimisation of this algorithm called alpha-beta pruning minimax (:math:`\alpha-\beta` minimax) returns the same result and has an average performance of :math:`O(\sqrt{b^d})`. 
+
+The algorithm keeps track of two values, :math:`\alpha` and :math:`\beta`, which hold the minimum score that the maximizing player is assured of and the maximum score that the minimizing player is assured of.
+Initially, :math:`\alpha = -\inf` and :math:`\beta = +\inf`: both players begin with their worst possible score.
+If the maximum score that the minimizing player is assured of becomes less than the minimum score that the maximizing player is assured of (so :math:`\beta < \alpha`), the maximizing player does not need to consider further children of this node (it prunes the node), as they are certain that the minimizer player would never play this move.
+This pruning is where the complexity gain of :math:`\alpha-\beta` comes from. 
+As :math:`\alpha-\beta` minimax has no disadvantage over minimax, this is the one we implement.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class AlphaBetaMinimaxPlayer(Player):
+        def __init__(self, player_id, cutoff_depth):
+            self.root = Game()
+            self.player_id = player_id
+            self.cutoff_depth = cutoff_depth
+        
+        def get_action(self):
+            actions = self.root.legal_actions
+            values = []
+            for action in actions:
+                child, _, _ = self.root.step(action)
+                value = self.minimax(child, self.cutoff_depth, float("-inf"), float("+inf"), False)
+                values.append(value)
+            best_action, best_value = max_rand(list(zip(actions, values)), key=lambda x: x[1])
+            
+            return best_action
+            
+            
+        def minimax(self, node, depth, alpha, beta, is_maximizing):
+            if depth == 0 or node.game_finished:
+                return self.evaluate(node)
+            
+            if is_maximizing:
+                value = float("-inf")
+                for action in node.legal_actions:
+                    child, _, _ = node.step(action)
+                    value = max(value, self.minimax(child, depth - 1, alpha, beta, False))
+                    alpha = max(alpha, value)
+                    if alpha >= beta:
+                        break
+                return value
+            else:
+                value = float("+inf")
+                for action in node.legal_actions:
+                    child, _, _ = node.step(action)
+                    value = min(value, self.minimax(child, depth - 1, alpha, beta, True))
+                    beta = min(beta, value)
+                    if alpha >= beta:
+                        break
+                return value
+            
+        def evaluate(self, node):
+            return node.captures[self.player_id] - node.captures[1 - self.player_id]
+
+
+
+
+
+
+  
+Retrograde analysis
+-------------------
+
+For both divergent and convergent games, search algorithms can prove the game result for positions near
+the end of a game. However, for divergent games the number of endgame
+positions is so big that enumerating all of them is computationally impossible (except for trivial
+games like Tic-Tac-Toe). However, for convergent games, the number of positions
+near the end of the game is small. Usually small enough to traverse them all, and collect
+their game values in a database, a so called endgame database.
+
+Retrograde Analysis computes endgame databases by going backward from values of final
+positions towards the initial position :cite:`goot2001`.
+First, Retrograde Analysis identifies all final positions in which the game value is known.
+By making reverse moves from these final positions the game value of some non-final positions can be deduced. And by making reverse moves from these newly proven non-final positions, the game value of other non-final positions can be deduced. This can continue either by running of available memory or by having enumerated all the legal positions in the game.
+
+Ströhlein is the first researcher who came up with the idea to create endgame databases and applied his idea to chess :cite:`endgame1970`.
+The first endgame database for Awale has been created by :cite:`allis1995` and was followed by many others, while the quest was ended by :cite:`romein2003solving` publishing a database for all legal positions.
+
+The above-mentioned results for Kalah and Awale both use an almost brute-force
+method to solve the game and use a database of all possible states. The database
+used by :cite:`romein2003solving` has 204 billion entries and weighs 178GiB.
+Such a huge database is of course not practical and we thus think there is still room for
+improvement if we can create an agent with a policy that does not need a
+exhaustive database, even if the agent is not capable of a perfect play.
+
+
+Monte Carlo Tree Search
+-----------------------
+
+
+Algorithm
+~~~~~~~~~
+
+.. figure:: _static/mcts-algorithm.png
+
+   The 4 steps of MCTS :cite:`chaslot2008monte`
+
+
+The (partial) tree is constructed as follows:
+
+* Selection: starting at the root node, recursively choose a child until
+  a leaf :math:`L` is reached
+* Expansion: if :math:`L` is not a terminal node\footnote{As the tree is
+  not complete, a leaf could be a node that is missing its children, not
+  necessarily a terminal state}, create a child :math:`C`
+* Simulation: run a playout from :math:`C` until a terminal node :math:`T` is
+  reached (play a full game)
+* Back-propagation: update the counters described below of each ancestor
+  of :math:`T`.
+
+
+Each node holds 3 counters : (:math:`W_S`), the number of simulations using this node ended that
+with a win for South;  and North (:math:`W_N`). From this
+counters, a probability of North winning conditional on a given action can be computed
+immediately: :math:`\frac{W_N}{N}`.
+
+This sampling can be ran as many times as allowed (most of the
+time, the agent is time constrained). One can also stop the sampling earlier if
+
+each time refining the probability of
+winning when choosing a child of the root node. When we are done sampling, the
+agent chooses the child with the highest probability of winning and plays the
+corresponding action in the game.
+
+the total number of times a node has been played during a
+sampling iteration (:math:`N`)
+
+XXX Every game are played at full random so the value of a node (wins - losses / total_games) will converge to the mean of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionaly choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
+
+
+
+
+  
+Implementation
+~~~~~~~~~~~~~~
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    @dataclass
+    class TreeStatsGame(TreeGame):
+        wins: np.array = field(default_factory=lambda: np.zeros(2, dtype=int))
+        n_playouts: int = 0
+    
+        def update_stats(self, winner):
+            if winner in [0, 1]:
+                self.wins[winner] += 1
+            self.n_playouts += 1
+            if self.parent and self.parent():
+                self.parent().update_stats(winner)
+
+
+
+
+
+
+  
+The MCTS first chooses a node to expand with the `tree_policy()` when the node is found, it is expanded with the `default_policy()`. When reaching a terminal node, the counters are updated. This is repeated `BUDGET` times and then the final action is chosen as the action that has the highest mean of game values (game value is 1 for wins, 0 for draws, -1 for losses).
+
+Both policies in this implementation are random walks.
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    class MCTSPlayer(Player):
+        def __init__(self, player_id, budget: timedelta):
+            self.root = TreeStatsGame()
+            self.player_id = player_id
+            self.budget = budget
+    
+        def tree_policy(self, node):
+            while not node.is_leaf_game:
+                if node.is_fully_expanded:
+                    node = random.choice(node.expanded_children)
+                else:
+                    action = random.choice(node.legal_unvisited_actions)
+                    node, _, _ = node.step(action)
+            return node
+        
+        def explore_tree(self):
+            # Choose a starting node
+            node = self.tree_policy(self.root)
+    
+            # Run a simulation on that node
+            finished = node.game_finished
+            while not finished:
+                action = self.default_policy(node)
+                node, _, finished = node.step(action)
+    
+            # Backtrack stats
+            node.update_stats(node.winner)
+        
+        def default_policy(self, node):
+            # Random walk
+            return random.choice(node.legal_actions)
+        
+        def action_score(self, x):
+            node = self.root.children[x]
+            if node is None:
+                return float("-inf")
+    
+            return (node.wins[self.player_id] - node.wins[1 - self.player_id]) / node.n_playouts
+        
+        def final_selection(self):
+            return = max(self.root.legal_actions, key=self.action_score)
+            
+        
+        def get_action(self):
+            start = datetime.now()
+            end = start + self.budget
+            while datetime.now() < end:
+                self.explore_tree()
+            
+            return self.final_selection()
+
+
+
+
+
+
+  
 ================================
 Monte Carlo tree search variants
 ================================
-
-Node Selection
---------------
 
 In step 1 and 3 of the algorithm, we have to choose nodes.
 There are multiples ways to choose those.
@@ -1184,16 +1237,16 @@ This is easy to implement but it is not effective since it explores every part o
 Upper Confidence Bounds for Trees
 ---------------------------------
 
-A better method would be asymmetric and explore more often the interesting parts of the
-tree. Kocsis and Szepervari :cite:`kocsis2006bandit` defined Upper Confidence
-Bounds for Trees (UCT), a method mixing vanilla MCTS and Upper Confidence Bounds
-(UCB).
+Because basic MCTS samples uniformly the game tree, it spends compute time estimating the value of uninsteresting nodes that will never be played in a real game. A more efficient method would instead explore more often the interesting parts of the tree: an asymmetric method.
+Kocsis and Szepervari :cite:`kocsis2006bandit` defined Upper Confidence Bounds for Trees (UCT), a method combining vanilla MCTS and Upper Confidence Bounds (UCB) from the multi-armed bandit problem during the selection process.
 
-Indeed, in step 1, selecting the node during the tree descent that maximizes the
-probability of winning is analogous to the multi-armed bandit problem in which a
-player has to choose the slot machine that maximizes the estimated reward.
+Basic MCTS, during the tree policy, chooses a child at random even if the children is likely of having a poor mean value. UCT instead treats the choice of child as a multi-armed bandit problem: picking a child for which we have an estimation of the true value to make a simulation is analogous to picking a slot machine for which we have a estimation of the true reward probability. 
 
-The UCB is
+
+
+
+
+By adapting UCB to a game tree, the UCT formula gives us the upper confidence
 
 .. math::
 
@@ -1201,19 +1254,14 @@ The UCB is
 
 where :math:`N'` is the number of times the
 parent node has been visited and :math:`c` is a parameter that can be tuned to balance exploitation of known wins and exploration of
-less visited nodes. Kocsis et al. has shown that :math:`\frac{\sqrt{2}}{2}`
-:cite:`kocsis2006bandit` is a good value when rewards are in :math:`[0, 1]`.
+less visited nodes.
 
 In step 3, the playouts are played by choosing an action from an uniform distribution since it is the first time these nodes
 are seen and we do not have a generic evaluation function do direct the playout
 towards 'better' states.
 
 
-
-
-  
-
-`UCTPlayer` reuses the MCTS agent but subclasses the `tree_policy` and uses UCT
+:code:`UCTPlayer` reuses the MCTS agent but subclasses the :code:`tree_policy` and uses UCT
 
 
 
@@ -1293,8 +1341,125 @@ of the algorithm as much less playouts are required.
 Empirical results
 =================
 
+This section first describes the statistical framework used to compare two agents and the method used to compare and rank multiple agents. Next, we detail the experimental setup in wich the games between agents are played as well as the method used to run the experiments in a massively parallel setup to be able to record enough game to have statistically strong results. We then run our experiments, analyze their results and present a ranking between our agents.
 
-This section first describes the experimental setup in wich the games between agents are played as well as the method used to run the experiments in a massively parallel setup to be able to record enough game to have statistically strong results. Next, we individually tune variables of the different agents to create a champion agent for each algorithm. Those champions are then opposed against each other in a final round of matches used to rank them.
+
+
+
+  
+Comparing algorithms
+--------------------
+
+
+
+
+How to compare A and B
+~~~~~~~~~~~~~~~~~~~~~~
+
+Because the outcome of a match between two agents is not deterministic, we can not rely on a single match to ascertain than the winner of a match is better than the looser. So the first step is to define a statistical method to compare two arbitrarily chosen agents: A and B.
+
+The probability that A wins is denoted by :math:`p` and is unknown (the probability that B wins is :math:`1-p`).
+Our null hypothesis is that both agents are equaly strong (:math:`p=0.50`) and the alternative hypothesis is that they are of different strength (:math:`p \neq 0.50`).
+To compare agents A and B, we run :math:`N` matches and A wins :math:`n` times (thus B wins :math:`N-n` times).
+
+Using the SciPy function :code:`scipy.stats.binom_test`, we then compute the p-value.
+If it is lower than :math:`5\%`, we traditionally reject the null hypothesis.
+This guarantees that, conditional on H0 being true, the probability of making an incorrect decision is :math:`5\%`.
+But if H1 is true, the probability of an incorrect decision is not necessarily :math:`5\%`: it depends on the number :math:`N` of matches and on the true value of :math:`p`.
+To ensure that the probability of an incorrect decision, conditional on H1, be acceptable, we resort to the concept of statistical power.
+
+Suppose the true probability :math:`p` is :math:`0.75`. This is very far from the null hypothesis. In that case, we want the probability of choosing H1 (not making an incorrect decision) to be high (for instance :math:`95\%`). This probability is the power and can be computed by means of the R function :code:`powerBinom` implemented in the R package :code:`exactci`. The output of this function is the number :math:`N` of matches needed to achieve the desired power and it is 49. As we always play a even number of matches between two agents (A vs. B and B vs. A), we decide that we need :math:`N=50` matches.
+
+Now that we know the amount of matches we need to play to be able to assertain that H1 is probable enough, we still need to know how many matches of the 50 an agent needs to win so we may declare H1 true. This can be done with the :code:`scipy.stats.binom_test` function.
+
+
+
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    for wins in range(50):
+        pvalue = scipy.stats.binom_test(wins, 50, p=0.5, alternative="greater")
+        if pvalue < 0.05:
+            print("If a agent wins", wins, "matches, we can reject H0 with a p-value of", round(pvalue, 4))
+            break
+
+
+
+
+.. parsed-literal::
+
+    If a agent wins 32 matches, we can reject H0 with a p-value of 0.0325
+
+
+
+
+
+  
+With this method, we can then define a relation "is stronger than" or "relation of strength", noted :math:`>` over the set of agents where :math:`A > B` if when playing 50 matches between A and B, A wins more than 31 matches. 
+
+
+
+
+  
+Proof of non-transitivity
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We have a method to determine if an agent is stronger than another but we don't have a way to order all our agents regarding to their strength. It could be tempting to use a sorting algorithm to order the agents using the :math:`>` relation but for this to be correct, the relation has to be transitive.
+
+In the following, we prove that the relation of strength between two agents is not transitive and thus a total order between all possible agents does not exist.
+
+Lets define 3 theoretical algorithms: each of them play the first move at random and the next moves of the match depending on the first move in three different ways: always playing the best move (noted :math:`+`), always playing the worst move (noted :math:`-`) or playing at random (noted :math:`r`).
+
+.. table:: Moves of the theoretical algorithms A, B and C depending on the first move of the game.
+
+    +------------+-----------+-----------+-----------+
+    | First move | A         | B         | C         |
+    +------------+-----------+-----------+-----------+
+    | 1, 2       | :math:`+` | :math:`r` | :math:`-` |
+    +------------+-----------+-----------+-----------+
+    | 3, 4       | :math:`r` | :math:`-` | :math:`+` |
+    +------------+-----------+-----------+-----------+
+    | 5, 6       | :math:`-` | :math:`+` | :math:`r` |
+    +------------+-----------+-----------+-----------+
+
+
+If A and B are playing matches, if the match starts with move:
+ - 1 or 2: A wins,
+ - 3 or 4: A wins more than half the matches,
+ - 5 or 6: B wins.
+ 
+So A wins more matches than B and we can say :math:`A > B`. By doing the same with B vs. C and C vs. A we have :math:`B > C` and :math:`C > A`. Thus the relation between these 3 theoretical algorithms is not transitive.
+
+How to compare more than two agents
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As described above, transitivity can not be proved in all cases so we can not use a sorting algorithm to order our agents. We thus have to resort to a full tournament where the relation :code:`>` is eveluated between every pair of agent. 
+
+We have 6 algorithms, each with some continuous or discrete parameters. Even if we restrict every parameter to a small finite set of values (let's say 10), we would still have 60 agents to compare. This would in turn make a tournament of size :math:`60^2` where each evaluation of the relation requires 50 matches. This method would thus require :math:`60^2 * 50 = 180 000` matches. Playing such a big number of matches is not practical so we will resort to a more frugal approach.
+
+The approach that we take is to first select, for each algorithm, the parameters that result in the best agent (a champion). This will in turn reduce the amount of agents playing in the tournament to 6 and the amount of matches to play to :math:`6^2 * 50 = 180`, a much more reasonable amount. While this approach reduces drastically the amount of computations needed, we have no guarantee that the agent we select will be the strongest against agents from other algorithms. This is a known limitation and verifying this assumption is outside of the scope of this work.  
+
+
+Champion selection
+~~~~~~~~~~~~~~~~~~
+
+
+
+Tournament solution
+~~~~~~~~~~~~~~~~~~~
+
+Framework of tournament solutions :cite:`laslier` to analyze the results and eventualy find a total order.
+
+
+
+
+  
 
 Experimental setup
 ------------------
@@ -1361,7 +1526,7 @@ Relevant data from the match can then be recorded in a dictionary like this:
 
 .. parsed-literal::
 
-    {'duration': 0.013, 'depth': 123, 'score': [23, 21], 'winner': 0}
+    {'duration': 0.0089, 'depth': 57, 'score': [25, 8], 'winner': 0}
 
 
 
@@ -1460,12 +1625,6 @@ Results of the jobs submited to AWS Batch can then be found in AWS CloudWatch. T
 Algorithm tuning
 ----------------
 
-Now that we have a way to run a match between two agents of our choice and record the result, we can start tuning each algorithm individually to create be best agent possible for a given algorithm.
-
-.. todo:: Insert here a paragraph about the (non-)transitivity of the relation "A wins against B". The best way to avoid this problem would be to play a full tournament for each possible value of a variable. But this is not feasible. However, we think that the relation is fairly transitive inside a single algorithm family. This enables us to play a much smaller amount of matches.
-
-
-
 :math:`\varepsilon`-Greedy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1513,7 +1672,7 @@ MCTS
 ~~~~
 
 The MCTS agent has a parameter :math:`t` that states how much time the agent may spend on simulation during its turn.
-As :cite:`kocsis2006bandit` have shown that given enough time MCTS converges to the minimax tree and thus is optimal, we know that the higher is :math:`t`, the better the agent will be. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
+As :cite:`kocsis2006bandit` have shown that given enough time MCTS (XXX UTC converges, not MCTS) converges to the minimax tree and thus is optimal, we know that the higher is :math:`t`, the better the agent will be. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
 
 Given our objective of producing an agent capable of playing against a human, choosing a value of :math:`t` higher than 1 minute is unrealistic as the human will not want to wait more than that at each turn of the game. While 1 minute is an upper bound, having a much smaller waiting time at each turn would be valuable. We think that  :math:`t = 5s` is a reasonable value.
 
@@ -1563,7 +1722,7 @@ While the results showin in :numref:`Figure %s <fig:mcts-time_5s>` are also nois
     
 
 
-.. figure:: index_files/index_81_0.svg
+.. figure:: index_files/index_88_0.svg
 
 
 
@@ -1657,124 +1816,6 @@ While the curve in :numref:`Figure %s <uct-tuning-c-15>` is not as smooth as in 
 
 
   
-Comparing algorithms
---------------------
-
-Now that we have found the best values of each variable for each algorithm, we have a small (:math:`N = 5`) set of agents to compare to each other. As the assumptions of smoothness and transitivity we placed in the previous section might not hold when comparing agents using different algorithms, we need to define a stronger framework to find the best agent.
-
-
-How to compare A and B
-~~~~~~~~~~~~~~~~~~~~~~
-
-
-The first step is to define a way to compare agent A and B. The probability that A wins is denoted by :math:`p` and is unknown (the probability that B wins is :math:`1-p`).
-Our null hypothesis is that both agents are equaly strong (:math:`p=0.50`) and the alternative hypothesis is that they are of different strength (:math:`p \neq 0.50`).
-To compare agents A and B, we run :math:`N` matches and A wins :math:`n` times (thus B wins :math:`N-n` times).
-
-Using the SciPy function :code:`scipy.stats.binom_test`, we then compute the p-value.
-If it is lower than :math:`5\%`, we traditionally reject the null hypothesis.
-This guarantees that, conditional on H0 being true, the probability of making an incorrect decision is :math:`5\%`.
-But if H1 is true, the probability of an incorrect decision is not necessarily :math:`5\%`: it depends on the number :math:`N` of matches and on the true value of :math:`p`.
-To ensure that the probability of an incorrect decision, conditional on H1, be acceptable, we resort to the concept of statistical power.
-
-Suppose the true probability :math:`p` is :math:`0.75`. This is very far from the null hypothesis. In that case, we want the probability of choosing H1 (not making an incorrect decision) to be high (for instance :math:`95\%`). This probability is the power and can be computed by means of the R function powerBinom implemented in the R package exactci:
-
-
-
-
-  
-
-
-  .. code:: ipython3
-
-    # This is R code and should be translated to the Python equivalent, probably using SciPy
-    #powerBinom(power = 0.95, p0 = 0.5, p1 = 0.75, sig.level = 0.05, alternative = "two.sided")
-
-
-
-
-
-
-  
-The output of this command is the number :math:`N` of matches needed to achieve the desired power and it is 49. As we always play a even number of matches between two agents (A vs. B and B vs. A), we decide that we need :math:`N=50` matches.
-
-Now that we know the amount of matches we need to play to be able to assertain that H1 is probable enough, we still need to know how many matches of the 50 an agent needs to win so we may declare H1 true. This can be done with the :code:`scipy.stats.binom_test` function.
-
-
-
-
-  
-
-
-  .. code:: ipython3
-
-    for wins in range(50):
-        pvalue = scipy.stats.binom_test(wins, 50, p=0.5, alternative="greater")
-        if pvalue < 0.05:
-            print("If a agent wins", wins, "matches, we can reject H0 with a p-value of", round(pvalue, 4))
-            break
-
-
-
-
-.. parsed-literal::
-
-    If a agent wins 32 matches, we can reject H0 with a p-value of 0.0325
-
-
-
-
-
-  
-Proof of non-transitivity
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-We now have a way to determine if an agent is stronger than another but we don't have a way to order all our agents regarding to their strength. In the following, we prove that a total order between all agents does not exist by showing that the relation of strength between two agents is not transitive.
-
-Lets define 3 theoretical algorithms: each of them play the first move at random and the next moves of the match depending on the first move in three different ways: always playing the best move (noted :math:`+`), never playing the best move (noted :math:`-`) or playing at random (noted :math:`r`).
-
-.. table:: Moves of the theoretical algorithms depending on the first move of the game.
-
-    +------------+-----------+-----------+-----------+
-    | First move | A         | B         | C         |
-    +------------+-----------+-----------+-----------+
-    | 1, 2       | :math:`+` | :math:`r` | :math:`-` |
-    +------------+-----------+-----------+-----------+
-    | 3, 4       | :math:`r` | :math:`-` | :math:`+` |
-    +------------+-----------+-----------+-----------+
-    | 5, 6       | :math:`-` | :math:`+` | :math:`r` |
-    +------------+-----------+-----------+-----------+
-
-
-If A and B are playing matches, if the match starts with move:
- - 1 or 2: A wins all the time,
- - 3 or 4: A wins more than half the matches,
- - 5 or 6: B wins all the matches.
- 
-So A wins more matches than B and we can say :math:`A > B`. By doing the same with B vs. C and C vs. A we have :math:`B > C` and :math:`C > A`. Thus the relation between these 3 theoretical algorithms is not transitive.
-
-How to compare more than two agents
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-As described above, transitivity can not be proved in all cases.
-Because we want to compare agents using different algorithms, we think that we can not make the assumption
-(made previously inside an algorithm family) that strength is transitive.
-We thus resort to playing a full tournament between the agents we want to compare.
-
-We can play a trounament of 50 matches between every pair of agents. This is a values tournament as each pair has a score contained in :math:`[0, 50]`. 
-We then transfrom this valued tournament in a binary tournament by deciding that :math:`A > B`, :math:`A < B` or :math:`A = B` if respectively :math:`A` wins more than 31 matches , A loses more than 31 matches or neither wins more than 31 matches.
-
-This in turn enables us to use the framework of tournament solutions :cite:`laslier` to analyze the results and eventualy find a total order.
-
-.. todo:: We might still want to rank our algorithms on a scale with total ordering. There are a lot of algorithms to do this (Elo ranking and others). Research is still developing on this subject and there is no consensus on the right method to use. This is beyond the topic, i won't go further.
-
-https://www.researchgate.net/publication/287630111_A_Comparison_between_Different_Chess_Rating_Systems_for_Ranking_Evolutionary_Algorithms
-
-
-
-
-
-  
 Tournament results
 ------------------
 
@@ -1841,9 +1882,6 @@ Appendix
 
 Bibliography
 ------------
-
-.. warning::
-   Some papers are currently wrongly cited. 
 
 .. bibliography:: refs.bib
    :style: custom

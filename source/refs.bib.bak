@@ -5,8 +5,7 @@
     editor="Selin, Helaine",
     title="Encyclopaedia of the History of Science, Technology, and Medicine in Non-Western Cultures",
     year="2014",
-    publisher="Springer Netherlands",
-    address="Dordrecht",
+    publisher="Springer, Dordrecht",
     isbn="978-94-007-3934-5",
     doi="10.1007/978-94-007-3934-5_9947-1",
     url="https://www.springer.com/gp/book/9781402044250",
@@ -83,9 +82,13 @@
 	volume = {362},
 	number = {6419},
 	pages = {1140--1144},
-  journal = {Science},
 	year = {2018},
 	doi = {10.1126/science.aar6404},
+	publisher = {American Association for the Advancement of Science},
+	issn = {0036-8075},
+	URL = {https://science.sciencemag.org/content/362/6419/1140},
+	eprint = {https://science.sciencemag.org/content/362/6419/1140.full.pdf},
+	journal = {Science}
 }
 
 @article{AlphaGoZero,
@@ -93,10 +96,12 @@
     author={Silver, David and Schrittwieser, Julian and Simonyan, Karen and Antonoglou, Ioannis and Huang, Aja and Guez, Arthur and Hubert, Thomas and Baker, Lucas and Lai, Matthew and Bolton, Adrian and others},
     journal={Nature},
     volume={550},
+    number={7676},
     pages={354},
     year={2017},
     publisher={Nature Publishing Group},
     doi="10.1038/nature24270",
+    url="https://www.nature.com/articles/nature24270",
 }
 
 
@@ -119,6 +124,7 @@
   title     = {African Games of Strategy: A Teaching Manual},
   year      = {1982},
   series    = {African outreach series},
+  lccn      = {83621509},
   volume = {2},
   url="https://eric.ed.gov/?id=ED277645",
 }
@@ -135,21 +141,20 @@
   title="Awari Retrograde Analysis",
   booktitle="Computers and Games",
   year="2000",
-  publisher="Springer",
+  publisher="Springer Berlin Heidelberg",
   address="Berlin, Heidelberg",
   pages="87--95",
-  series="Lecture Notes in Computer Science",
-  volume="2063",
   doi="10.1007/3-540-45579-5_6"
 }
 
 @INPROCEEDINGS{allis1995,
   author={Bal, Henri and Allis, Victor},
-  booktitle={Proceedings of the 1995 ACM/IEEE Conference on Supercomputing},
-  series={Supercomputing '95},
+  booktitle={Supercomputing '95:Proceedings of the 1995 ACM/IEEE Conference on Supercomputing},
   title={Parallel Retrograde Analysis on a Distributed System},
   year={1995},
-  pages={73--73},
+  volume={},
+  number={},
+  pages={73-73},
   doi="10.1145/224170.224470"
 }
 
@@ -157,7 +162,7 @@
   title = "Games solved: Now and in the future",
   journal = "Artificial Intelligence",
   volume = "134",
-  pages = "277--311",
+  pages = "277 - 311",
   year = "2002",
   doi = "10.1016/S0004-3702(01)00152-7",
   author = "H. Jaap van den Herik and Jos W.H.M. Uiterwijk and Jack {van Rijswijck}",
@@ -168,11 +173,9 @@
   journal = {Mathematische Annalen},
   title   = {Zur Theorie der Gesellschaftsspiele},
   year    = {1928},
-  volume  = {100},
+  number  = {100},
   pages   = {295-320},
 }
-
-%%%%%%%%%%% STOP
 
 @inproceedings{databases-awari,
 title = "Databases in Awari",
@@ -198,19 +201,6 @@ booktitle = "Heuristic programming in artificial intelligence",
   year={1997},
   publisher={U.S. Government Printing Office}
 }
-
-@Inbook{Shannon1988,
-author="Shannon, Claude E.",
-editor="Levy, David",
-title="Programming a Computer for Playing Chess",
-bookTitle="Computer Chess Compendium",
-year="1988",
-publisher="Springer New York",
-address="New York, NY",
-pages="2--13",
-doi="10.1007/978-1-4757-1968-0_1",
-}
-
 
 
 %% TO check
@@ -264,7 +254,6 @@ doi="10.1007/978-1-4757-1968-0_1",
   editor    = {Michie, Donald},
   pages     = {181--194},
   volume    = {3},
-  journal   = {Machine Intelligence},
 }
 
 % Russell, R. Kalah—The Game and the Program; Artificial Intelligence Project Memo No. 22; University of Stanford: Standford, CA, USA, 1964. [Google Scholar]

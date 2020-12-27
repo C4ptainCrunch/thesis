@@ -1,0 +1,20 @@
+
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="535" height="180">
+      <style>
+        circle {
+          fill: none;
+          stroke: #000;
+          stroke-width: 2;
+        }
+        .bean {
+          fill: #000
+        }
+        .highlight {
+          stroke: red;
+        }
+      </style>
+
+      <circle cx="48.0" cy="48.0" r="40" /><text x="82.0" y="82.0" >0</text><circle cx="136.0" cy="48.0" r="40" /><text x="170.0" y="82.0" >0</text><circle cx="224.0" cy="48.0" r="40" /><text x="258.0" y="82.0" >0</text><circle cx="312.0" cy="48.0" r="40" /><text x="346.0" y="82.0" >0</text><circle cx="400.0" cy="48.0" r="40" /><text x="434.0" y="82.0" >0</text><circle cx="488.0" cy="48.0" r="40" /><text x="522.0" y="82.0" >0</text><circle cx="48.0" cy="136.0" r="40" /><text x="82.0" y="170.0" >0</text><circle cx="136.0" cy="136.0" r="40" /><text x="170.0" y="170.0" >3</text><circle cx="224.0" cy="136.0" r="40" /><text x="258.0" y="170.0" >0</text><circle cx="312.0" cy="136.0" r="40" /><text x="346.0" y="170.0" >0</text><circle cx="400.0" cy="136.0" r="40" /><text x="434.0" y="170.0" >0</text><circle cx="488.0" cy="136.0" r="40" /><text x="522.0" y="170.0" >0</text>
+      <circle cx="144.42054229193295" cy="134.95383198779132" r="4" class="bean"/><circle cx="130.88372077883415" cy="129.23068046764917" r="4" class="bean"/><circle cx="132.6957369292329" cy="143.81548754455952" r="4" class="bean"/>
+    </svg>
+    

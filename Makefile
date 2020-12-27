@@ -23,4 +23,4 @@ livenotebooks:
 	make -C source/ watch_notebooks
 
 livehtml:
-	sphinx-autobuild -b html --ignore "*.ipynb" $(SPHINXOPTS) $(SOURCEDIR) $(BUILDDIR)/html
+	sphinx-autobuild -b html --ignore "*.ipynb" --ignore "*.svg" --ignore "*.png" $(SPHINXOPTS) $(SOURCEDIR) $(BUILDDIR)/html

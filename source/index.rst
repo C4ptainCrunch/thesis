@@ -41,7 +41,7 @@ At each turn, the players move some seeds and can potentially capture some of th
 .. todo:: Explain here what i'm going to do in my thesis, why it is interesting and why it is new.
 
 In Section 2, we present Awale in detail. We then introduce Game Theory frameworks in Section 3.
-Section 4 reviews various approaches to solve Awale: retrograde analysis, :math:`\alpha-\beta`-pruning Minimax, and basic Monte Carlo Tree Search.
+Section 4 reviews various approaches to solve Awale: retrograde analysis, :math:`\alpha\beta`-pruning Minimax, and basic Monte Carlo Tree Search.
 In Section 5, we describe more advanced versions of MCTS and in particular UCT.
 Section 6 presents some empirical results (simulations) allowing to compare several MCTS algorithms and Section 7 concludes.
 
@@ -84,8 +84,6 @@ The rules vary slightly across countries and will be detailed in Section (:ref:`
 
 
 
-
-
     
 
     
@@ -94,8 +92,6 @@ The rules vary slightly across countries and will be detailed in Section (:ref:`
 
 
 .. figure:: index_files/index_6_0.svg
-
-
 
 
 
@@ -174,8 +170,6 @@ In this work, the pits of a player are numbered left to right from his point of 
 
 
 
-
-
     
 
     
@@ -184,8 +178,6 @@ In this work, the pits of a player are numbered left to right from his point of 
 
 
 .. figure:: index_files/index_10_0.svg
-
-
 
 
 
@@ -215,8 +207,6 @@ As an example, in the initial state (:numref:`See Figure %s <fig:initial_board>`
 
 
 
-
-
     
 
     
@@ -225,8 +215,6 @@ As an example, in the initial state (:numref:`See Figure %s <fig:initial_board>`
 
 
 .. figure:: index_files/index_13_0.svg
-
-
 
 
 
@@ -266,8 +254,6 @@ be able to capture the seeds in pits 2' and 3' (highlighted in red in :numref:`F
 
 
 
-
-
     
 
     
@@ -276,8 +262,6 @@ be able to capture the seeds in pits 2' and 3' (highlighted in red in :numref:`F
 
 
 .. figure:: index_files/index_16_0.svg
-
-
 
 
 
@@ -300,8 +284,6 @@ be able to capture the seeds in pits 2' and 3' (highlighted in red in :numref:`F
 
 
 
-
-
     
 
     
@@ -310,8 +292,6 @@ be able to capture the seeds in pits 2' and 3' (highlighted in red in :numref:`F
 
 
 .. figure:: index_files/index_18_0.svg
-
-
 
 
 
@@ -347,8 +327,6 @@ In :numref:`Figure %s <fig:feed>`, South has to play pit 5 because playing pit 1
 
 
 
-
-
     
 
     
@@ -357,8 +335,6 @@ In :numref:`Figure %s <fig:feed>`, South has to play pit 5 because playing pit 1
 
 
 .. figure:: index_files/index_21_0.svg
-
-
 
 
 
@@ -405,9 +381,13 @@ Sections containing code are prefixed by :code:`In[]:` and the output of the cod
 
 
 
+
+
 .. parsed-literal::
 
     This was executed by Python
+
+
 
 
 
@@ -545,7 +525,7 @@ some of them being deliberately excluded from this implementation:
             """Returns the winner of the game or None if the game is not finished or in a draw"""
             if not self.game_finished:
                 return None
-            # The game is finished but both player have the same amount of seeds: it's a draw
+            # The game is finished but both player have the same number of seeds: it's a draw
             elif self.captures[0] == self.captures[1]:
                 return None
             # Else, there is a winner: the player with the most seeds
@@ -560,7 +540,7 @@ some of them being deliberately excluded from this implementation:
   
 We can now define the :code:`Game.step(i)` method that is called for every step of the game.
 It takes a single parameter, :code:`i`, and plays the i-th pit in the current sate.
-This method returns the new state, the amount of seeds captured and a boolean informing whether the game is finished.
+This method returns the new state, the number of seeds captured and a boolean informing whether the game is finished.
 
 
 
@@ -576,7 +556,7 @@ This method returns the new state, the amount of seeds captured and a boolean in
         def step(self, action: int) -> Tuple[Game, int, bool]:
             """Plays the action given as parameter and returns:
                 - a the new state as a new Game object,
-                - the amount of captured stones in the transition
+                - the number of captured stones in the transition
                 - a bool indicating if the new state is the end of the game
             """
             assert 0 <= action < 6, "Illegal action"
@@ -698,11 +678,7 @@ To show a minimal example of the implementation, we can now play a move and have
 
 
 
-
-
 .. figure:: index_files/index_38_0.svg
-
-
 
 
 
@@ -724,7 +700,7 @@ Awale and Game Theory
 
   
 Tree representation
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 A combinatorial game like Awale can be represented as a tree in a straightforward way where every node is a state of the game.
 The root of the tree represents the initial state.
@@ -855,7 +831,7 @@ Artificial Intelligence approaches to play Awale
 ================================================
 
 Many algorithms have been proposed and studied to play sequential perfect information games.
-A few examples detailed here are retrograde analysis, heuristic :math:`\alpha-\beta` pruning Minimax,
+A few examples detailed here are retrograde analysis, heuristic :math:`\alpha\beta` pruning Minimax,
 Monte Carlo tree search (MCTS) and the most recent approach from Deepmind: Alpha Zero :cite:`AlphaGoZero`.
 
 We will quickly present and implement those and then focus on MCTS and its variants as they are computationally feasible and do not require expert knowledge about the given game to make reasonable decisions.
@@ -981,15 +957,15 @@ Heuristic Minimax
 The minimax method presented before and used to find the value of a game state needs to generate the whole game tree, all the way down to the terminal states.
 In Awalé and other complex games, as shown before, generating the whole tree is computationaly very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to the depth :math:`d`. Nodes at depth :math:`d` are then considered as leafs and their value are estimated using an heuristic instead of being computed by looking at the values of their children. 
 
-The heuristic used should try to estimate the value of the node only by inspecting the state of the game and can be of varying complexity. A simple approach as taken here is to count the difference of the amount of seeds each player has captured. As heuristics are most often crafted by hand using human knowledge of the game, exploring more complex ones are beyond the scope of this work.
+The heuristic used should try to estimate the value of the node only by inspecting the state of the game and can be of varying complexity. A simple approach as taken here is to count the difference of the number of seeds each player has captured. As heuristics are most often crafted by hand using human knowledge of the game, exploring more complex ones are beyond the scope of this work.
 
-The complexity of the heuristic minimax algorithm is :math:`O(b^d)` where :math:`b` is the average branching factor. A well known optimisation of this algorithm called alpha-beta pruning minimax (:math:`\alpha-\beta` minimax) returns the same result and has an average performance of :math:`O(\sqrt{b^d})`. 
+The complexity of the heuristic minimax algorithm is :math:`O(b^d)` where :math:`b` is the average branching factor. A well known optimisation of this algorithm called alpha-beta pruning minimax (:math:`\alpha\beta` minimax) returns the same result and has an average performance of :math:`O(\sqrt{b^d})`. 
 
 The algorithm keeps track of two values, :math:`\alpha` and :math:`\beta`, which hold the minimum score that the maximizing player is assured of and the maximum score that the minimizing player is assured of.
-Initially, :math:`\alpha = -\inf` and :math:`\beta = +\inf`: both players begin with their worst possible score.
+Initially, :math:`\alpha = -\infty` and :math:`\beta = +\infty`: both players begin with their worst possible score.
 If the maximum score that the minimizing player is assured of becomes less than the minimum score that the maximizing player is assured of (so :math:`\beta < \alpha`), the maximizing player does not need to consider further children of this node (it prunes the node), as they are certain that the minimizer player would never play this move.
-This pruning is where the complexity gain of :math:`\alpha-\beta` comes from. 
-As :math:`\alpha-\beta` minimax has no disadvantage over minimax, this is the one we implement.
+This pruning of entires sub-trees is where the complexity gain comes from. 
+As :math:`\alpha\beta` minimax has no disadvantage over minimax, this is the one we implement.
 
 
 
@@ -1255,7 +1231,7 @@ where :math:`N'` is the number of times the
 parent node has been visited and :math:`c` is a parameter that can be tuned to balance exploitation of known wins and exploration of
 less visited nodes.
 
-The tree policy from MCTS is then replaced by a policy always chosing the node with the highest confidence bound, resolving ties by a coin toss.
+The tree policy from MCTS is then replaced by a policy always chosing the node with the highest upper confidence bound, resolving ties by a coin toss.
 :code:`UCTPlayer` thus reuses the MCTS agent but subclasses the :code:`tree_policy`.
 
 
@@ -1363,7 +1339,7 @@ To ensure that the probability of an incorrect decision, conditional on H1, be a
 
 Suppose the true probability :math:`p` is :math:`0.75`. This is very far from the null hypothesis. In that case, we want the probability of choosing H1 (not making an incorrect decision) to be high (for instance :math:`95\%`). This probability is the power and can be computed by means of the R function :code:`powerBinom` implemented in the R package :code:`exactci`. The output of this function is the number :math:`N` of matches needed to achieve the desired power and it is 49. As we always play a even number of matches between two agents (A vs. B and B vs. A), we decide that we need :math:`N=50` matches.
 
-Now that we know the amount of matches we need to play to be able to assertain that H1 is probable enough, we still need to know how many matches of the 50 an agent needs to win so we may declare H1 true. This can be done with the :code:`scipy.stats.binom_test` function.
+Now that we know the number of matches we need to play to be able to assertain that H1 is probable enough, we still need to know how many matches of the 50 an agent needs to win so we may declare H1 true. This can be done with the :code:`scipy.stats.binom_test` function.
 
 
 
@@ -1385,6 +1361,8 @@ Now that we know the amount of matches we need to play to be able to assertain t
 
 
 
+
+
 .. parsed-literal::
 
     If a agent wins 32 matches, we can reject H0 with a p-value of 0.0325
@@ -1393,17 +1371,19 @@ Now that we know the amount of matches we need to play to be able to assertain t
 
 
 
-  
-With this method, we can then define a relation "is stronger than" or "relation of strength", noted :math:`>` over the set of agents where :math:`A > B` if when playing 50 matches between A and B, A wins more than 31 matches. 
-
-
 
 
   
-Proof of non-transitivity
-~~~~~~~~~~~~~~~~~~~~~~~~~
+With this method, we can then define a relation "is stronger than" or "relation of strength", noted :math:`\succ` over the set of agents where :math:`A \succ B` if when playing 50 matches between A and B, A wins more than 31 matches. 
 
-We have a method to determine if an agent is stronger than another but we don't have a way to order all our agents regarding to their strength. It could be tempting to use a sorting algorithm to order the agents using the :math:`>` relation but for this to be correct, the relation has to be transitive.
+
+
+
+  
+Transitivity of the strength relation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We have a method to determine if an agent is stronger than another but we don't have a way to order all our agents regarding to their strength. It could be tempting to use a sorting algorithm to order the agents using the :math:`\succ` relation but for this to be correct, the relation has to be transitive.
 
 In the following mind experiment, we prove that the relation of strength between two agents is not transitive and thus a total order between all possible agents does not exist.
 
@@ -1427,30 +1407,41 @@ If A and B are playing matches, if the match starts with move:
  - 3 or 4: A wins more than half the matches,
  - 5 or 6: B wins.
  
-So A wins more matches than B and we can say :math:`A > B`. By doing the same with B vs. C and C vs. A we have :math:`B > C` and :math:`C > A`. Thus the relation between these 3 theoretical algorithms is not transitive.
+So A wins more matches than B and we can say :math:`A \succ B`. By doing the same with B vs. C and C vs. A we have :math:`B \succ C` and :math:`C \succ A`. Thus the relation between these 3 theoretical algorithms is not transitive.
 
 How to compare more than two agents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As described above, transitivity can not be proved in all cases so we can not use a sorting algorithm to order our agents. We thus have to resort to a full tournament where the relation :code:`>` is eveluated between every pair of agent. 
+As described above, transitivity can not be proved in all cases so we can not use a sorting algorithm to order our agents. We thus have to resort to a full tournament where the relation :math:`\succ` is eveluated between every pair of agent. 
 
-We have 6 algorithms, each with some continuous or discrete parameters. Even if we restrict every parameter to a small finite set of values (let's say 10), we would still have 60 agents to compare. This would in turn make a tournament of size :math:`60^2` where each evaluation of the relation requires 50 matches. This method would thus require :math:`60^2 * 50 = 180 000` matches. Playing such a big number of matches is not practical so we will resort to a more frugal approach.
+We have 6 algorithms, each with some continuous or discrete parameters. Even if we restrict every parameter to a small finite set of values (let's say 100), we would still have 600 agents to compare. This would in turn make a tournament of size :math:`600^2` where each evaluation of the relation requires 50 matches. This method would thus require :math:`600^2 * 50 = 18\,000\,000` matches. Playing such a big number of matches is hardly feasible so we will resort to a more frugal approach.
 
-The approach that we take is to first select, for each algorithm, the parameters that result in the best agent (a champion). This will in turn reduce the amount of agents playing in the tournament to 6 and the amount of matches to play to :math:`6^2 * 50 = 180`, a much more reasonable amount. While this approach reduces drastically the amount of computations needed, we have no guarantee that the agent we select will be the strongest against agents from other algorithms. This is a known limitation and verifying this assumption is outside of the scope of this work.  
+The approach that we take is to first select, for each algorithm, the parameters that result in the best agent (a champion). This will in turn reduce the number of agents playing in the tournament to 6 and the number of matches to play to :math:`6^2 * 50 = 180`, a much more reasonable number. While this approach reduces drastically the amount of computations needed, it might not be perfect.
+We have no guarantee that the champion whithin a family (all agents derived from a single algorithm) is also the best family member against agents from other families. This is a known limitation and verifying this assumption is outside of the scope of this work.  
 
 
 Champion selection
 ~~~~~~~~~~~~~~~~~~
 
-    pas besoin de belles stats
-      hypothèse lisse/structure
-      hypothèse qu'un bat tous les autres
+Let  :math:`A_x` be an algorithm :math:`A` with a continuous parameter :math:`x \in X` and :math:`f_n(A_{x}, A_{y})`, the number of wins of :math:`A_{x}` against :math:`A_{y}` after :math:`n` matches.
+We make the assumption that with :math:`n` big enough, :math:`f_n(A_{x}, A_{y})` is smooth for all :math:`x,y \in X` due to the fact that both agents :math:`A_{x}` and :math:`A_{y}` share the same algorithm. This smoothness property will be empirically confirmed later (see XXX and XXX).
 
 
+So, for :math:`x_1` close to :math:`x_1` and :math:`y_1` close to :math:`y_2`, the value of :math:`f_n(A_{x_1}, A_{y_1})` gives us an indication about the value of :math:`f_n(A_{x_2}, A_{y_2})`.
+This assumption and the fact that we evaluate :math:`f_n` over a dense sample of the parameter space allows us to compare agents from a single family by playing much less matches than the 50 matches derived from our statistical power analysis.
+
+
+During the champion selection, contrary to the full tournament, we also assume that the strength relation :math:`\succ` over agents of a family is "approximately" transitive: we expect that :math:`\forall y \in X, \exists x \neq y, y \in X | f_{\infty}(A_{x}, A_{y}) > n/2`: there exists an agent that wins more than half the time against every other agent of its family.
+
+
+
+
+  
 Tournament solution
 ~~~~~~~~~~~~~~~~~~~
 
-Framework of tournament solutions :cite:`laslier` to analyze the results and eventualy find a total order.
+.. todo::
+  We will use the framework of tournament solutions :cite:`laslier` to analyze the results and eventualy find a total order or an overall best agent. This will be done once we have our final results.
 
 
 
@@ -1461,7 +1452,7 @@ Experimental setup
 ------------------
 
 A match between two agents is played with the following code, where the variables :code:`player` and :code:`opponent` contain an instance of an agent (a class derived from :code:`Player`).
-Because most games finish in less than 200 moves, we limit games to 500 moves to avoid agents playing infinite games. A game that goes over the threshold of 500 moves is considered a draw, regardles of the score of both players.
+Because most games finish in less than 200 moves, we limit games to 500 moves to avoid playing infinite games. A game that goes over the threshold of 500 moves is considered a draw, regardless of the score of both players.
 
 
 
@@ -1496,7 +1487,11 @@ Because most games finish in less than 200 moves, we limit games to 500 moves to
 
 
   
-Relevant data from the match can then be recorded in a dictionary like below where :code:`duration` is the total duration of the game in seconds, :code:`depth` is the amount of moves played by both agents, :code:`score` is a tuple of score of South followed by the score of North, :code:`winner` is :code:`0` if South won, :code:`1` if North won and :code:`None` is the game was a draw.
+Relevant data from the match can then be recorded in a dictionary like below where:
+ * :code:`duration` is the total duration of the game in seconds,
+ * :code:`depth` is the number of moves played by both agents,
+ * :code:`score` is a tuple of score of South followed by the score of North,
+ * :code:`winner` is :code:`0` if South won, :code:`1` if North won and :code:`None` is the game was a draw.
 
 
 
@@ -1518,8 +1513,6 @@ Relevant data from the match can then be recorded in a dictionary like below whe
 
 
 
-
-
 .. parsed-literal::
 
     {'duration': 0.0089, 'depth': 57, 'score': [25, 8], 'winner': 0}
@@ -1529,19 +1522,17 @@ Relevant data from the match can then be recorded in a dictionary like below whe
 
 
 
-
-
   
-Because the number of matches we expect to play is quite high and a match between two agents might take a few minutes, we have to be able to run matches in a massively parralel setup.
+Because the number of matches we expect to play is quite high and a match between two agents might take a few minutes of CPU time, we have to be able to play a big number of run matches in parralel.
 
 We used the infrastructure of Amazon Web Services (AWS) to be able to access hundreds of CPU cores at the same time and used AWS Batch to schedule the jobs across the different machines.
 
-To this effect, we placed the code to run a match in a standalone Python script that accepts the match parameters via environment variables and packaged it in a Docker container. The dictionary showed above is then outputed to the standard output.
+To this effect, we placed the code to run a match in a standalone Python script that accepts parameters to give to the agents via environment variables and packaged it in a Docker container. When a game is finished, the dictionary showed above is then outputed to the standard output.
 
-This Docker container is then used to launch AWS Batch tasks in parallel, their standard output being sent to AWS Cloudwatch to be analyzed later.
-Each match was in a separate AWS Batch task was allowed 1 vCPU with 500MB of RAM. THose tasks were running on C5 compute optimized EC2 instances [#aws_c5]_. 
+This Docker container is then used as a template to launch AWS Batch tasks in parallel, their standard output being sent to AWS Cloudwatch to be analyzed later.
+Each match was in a separate AWS Batch task was allowed 1 vCPU with 500MB of RAM. Those tasks were running on C5 compute optimized EC2 instances [#aws_c5]_. 
 
-AWS Batch tasks can be launched with the following function:
+AWS Batch tasks can be launched with the :code:`submit_match()` function, using itself the :code:`submit_aws_job()` utility function defined in Annex XXX.
 
 
 
@@ -1596,7 +1587,7 @@ Because we can not be sure an agent has the same strength if it is allowed to be
 
 
   
-Results of the jobs submited to AWS Batch can then be found in AWS CloudWatch. They are downloaded with a script available in the Appendix and then stored in :code:`source/data/*.jsonl`. These results are then processed and normalised.
+Results of the jobs submited to AWS Batch can then be found in AWS CloudWatch. They are downloaded with a script available in the Annex XXX and then stored in :code:`source/data/*.jsonl`. These results are then processed and normalised and made available in Pandas DataFrame :cite:`pandas` importable with the following code.
 
 
 
@@ -1611,9 +1602,7 @@ Results of the jobs submited to AWS Batch can then be found in AWS CloudWatch. T
 
 
 
-.. parsed-literal::
 
-    Populating the interactive namespace from numpy and matplotlib
 
 
 
@@ -1720,7 +1709,7 @@ While the results showin in :numref:`Figure %s <fig:mcts-time_5s>` are also nois
     
 
 
-.. figure:: index_files/index_88_0.svg
+.. figure:: index_files/index_89_0.svg
 
 
 
@@ -1900,8 +1889,8 @@ Footnotes
 
 
   
-Addidional code
----------------
+Appendix
+--------
 
 :doc:`removed`
 

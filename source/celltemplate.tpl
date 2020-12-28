@@ -15,12 +15,12 @@
 {% endblock input %}
 
 
-{% block execute_result %}
+{% block stream %}
 {% if 'hr' in cell['metadata'].get('tags', []) %}
 {% else %}
 {{ super() }}
 {% endif %}
-{% endblock execute_result %}
+{% endblock stream %}
 
 {% block data_svg %}
 

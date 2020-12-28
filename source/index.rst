@@ -699,8 +699,6 @@ Awale and Game Theory
 
 
   
-Tree representation
--------------------
 
 A combinatorial game like Awale can be represented as a tree in a straightforward way where every node is a state of the game.
 The root of the tree represents the initial state.

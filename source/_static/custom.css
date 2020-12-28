@@ -126,11 +126,7 @@ dl pre, blockquote pre, li pre {
    font-size: 0.75em
 }
 
-
-.highlight-ipython3 {
-}
-
-.highlight-default:before {
+.highlight-none:before {
    content: "[Out]:";
    font-family: monospace;
    color: red;

@@ -805,7 +805,7 @@ Artificial Intelligence approaches to play Awale
 ================================================
 
 Many algorithms have been proposed and studied to play sequential perfect information games.
-A few examples detailed here are retrograde analysis, heuristic :math:`\alpha\beta` pruning Minimax,
+A few examples detailed here are retrograde analysis, depth-limited :math:`\alpha\beta` pruning Minimax,
 Monte Carlo tree search (MCTS) and the most recent approach from Deepmind: Alpha Zero :cite:`AlphaGoZero`.
 
 We will quickly present and implement those and then focus on MCTS and its variants as they are computationally feasible and do not require expert knowledge about the given game to make reasonable decisions.
@@ -925,15 +925,15 @@ The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn
 
 
   
-Heuristic Minimax
------------------
+Depth-limited Minimax
+---------------------
 
 The minimax method presented before and used to find the value of a game state needs to generate the whole game tree, all the way down to the terminal states.
 In Awalé and other complex games, as shown before, generating the whole tree is computationaly very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to the depth :math:`d`. Nodes at depth :math:`d` are then considered as leafs and their value are estimated using an heuristic instead of being computed by looking at the values of their children. 
 
 The heuristic used should try to estimate the value of the node only by inspecting the state of the game and can be of varying complexity. A simple approach as taken here is to count the difference of the number of seeds each player has captured. As heuristics are most often crafted by hand using human knowledge of the game, exploring more complex ones are beyond the scope of this work.
 
-The complexity of the heuristic minimax algorithm is :math:`O(b^d)` where :math:`b` is the average branching factor. A well known optimisation of this algorithm called alpha-beta pruning minimax (:math:`\alpha\beta` minimax) returns the same result and has an average performance of :math:`O(\sqrt{b^d})`. 
+The complexity of the depth-limited minimax algorithm is :math:`O(b^d)` where :math:`b` is the average branching factor. A well known optimisation of this algorithm called alpha-beta pruning minimax (:math:`\alpha\beta` minimax) returns the same result and has an average performance of :math:`O(\sqrt{b^d})`. 
 
 The algorithm keeps track of two values, :math:`\alpha` and :math:`\beta`, which hold the minimum score that the maximizing player is assured of and the maximum score that the minimizing player is assured of.
 Initially, :math:`\alpha = -\infty` and :math:`\beta = +\infty`: both players begin with their worst possible score.
@@ -1034,6 +1034,20 @@ exhaustive database, even if the agent is not capable of a perfect play.
 Monte Carlo Tree Search
 -----------------------
 
+Monte Carlo Tree Search (MCTS) has been introduced by :cite:`coulom2006mcts` as formalization of Monte Carlo methods applied to tree search that were previously explored by others, among which :cite:`Bouzy2004montecarlo`. Since then, MCTS has been a major advancement and topic of interest in the field of AI research, particularly for games and planning problems.
+
+A tree is built in an incremental and asymmetric manner.
+For each iteration of the algorithm, a tree policy is used to find the most urgent node of the current tree.
+The tree policy attempts to balance considerations of exploration (look in areas that have not been well sampled yet) and exploitation (look in areas which appear to be promising).
+
+A simulation is then run from the selected node and the search tree updated according to the result.
+This involves the addition of a child node corresponding to the action taken from the selected node, and an update of the statistics of its ancestors.
+Moves are made during this simulation according to some default policy, which in the simplest case is to make uniform random moves.
+
+
+Due to the above, a great benefit of MCTS is that unlinke depth-limited minimax, there is no need to estimate the values of non-terminal nodes with an heuristic. This in turn, greatrly reduces (or even removes) the need to acquire and incorporate domain knowledge. This explains our interest on the subject and the title of this work.
+
+
 
 Algorithm
 ~~~~~~~~~
@@ -1072,7 +1086,7 @@ corresponding action in the game.
 the total number of times a node has been played during a
 sampling iteration (:math:`N`)
 
-XXX Every game are played at full random so the value of a node (wins - losses / total_games) will converge to the mean of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionaly choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
+TODO Every game are played at full random so the value of a node (wins - losses / total_games) will converge to the mean of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionaly choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
 
 
 
@@ -1195,7 +1209,7 @@ Because basic MCTS samples uniformly the game tree, it spends compute time estim
 
 Basic MCTS, during the tree policy, chooses a child at random even if the children is likely of having a poor mean value. UCT instead treats the choice of child as a multi-armed bandit problem: picking a child for which we have an estimation of the true value to make a simulation is analogous to picking a slot machine for which we have an estimation of the true reward probability. 
 
-XXX When a node has not been visited much, the ratio of wins to visits is an estimation of the mean value of the children. But after a time, UCT prioritizes more the good moves so the value drifts and converges to the game theoretic value (:cite:`kocsis2006bandit`). This means that the bandit is non stationary but this is ok as it does not drift too much.
+TODO When a node has not been visited much, the ratio of wins to visits is an estimation of the mean value of the children. But after a time, UCT prioritizes more the good moves so the value drifts and converges to the game theoretic value (:cite:`kocsis2006bandit`). This means that the bandit is non stationary but this is ok as it does not drift too much.
 
 
 UCT adapts UCB to a game tree and gives us the following formula for the upper confidence bound:
@@ -1659,7 +1673,7 @@ MCTS
 ~~~~
 
 The MCTS agent has a parameter :math:`t` that states how much time the agent may spend on simulation during its turn.
-As :cite:`kocsis2006bandit` have shown that given enough time MCTS (XXX UTC converges, not MCTS) converges to the minimax tree and thus is optimal, we know that the higher is :math:`t`, the better the agent will be. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
+As :cite:`kocsis2006bandit` have shown that given enough time MCTS (TODO UTC converges, not MCTS) converges to the minimax tree and thus is optimal, we know that the higher is :math:`t`, the better the agent will be. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
 
 Given our objective of producing an agent capable of playing against a human, choosing a value of :math:`t` higher than 1 minute is unrealistic as the human will not want to wait more than that at each turn of the game. While 1 minute is an upper bound, having a much smaller waiting time at each turn would be valuable. We think that  :math:`t = 5s` is a reasonable value.
 

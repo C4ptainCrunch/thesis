@@ -1405,7 +1405,7 @@ Proof of non-transitivity
 
 We have a method to determine if an agent is stronger than another but we don't have a way to order all our agents regarding to their strength. It could be tempting to use a sorting algorithm to order the agents using the :math:`>` relation but for this to be correct, the relation has to be transitive.
 
-In the following, we prove that the relation of strength between two agents is not transitive and thus a total order between all possible agents does not exist.
+In the following mind experiment, we prove that the relation of strength between two agents is not transitive and thus a total order between all possible agents does not exist.
 
 Lets define 3 theoretical algorithms: each of them play the first move at random and the next moves of the match depending on the first move in three different ways: always playing the best move (noted :math:`+`), always playing the worst move (noted :math:`-`) or playing at random (noted :math:`r`).
 
@@ -1442,6 +1442,9 @@ The approach that we take is to first select, for each algorithm, the parameters
 Champion selection
 ~~~~~~~~~~~~~~~~~~
 
+    pas besoin de belles stats
+      hypothèse lisse/structure
+      hypothèse qu'un bat tous les autres
 
 
 Tournament solution

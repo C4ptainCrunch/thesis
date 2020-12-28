@@ -1,3 +1,27 @@
+.. warning::
+  Previouosly, this section contained text about perfect information games, strongly solved games, then represented perfect information games as finite state machines and trees. After reading more litterature, i decided to remove an rewrite it.
+  I plan to rewrite it with the following: Set the basics of Game Theory and the concept of a "solution" to a game, talk about the minimax, define perfect information/combinatorial games then their tree representation.
+
+
+A combinatorial game like Awale can be represented as a tree in a straightforward way where every node is a state of the game.
+The root of the tree represents the initial state.
+If in a state :math:`s` the current player plays action :math:`i` resulting in state :math:`s'` then :math:`s'` will be the i-th child of the node representing :math:`s`.
+
+This results in the following properties:
+    - As the current player at the root node is South and that players alternate after each turn,
+      the tree contains alternating layers of current players:
+      the current player for nodes with an even depth is South and for odd depths is North;
+    - The leaf nodes of the tree correspond to final states;
+    - The path from the root to a leaf thus represents an instance of a full game.
+
+.. todo:: Insert a figure of an tree here
+
+
+We can now define the branching factor: the maximum number of children of a node in the game.
+In Awale the player can choose to sow his seeds from one of his non-empty pits.
+As the player has 6 pits, the branching factor is 6.
+
+
 
 Solving games
 -------------
@@ -166,4 +190,4 @@ Citation:
 .. [#GS07] Sylvain Gelly and David Silver. Combining online and offline
  knowledge in uct. In ICML ’07: Proceedings of the 24th
  Internatinoal Conference on Machine Learning, pages 273–280.
- ACM, 2007. 
+ ACM, 2007.

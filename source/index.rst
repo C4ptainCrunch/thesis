@@ -269,7 +269,7 @@ be able to capture the seeds in pits 2' and 3' (highlighted in red in :numref:`F
 
 
   
-  An example of a board configuration where South is to play pit 4.
+  An example of a board configuration where South is to play pit 4, in red.
 
 
 
@@ -299,7 +299,7 @@ be able to capture the seeds in pits 2' and 3' (highlighted in red in :numref:`F
 
 
   
-  The resulting board after South played 4 in :numref:`Fig %s <fig:pre_capture>`. Pits 2' and 3' will be captured.
+  The resulting board after South played 4 in :numref:`Fig %s <fig:pre_capture>`. Pits 2' and 3' in red will be captured.
 
 
 
@@ -342,7 +342,7 @@ In :numref:`Figure %s <fig:feed>`, South has to play pit 5 because playing pit 1
 
 
   
-  South is forced to play pit 5 because playing pit 1 would leave North without any seed to play.
+  South is forced to play pit 5, in red, because playing pit 1 would leave North without any seed to play.
 
 
 
@@ -394,7 +394,7 @@ Sections containing code are prefixed by :code:`In[]:` and the output of the cod
 
 
   
-In this subsection, we use the use the power of Jupyter Notebooks to define in multiple steps a Python :code:`Game()` class holding the state of the game and its rules. We will then successively inherit from it to add the rules and some convenience methods.
+In this subsection, we use the use the power of Jupyter Notebooks to define in multiple steps a Python :code:`Game()` class holding the state of the game. We will then successively inherit from it to add an implementation of the rules and some convenience methods.
 
 We set the following encoding conventions:
  - :code:`0` is South, :code:`1` is North,
@@ -415,7 +415,6 @@ First, we define a dataclass with the minimal attributes needed to store a state
 
     from dataclasses import dataclass, field
     
-    
     @dataclass
     class Game:
         # a 2x6 matrix containing the number of seeds in each pits
@@ -431,7 +430,7 @@ First, we define a dataclass with the minimal attributes needed to store a state
 
 
   
-Next, we add some convenient methods that will be useful later.
+We then add some convenience methods that will be useful later.
 
 
 
@@ -690,34 +689,10 @@ To show a minimal example of the implementation, we can now play a move and have
 Awale and Game Theory
 =====================
 
-.. warning::
-  Previouosly, this section contained text about perfect information games, strongly solved games, then represented perfect information games as finite state machines and trees. After reading more litterature, i decided to remove an rewrite it.
-  I plan to rewrite it with the following: Set the basics of Game Theory and the concept of a "solution" to a game, talk about the minimax, define perfect information/combinatorial games then their tree representation.
-
-
 
 
 
   
-
-A combinatorial game like Awale can be represented as a tree in a straightforward way where every node is a state of the game.
-The root of the tree represents the initial state.
-If in a state :math:`s` the current player plays action :math:`i` resulting in state :math:`s'` then :math:`s'` will be the i-th child of the node representing :math:`s`.
-
-This results in the following properties:
-    - As the current player at the root node is South and that players alternate after each turn,
-      the tree contains alternating layers of current players:
-      the current player for nodes with an even depth is South and for odd depths is North;
-    - The leaf nodes of the tree correspond to final states;
-    - The path from the root to a leaf thus represents an instance of a full game.
-
-.. todo:: Insert a figure of an tree here
-
-
-We can now define the branching factor: the maximum number of children of a node in the game.
-In Awale the player can choose to sow his seeds from one of his non-empty pits.
-As the player has 6 pits, the branching factor is 6.
-
 We now implement this tree representation in Python by inheriting from :code:`Game()` class previously defined so that a state can hold references to its parent and children.
 
 
@@ -1204,6 +1179,9 @@ Both policies in this implementation are random walks.
 Monte Carlo tree search variants
 ================================
 
+The basic version of MCTS presented above has proven to be effective in a variety of problems. Variants and enhancements to MCTS have been studied extensively and were shown to bring substantial benefits :cite:`browne2012survey`. In this section, we present a few of them and apply them to Awale.
+
+
 
 
 
@@ -1248,7 +1226,9 @@ The tree policy from MCTS is then replaced by a policy always chosing the node w
             self.c = c
             
         def node_score(self, node):
-            exporation = node.wins[node.current_opponent] / (node.n_playouts + 1)
+            draws = node.n_playouts - node.wins.sum()
+            w = node.wins[node.current_opponent] + 0.5 * draws
+            exporation = w / (node.n_playouts + 1)
             exploitation = math.sqrt(math.log(node.parent().n_playouts) / (node.n_playouts + 1))
             return exporation + self.c * exploitation
     
@@ -1294,6 +1274,17 @@ Informed UCT
 
 
   
+All moves as first
+------------------
+
+"All Moves As First" (AMAF) and its successor "Rapid Action Value Estimation" (RAVE) are enhancements that have often been proved very successful when applying MCTS to the game of Go :cite:`gelly20111rave`.
+The basic idea is to update statistics for all actions selected during a simulation as if they were the first action applied. This method is particularly well suited for incremental games such as Go, where the value of a move is often dependent on the state of the board in its close proximity and unaffected by moves played elsewhere on the board. 
+Due to the popularity of AMAF, the method is mentioned here for completeness but will not be pursued further due to the lack of applicability to Awale.
+
+
+
+
+  
 Alpha Zero
 ----------
 
@@ -1306,11 +1297,11 @@ of the algorithm because much less playouts are required.
 
 
   
-=================
-Empirical results
-=================
+======
+Method
+======
 
-This section first describes the statistical framework used to compare two agents and the method used to compare and rank multiple agents. Next, we detail the experimental setup in wich the games between agents are played as well as the method used to run the experiments in a massively parallel setup to be able to record enough game to have statistically strong results. We then run our experiments, analyze their results and present a ranking between our agents.
+This section describes the statistical framework used to compare two agents and the method used to compare and rank multiple agents. Next, we detail the experimental setup in wich the games between agents are played as well as the method used to run the experiments in a massively parallel setup to be able to record enough game to have statistically strong results.
 
 
 
@@ -1607,8 +1598,14 @@ Results of the jobs submited to AWS Batch can then be found in AWS CloudWatch. T
 
 
   
-Algorithm tuning
-----------------
+===========
+Experiments
+===========
+
+We run our experiments, analyze their results and present a ranking between the different agents.
+
+Champion selection
+------------------
 
 :math:`\varepsilon`-Greedy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1707,7 +1704,7 @@ While the results showin in :numref:`Figure %s <fig:mcts-time_5s>` are also nois
     
 
 
-.. figure:: index_files/index_89_0.svg
+.. figure:: index_files/index_90_0.svg
 
 
 
@@ -1842,12 +1839,6 @@ The results, displayed in a matrix in :numref:`Figure %s <matrix>`, show that UC
   Matrix representation of the valued tournament between every algorithm
   
 .. todo:: We still have to transform the values tournament in a binary one and then analyze it with the framework of tournament solutions.
-
-Limitations
------------
-
-.. todo:: As we only compare the champions of each algorithm, we might have a non-champion that would still won against another algo. Then we would not have a complete pre-order. We can not do this due to compute limitation.
-
 
 
 

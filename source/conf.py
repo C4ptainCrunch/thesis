@@ -158,6 +158,7 @@ latex_documents = [
     ),
 ]
 
+nitpicky = True
 
 # -- Extension configuration -------------------------------------------------
 

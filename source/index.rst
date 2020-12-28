@@ -138,6 +138,7 @@ Other Mancala games have been studied in Computer Science and Artificial Intelli
   
 .. _sec:rules:
 
+
 Rules of the game
 -----------------
 
@@ -1279,7 +1280,7 @@ All moves as first
 
 "All Moves As First" (AMAF) and its successor "Rapid Action Value Estimation" (RAVE) are enhancements that have often been proved very successful when applying MCTS to the game of Go :cite:`gelly20111rave`.
 The basic idea is to update statistics for all actions selected during a simulation as if they were the first action applied. This method is particularly well suited for incremental games such as Go, where the value of a move is often dependent on the state of the board in its close proximity and unaffected by moves played elsewhere on the board. 
-Due to the popularity of AMAF, the method is mentioned here for completeness but will not be pursued further due to the lack of applicability to Awale.
+Due to the popularity of AMAF, these methods are mentioned here for completeness but will not be pursued further due to the lack of applicability to Awale where the value of moves are dependent on the whole board and on the advancment of the game.
 
 
 
@@ -1413,7 +1414,7 @@ Champion selection
 ~~~~~~~~~~~~~~~~~~
 
 Let  :math:`A_x` be an algorithm :math:`A` with a continuous parameter :math:`x \in X` and :math:`f_n(A_{x}, A_{y})`, the number of wins of :math:`A_{x}` against :math:`A_{y}` after :math:`n` matches.
-We make the assumption that with :math:`n` big enough, :math:`f_n(A_{x}, A_{y})` is smooth for all :math:`x,y \in X` due to the fact that both agents :math:`A_{x}` and :math:`A_{y}` share the same algorithm. This smoothness property will be empirically confirmed later (see XXX and XXX).
+We make the assumption that with :math:`n` big enough, :math:`f_n(A_{x}, A_{y})` is smooth for all :math:`x,y \in X` due to the fact that both agents :math:`A_{x}` and :math:`A_{y}` share the same algorithm. This smoothness property will be empirically confirmed later (see :ref:`sec:eps-tuning` and :ref:`sec:uct-tuning`).
 
 
 So, for :math:`x_1` close to :math:`x_1` and :math:`y_1` close to :math:`y_2`, the value of :math:`f_n(A_{x_1}, A_{y_1})` gives us an indication about the value of :math:`f_n(A_{x_2}, A_{y_2})`.
@@ -1607,6 +1608,8 @@ We run our experiments, analyze their results and present a ranking between the 
 Champion selection
 ------------------
 
+.. _sec:eps-tuning:
+
 :math:`\varepsilon`-Greedy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1650,6 +1653,8 @@ The results of these matches is shown in :numref:`Figure %s <eps-matrix>` below 
 
 
   
+.. _sec:mcts-tuning:
+
 MCTS
 ~~~~
 
@@ -1658,7 +1663,7 @@ As :cite:`kocsis2006bandit` have shown that given enough time MCTS (XXX UTC conv
 
 Given our objective of producing an agent capable of playing against a human, choosing a value of :math:`t` higher than 1 minute is unrealistic as the human will not want to wait more than that at each turn of the game. While 1 minute is an upper bound, having a much smaller waiting time at each turn would be valuable. We think that  :math:`t = 5s` is a reasonable value.
 
-As stated earlier, we know that the strength of the agent is an increasing function of :math:`t`. However, we don't know the shape of this function. We compare the strength of MCTS(t=5) against a range of values of :math:`t' \in \{0.5, 1, 1.5, 2, 3, 5, 7, 10, 15, 20, 30, 40\}` by playing 10 matches for each value of :math:`t'`.
+As stated earlier, we know that the strength of the agent is an increasing function of :math:`t`. However, we don't know the shape of this function. We compare the strength of MCTS(:math:`t=5`) against a range of values of :math:`t' \in \{0.5, 1, 1.5, 2, 3, 5, 7, 10, 15, 20, 30, 40\}` by playing 10 matches for each value of :math:`t'`.
 
 
 
@@ -1717,10 +1722,13 @@ While the results showin in :numref:`Figure %s <fig:mcts-time_5s>` are also nois
 
 
   
+.. _sec:uct-tuning:
+
 UCT
 ~~~
 
 The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`c` the balance between exploration and exploitation. We will fix :math:`t=5s` so that we can fairly compare MCTS and UTC later.
+
 :cite:`kocsis2006bandit` has shown that :math:`c=\frac{\sqrt{2}}{2}` is a good starting value. We thus play matches of UCT(:math:`c=\frac{\sqrt{2}}{2}`) against a range of 11 values equaly spaced between 0.2 and 2.2
 
 

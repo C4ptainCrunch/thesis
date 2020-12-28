@@ -1,3 +1,25 @@
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Bright/cmun-bright.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Bright Semibold/cmun-bright-semibold.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Classical Serif Italic/cmun-classical-serif-italic.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Concrete/cmun-concrete.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Sans/cmun-sans.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Sans Demi-Condensed/cmun-sans-demicondensed.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Serif/cmun-serif.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Serif Slanted/cmun-serif-slanted.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Typewriter/cmun-typewriter.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Typewriter Light/cmun-typewriter-light.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Typewriter Variable/cmun-typewriter-variable.css);
+@import url(https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/font/Upright Italic/cmun-upright-italic.css);
+
+body {
+  font-family: "Computer Modern Serif", serif !important;
+  font-size: 19px;
+}
+
+div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
+  font-family: "Computer Modern Serif", serif !important;
+}
+
 /* Document width */
 @media screen {
   div.document {

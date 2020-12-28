@@ -66,7 +66,7 @@ The 6 pits from the top row belong to North and the 6 from the bottom to South.
 
 The players take turns, a player removing all the seeds from a pit and placing them in other pits following the rules. This is called sowing the seeds. This can result in a configuration in which the player is allowed to capture some seeds according to the rules.
 The goal for each player is to capture more seeds than his opponent.
-The rules vary slightly across countries and will be detailed in :ref:`sec:rules`. 
+The rules vary slightly across countries and will be detailed in Section (:ref:`sec:rules`). 
 
 
 
@@ -930,7 +930,7 @@ The first agent is the most simple we can think of and does not use any intellig
 
   
 The second is :math:`\varepsilon`-Greedy: an agent that tries to maximise an immediate reward at each turn: the number of seeds captured during that turn.
-The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn, the agent draws an number :math:`e` in the uniform distribution :math:`\mathcal{U}(0, 1)`, if it is geater than :math:`\varepsilon`, the agent chooses an action uniformly at random else it maximises the reward.
+The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn, the agent draws an number :math:`e` in the uniform distribution :math:`\mathcal{U}(0, 1)`, if :math:`e > \varepsilon`, the agent chooses an action uniformly at random, else it maximises the reward.
 
 
 
@@ -1051,6 +1051,12 @@ As :math:`\alpha-\beta` minimax has no disadvantage over minimax, this is the on
   
 Retrograde analysis
 -------------------
+
+Board games can mostly be divided into two separate categories. The first category consist
+of games where the number pieces on the board increases over time, because players add pieces on the board during their turn. The state space increases over time: these are called divergent games.
+Examples of these games are Tick Tack Toe, Connect Four and Go.
+The second category consists of games where the number of pieces on the board decreases over time because players may capture pieces over time. Those are called convergent games.
+Games that belong to this category are Chess, Checkers, Backgammon and Awalé :cite:`vandenherik2002`.
 
 For both divergent and convergent games, search algorithms can prove the game result for positions near
 the end of a game. However, for divergent games the number of endgame

@@ -60,7 +60,7 @@ Originally, the game is played on the ground, by digging two rows of six small p
 stones, seeds or shells. In the present document, we will name them seeds. The game is also often played on a wooden board symbolizing the original dirt pits.
 The board can be schematized as in :numref:`Figure %s <fig:initial_board>`, every big circle representing a pit and every small disc representing a seed.
 Numbers at the bottom right of each pit are the counts of seeds in each pit for better readability.
-Each row of pits is owned by a player that sits in front of it (:numref:`see Fig. %s <board>`).
+Each row of pits is owned by a player that sits in front of it (:numref:`see Figure %s <board>`).
 For the sake of convenience, the players are named North and South.
 The 6 pits from the top row belong to North and the 6 from the bottom to South.
 
@@ -115,7 +115,7 @@ Mancala
 The Mancala games are an ancient family of game that are played on many continents :cite:`deVoogt2008`, Awale being one of them.
 The word mancala comes from the Arabic word "نقلة", transliterated as "naqala" and literally meaning "to move".
 
-Like Awale, Mancala games can consist of rows of pits, some of them having more than two rows (:numref:`see Fig. %s <bao>`) and sometimes extra pits with a special role. Mancala games can sometimes be played by more than two players.
+Like Awale, Mancala games can consist of rows of pits, some of them having more than two rows (:numref:`see Figure %s <bao>`) and sometimes extra pits with a special role. Mancala games can sometimes be played by more than two players.
  
 .. _bao:
 
@@ -159,7 +159,7 @@ each turn (one per non-empty pit owned by him).
 
 Usually, the player that starts the game is the oldest player. In this work, South will always play first.
 
-In this work, the pits of a player are numbered left to right from his point of view as shown in :numref:`Figure %s <fig:pit_numbering>`. :math:`1` being the leftmost pit of South, until :math:`6` at the far right. The same holds for North: :math:`1'` to :math:`6'`.
+In this work, the pits of a player are numbered left to right from his point of view as shown in :numref:`Figure %s <fig:pit_numbering>`, :math:`1` being the leftmost pit of South, until :math:`6` at the far right. The same holds for North: :math:`1'` to :math:`6'`.
 
 
 
@@ -200,7 +200,7 @@ In this work, the pits of a player are numbered left to right from his point of 
 
   
 
-As an example, in the initial state (:numref:`See Fig. %s <fig:initial_board>`), the first player to move is South (on the bottom) and he plays :math:`4` (highlighted in the figure in red), the board will then be in the  state shown in :numref:`Figure %s <fig:first_move>`.
+As an example, in the initial state (:numref:`See Figure %s <fig:initial_board>`), the first player to move is South (on the bottom) and he plays :math:`4` (highlighted in the figure in red), the board will then be in the  state shown in :numref:`Figure %s <fig:first_move>`.
 
 
 
@@ -414,7 +414,7 @@ Sections containing code are prefixed by :code:`In[]:` and the output of the cod
 
 
   
-In this subsection, we use the use th power of Jupyter Notebooks to define in multiple steps a Python :code:`Game()` class holding the state of the game and its rules. We will then successively inherit from it to add the rules and some convenience methods.
+In this subsection, we use the use the power of Jupyter Notebooks to define in multiple steps a Python :code:`Game()` class holding the state of the game and its rules. We will then successively inherit from it to add the rules and some convenience methods.
 
 We set the following encoding conventions:
  - :code:`0` is South, :code:`1` is North,
@@ -1224,12 +1224,6 @@ Both policies in this implementation are random walks.
 Monte Carlo tree search variants
 ================================
 
-In step 1 and 3 of the algorithm, we have to choose nodes.
-There are multiples ways to choose those.
-
-In the original MCTS we take a child at random each time.
-This is easy to implement but it is not effective since it explores every part of the tree even if a part has no chance of leading to a win for the player.
-
 
 
 
@@ -1238,15 +1232,14 @@ Upper Confidence Bounds for Trees
 ---------------------------------
 
 Because basic MCTS samples uniformly the game tree, it spends compute time estimating the value of uninsteresting nodes that will never be played in a real game. A more efficient method would instead explore more often the interesting parts of the tree: an asymmetric method.
-Kocsis and Szepervari :cite:`kocsis2006bandit` defined Upper Confidence Bounds for Trees (UCT), a method combining vanilla MCTS and Upper Confidence Bounds (UCB) from the multi-armed bandit problem during the selection process.
+:cite:`kocsis2006bandit` defined Upper Confidence Bounds for Trees (UCT), a method combining during the selection process vanilla MCTS and Upper Confidence Bounds (UCB) used in the multi-armed bandit problem.
 
-Basic MCTS, during the tree policy, chooses a child at random even if the children is likely of having a poor mean value. UCT instead treats the choice of child as a multi-armed bandit problem: picking a child for which we have an estimation of the true value to make a simulation is analogous to picking a slot machine for which we have a estimation of the true reward probability. 
+Basic MCTS, during the tree policy, chooses a child at random even if the children is likely of having a poor mean value. UCT instead treats the choice of child as a multi-armed bandit problem: picking a child for which we have an estimation of the true value to make a simulation is analogous to picking a slot machine for which we have an estimation of the true reward probability. 
+
+XXX When a node has not been visited much, the ratio of wins to visits is an estimation of the mean value of the children. But after a time, UCT prioritizes more the good moves so the value drifts and converges to the game theoretic value (:cite:`kocsis2006bandit`). This means that the bandit is non stationary but this is ok as it does not drift too much.
 
 
-
-
-
-By adapting UCB to a game tree, the UCT formula gives us the upper confidence
+UCT adapts UCB to a game tree and gives us the following formula for the upper confidence bound:
 
 .. math::
 
@@ -1256,12 +1249,8 @@ where :math:`N'` is the number of times the
 parent node has been visited and :math:`c` is a parameter that can be tuned to balance exploitation of known wins and exploration of
 less visited nodes.
 
-In step 3, the playouts are played by choosing an action from an uniform distribution since it is the first time these nodes
-are seen and we do not have a generic evaluation function do direct the playout
-towards 'better' states.
-
-
-:code:`UCTPlayer` reuses the MCTS agent but subclasses the :code:`tree_policy` and uses UCT
+The tree policy from MCTS is then replaced by a policy always chosing the node with the highest confidence bound, resolving ties by a coin toss.
+:code:`UCTPlayer` thus reuses the MCTS agent but subclasses the :code:`tree_policy`.
 
 
 
@@ -1301,7 +1290,7 @@ towards 'better' states.
 Informed UCT
 ------------
 
- `GreedyUCTPlayer` subclasses `UCTPlayer` and changes the `default_policy` to weigh more the actions that will give more immediate rewards.
+:code:`GreedyUCTPlayer` subclasses :code:`UCTPlayer` and changes the :code:`default_policy` to weigh more the actions that will give more immediate rewards.
 
 
 
@@ -1328,10 +1317,10 @@ Informed UCT
 Alpha Zero
 ----------
 
-To replace the random play in step 3, D. Silver et al. propose
-:cite:`AlphaGoZero` to use a neural network to estimate the value of a
-game state without having to play it. This can greatly enhances the performance
-of the algorithm as much less playouts are required.
+To replace the random play in the simulation step, :cite:`AlphaGoZero` proposes
+to use a neural network to estimate the value of a
+game state without having to play it. This can greatly enhance the performance
+of the algorithm because much less playouts are required.
 
 
 
@@ -1349,8 +1338,6 @@ This section first describes the statistical framework used to compare two agent
   
 Comparing algorithms
 --------------------
-
-
 
 
 How to compare A and B
@@ -1464,7 +1451,7 @@ Framework of tournament solutions :cite:`laslier` to analyze the results and eve
 Experimental setup
 ------------------
 
-A match between two agents is played with the following code, where the variables `player` and `opponent` contain an instance of an agent (a class derived from `Player`).
+A match between two agents is played with the following code, where the variables :code:`player` and :code:`opponent` contain an instance of an agent (a class derived from :code:`Player`).
 Because most games finish in less than 200 moves, we limit games to 500 moves to avoid agents playing infinite games. A game that goes over the threshold of 500 moves is considered a draw, regardles of the score of both players.
 
 
@@ -1500,7 +1487,7 @@ Because most games finish in less than 200 moves, we limit games to 500 moves to
 
 
   
-Relevant data from the match can then be recorded in a dictionary like this:
+Relevant data from the match can then be recorded in a dictionary like below where :code:`duration` is the total duration of the game in seconds, :code:`depth` is the amount of moves played by both agents, :code:`score` is a tuple of score of South followed by the score of North, :code:`winner` is :code:`0` if South won, :code:`1` if North won and :code:`None` is the game was a draw.
 
 
 
@@ -1538,10 +1525,12 @@ Relevant data from the match can then be recorded in a dictionary like this:
   
 Because the number of matches we expect to play is quite high and a match between two agents might take a few minutes, we have to be able to run matches in a massively parralel setup.
 
+We used the infrastructure of Amazon Web Services (AWS) to be able to access hundreds of CPU cores at the same time and used AWS Batch to schedule the jobs across the different machines.
+
 To this effect, we placed the code to run a match in a standalone Python script that accepts the match parameters via environment variables and packaged it in a Docker container. The dictionary showed above is then outputed to the standard output.
 
-This Docker container is then used to launch hundreds of AWS Batch tasks in parallel, their standard output being sent to AWS Cloudwatch to be analyzed later.
-Each AWS Batch tasks are allowed 1 vCPU each with 500MB of RAM and are running on C5 compute optimized EC2 instances [#aws_c5]_. 
+This Docker container is then used to launch AWS Batch tasks in parallel, their standard output being sent to AWS Cloudwatch to be analyzed later.
+Each match was in a separate AWS Batch task was allowed 1 vCPU with 500MB of RAM. THose tasks were running on C5 compute optimized EC2 instances [#aws_c5]_. 
 
 AWS Batch tasks can be launched with the following function:
 

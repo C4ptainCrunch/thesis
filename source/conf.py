@@ -19,7 +19,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = "mancala-thesis"
+project = "Playing Awale with MCTS"
 copyright = "2020, Nikita Marchant"
 author = "Nikita Marchant"
 
@@ -38,23 +38,30 @@ release = ""
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+
+import sys, os
+
+sys.path.append(os.path.abspath('./extensions/'))
+
 extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.todo",
     "sphinx.ext.ifconfig",
     "sphinxcontrib.bibtex",
     "nbsphinx",
+    # "numsec",
 ]
 
 todo_include_todos = True
 nbsphinx_allow_errors = True
 nbsphinx_execute = "never"
+
 numfig = True
 numfig_format = {
-    "figure": "Figure %s",
-    "table": "Table %s",
-    "code-block": "Listing %s",
-    "section": "Section %s",
+    "figure": "Figure %s.",
+    "table": "Table %s.",
+    "code-block": "Listing %s.",
+    "section": "Section %s.",
 }
 
 # Add any paths that contain templates here, relative to this directory.
@@ -117,6 +124,7 @@ html_sidebars = {}
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "mancala-thesisdoc"
+html_title = "Playing Awale with MCTS"
 
 
 # -- Options for LaTeX output ------------------------------------------------

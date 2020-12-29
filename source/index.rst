@@ -3,7 +3,7 @@
 
     <section class="first-page">
         <h1>Playing Awale with MCTS</h1>
-        <h2>Master thesis submitted in partial fulfilment of the requirements
+        <h2>Master thesis submitted in partial fulfillment of the requirements
         for the degree of Master of Science in Applied Sciences and Engineering:&nbsp;Computer Science
         </h2>
 
@@ -129,7 +129,7 @@ are played in tournaments around the world, both in offline and online competiti
 
 In particular, Kalah is a commercial, modern variant of Mancala, introduced in the 1950s by William Julius Champion Jr., that is widespread in the United States. :cite:`irving2000solving`. This variant has been studied in Artifical Intelligence as early as 1964 by :cite:`russel1964`.
 Nowadays, Kalah is often used as an example game in computer-science courses.
-Other Mancala games have been studied in Computer Science and Artificial Intelligence :cite:`deVoogt2008`. Tournaments opposing computers on both sides have been organised multiple times, notably in the Computer Olympiad organized by the International Computer Games Association :cite:`icga_olympiad`.
+Other Mancala games have been studied in Computer Science and Artificial Intelligence :cite:`deVoogt2008`. Tournaments opposing computers on both sides have been organized multiple times, notably in the Computer Olympiad organized by the International Computer Games Association :cite:`icga_olympiad`.
 
 
 
@@ -223,7 +223,7 @@ As an example, in the initial state (:numref:`See Figure %s <fig:initial_board>`
 
 
   
-  The board after the forst move, where South played pit 4.
+  The board after the first move, where South played pit 4.
 
 
 
@@ -805,7 +805,7 @@ Artificial Intelligence approaches to play Awale
 ================================================
 
 Many algorithms have been proposed and studied to play sequential perfect information games.
-We start by describing simple algorithms to be used as a baseline (random and greedy). Then follow with algorithms computing the exact minimax tree, either starting from the root (:math:`\alpha\beta` pruning Minimax) or the leaves (retrograde analysis). As those are often impractical for big game trees, we present their depth-limited variants (depth-limited minimax and end-game databases). We then explore approches that overcome the limitation of the previous algorithms by iteratively estimating the value of promising sub-trees of the game such as Monte Carlo tree search (MCTS) and the most recent approach from Deepmind: Alpha Zero :cite:`AlphaZero`.
+We start by describing simple algorithms to be used as a baseline (random and greedy). Then follow with algorithms computing the exact minimax tree, either starting from the root (:math:`\alpha\beta` pruning Minimax) or the leaves (retrograde analysis). As those are often impractical for big game trees, we present their depth-limited variants (depth-limited minimax and end-game databases). We then explore approaches that overcome the limitation of the previous algorithms by iteratively estimating the value of promising sub-trees of the game such as Monte Carlo tree search (MCTS) and the most recent approach from Deepmind: Alpha Zero :cite:`AlphaZero`.
 
 We will quickly present and implement the above mentioned and then focus on MCTS and its variants as they are computationally feasible and do not require expert knowledge about the given game to make reasonable decisions.
 
@@ -813,8 +813,8 @@ We will quickly present and implement the above mentioned and then focus on MCTS
 
 
   
-Before prensenting those, we describe a :code:`Player` class that every implementation will then reuse and implement two basic agents to be used as a baseline in our comparisons.
-The :code:`Player` class keeps track of the game state internaly.
+Before presenting those, we describe a :code:`Player` class that every implementation will then reuse and implement two basic agents to be used as a baseline in our comparisons.
+The :code:`Player` class keeps track of the game state internally.
 At each turn of the game, the :code:`Player` is called with the method :code:`play()` to inform it of the action played by their opponent
 (and thus update their internal state) and then chooses an action with :code:`get_action()`,
 updates once more their internal state and then outputs their action for the opposing :code:`Player` to use.
@@ -851,7 +851,7 @@ Naive agents
 ------------
 
 In addition algorithms listed above, we also implement two most basic agents: a random and a greedy player.
-While not having any interest per se due to their simplicity and low strength, these wille serve us later as a baseline to compare their strength to some more advanced algorithms.
+While not having any interest per se due to their simplicity and low strength, these will serve us later as a baseline to compare their strength to some more advanced algorithms.
 
 The first agent is the most simple we can think of and does not use any intelligence at all: it lists all the legal actions it can play and chooses one uniformly at random.
 
@@ -877,8 +877,8 @@ The first agent is the most simple we can think of and does not use any intellig
 
 
   
-The second is :math:`\varepsilon`-Greedy: an agent that tries to maximise an immediate reward at each turn: the number of seeds captured during that turn.
-The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn, the agent draws an number :math:`e` in the uniform distribution :math:`\mathcal{U}(0, 1)`, if :math:`e > \varepsilon`, the agent chooses an action uniformly at random, else it maximises the reward.
+The second is :math:`\varepsilon`-Greedy: an agent that tries to maximize an immediate reward at each turn: the number of seeds captured during that turn.
+The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn, the agent draws an number :math:`e` in the uniform distribution :math:`\mathcal{U}(0, 1)`, if :math:`e > \varepsilon`, the agent chooses an action uniformly at random, else it maximizes the reward.
 
 
 
@@ -929,15 +929,15 @@ Depth-limited Minimax
 The minimax algorithm performs a complete depth-first search used to compute the minimax tree.
 It is a recursive algorithm that computes the value of a node based on the value of its children. In the case of a terminal node, the value is trivial to compute and depends solely on the winner. Otherwise, for "inner" (non-terminal) nodes, the value is computed as the max (resp. min) of the value of the children if the node is at an even (resp. odd) depth.
 
-In Awale and other complex games, as shown before, generating the whole tree is computationaly very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to the depth :math:`d`. Nodes at depth :math:`d` are then considered as leaves and their value are estimated using an heuristic instead of being computed by recursively computing the values of their children. 
+In Awale and other complex games, as shown before, generating the whole tree is computationally very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to the depth :math:`d`. Nodes at depth :math:`d` are then considered as leaves and their value are estimated using an heuristic instead of being computed by recursively computing the values of their children. 
 
 The heuristic used should estimate the value of the node only by inspecting the state of the game and can be of varying complexity. A simple approach as taken here is to count the difference of the number of seeds each player has captured. Because heuristics are most often crafted by hand using human knowledge of the game, exploring more complex ones are beyond the scope of this work.
 
-The complexity of the depth-limited minimax algorithm is :math:`O(b^d)` where :math:`b` is the average branching factor. A well known optimisation of this algorithm called alpha-beta pruning minimax (:math:`\alpha\beta` minimax) returns the same result and has an average performance of :math:`O(\sqrt{b^d})`. 
+The complexity of the depth-limited minimax algorithm is :math:`O(b^d)` where :math:`b` is the average branching factor. A well known optimization of this algorithm called alpha-beta pruning minimax (:math:`\alpha\beta` minimax) returns the same result and has an average performance of :math:`O(\sqrt{b^d})`. 
 
 The algorithm keeps track of two values, :math:`\alpha` and :math:`\beta`, which hold the minimum score that the maximizing player is assured of and the maximum score that the minimizing player is assured of.
 Initially, :math:`\alpha = -\infty` and :math:`\beta = +\infty`: both players begin with their worst possible score.
-If the maximum score that the minimizing player is assured of becomes less than the minimum score that the maximizing player is assured of (so :math:`\beta < \alpha`), the maximizing player does not need to consider further children of this node (it prunes the node) as they are certain that the minimizer player would never play this move.
+If the maximum score that the minimizing player is assured of becomes less than the minimum score that the maximizing player is assured of (so :math:`\beta < \alpha`), the maximizing player does not need to consider further children of this node (it prunes the node) as they are certain that the minimizing player would never play this move.
 This pruning of entire sub-trees is where the complexity gain arises from. 
 As :math:`\alpha\beta` minimax has no disadvantage over minimax and has a lower computational complexity, this is the one we implement.
 
@@ -1052,7 +1052,7 @@ Moves are made during this simulation according to some default policy, which in
 
 TODO The MCTS algorithm constructs an estimation of the game tree by sampling. 
 
-A great benefit of MCTS is that unlinke depth-limited minimax, MCTS is aheuristic: there is no need to estimate the values of non-terminal nodes with an domain specific heuristic. This in turn, greatrly reduces (or even removes) the need to acquire and incorporate domain knowledge. This explains our interest on the subject and the title of this work.
+A great benefit of MCTS is that unlike depth-limited minimax, MCTS is aheuristic: there is no need to estimate the values of non-terminal nodes with an domain specific heuristic. This in turn, greatly reduces (or even removes) the need to acquire and incorporate domain knowledge. This explains our interest on the subject and the title of this work.
 
 
 
@@ -1063,10 +1063,10 @@ Algorithm
 
    The 4 steps of MCTS :cite:`chaslot2008monte`
 
-The estimation of the true game tree is constructed with the following algorithm: The estimation starts with a single node, the current state of the game. Then these four steps are repeated until the budget (usualy a time or memory constraint) is exhausted. 
+The estimation of the true game tree is constructed with the following algorithm: The estimation starts with a single node, the current state of the game. Then these four steps are repeated until the budget (usually a time or memory constraint) is exhausted. 
 
 * Selection: first, a node from the estimated tree is selected by starting at the root node and repeatedly
-  choosing (using a tree policy, defined lated) a child until a leaf :math:`L` is reached.
+  choosing (using a tree policy, defined later) a child until a leaf :math:`L` is reached.
 * Expansion: then, if :math:`L` is not a terminal node, create a child :math:`C` by playing a move at random.
 * Simulation: run a playout from :math:`C` until a terminal node :math:`T` is
   reached (play a full game)
@@ -1090,7 +1090,7 @@ corresponding action in the game.
 the total number of times a node has been played during a
 sampling iteration (:math:`N`)
 
-TODO Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionaly choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
+TODO Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionally choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
 
 
 
@@ -1214,7 +1214,7 @@ The basic version of MCTS presented above has proven to be effective in a variet
 Upper Confidence Bounds for Trees
 ---------------------------------
 
-Because basic MCTS samples uniformly the game tree, it spends compute time estimating the value of uninsteresting nodes that will never be played in a real game. A more efficient method would instead explore more often the interesting parts of the tree: an asymmetric method.
+Because basic MCTS samples uniformly the game tree, it spends compute time estimating the value of uninteresting nodes that will never be played in a real game. A more efficient method would instead explore more often the interesting parts of the tree: an asymmetric method.
 :cite:`kocsis2006bandit` defined Upper Confidence Bounds for Trees (UCT), a method combining during the selection process vanilla MCTS and Upper Confidence Bounds (UCB) used in the multi-armed bandit problem.
 
 Basic MCTS, during the tree policy, chooses a child at random even if the children is likely of having a poor mean value. UCT instead treats the choice of child as a multi-armed bandit problem: picking a child for which we have an estimation of the true value to make a simulation is analogous to picking a slot machine for which we have an estimation of the true reward probability. 
@@ -1232,7 +1232,7 @@ where :math:`N'` is the number of times the
 parent node has been visited and :math:`c` is a parameter that can be tuned to balance exploitation of known wins and exploration of
 less visited nodes.
 
-The tree policy from MCTS is then replaced by a policy always chosing the node with the highest upper confidence bound, resolving ties by a coin toss.
+The tree policy from MCTS is then replaced by a policy always choosing the node with the highest upper confidence bound, resolving ties by a coin toss.
 :code:`UCTPlayer` thus reuses the MCTS agent but subclasses the :code:`tree_policy`.
 
 
@@ -1304,7 +1304,7 @@ All moves as first
 
 "All Moves As First" (AMAF) and its successor "Rapid Action Value Estimation" (RAVE) are enhancements that have often been proved very successful when applying MCTS to the game of Go :cite:`gelly20111rave`.
 The basic idea is to update statistics for all actions selected during a simulation as if they were the first action applied. This method is particularly well suited for incremental games such as Go, where the value of a move is often dependent on the state of the board in its close proximity and unaffected by moves played elsewhere on the board. 
-Due to the popularity of AMAF, these methods are mentioned here for completeness but will not be pursued further due to the lack of applicability to Awale where the value of moves are dependent on the whole board and on the advancment of the game.
+Due to the popularity of AMAF, these methods are mentioned here for completeness but will not be pursued further due to the lack of applicability to Awale where the value of moves are dependent on the whole board and on the advancement of the game.
 
 
 
@@ -1326,7 +1326,7 @@ of the algorithm because much less playouts are required.
 Method
 ======
 
-This section describes the statistical framework used to compare two agents and the method used to compare and rank multiple agents. Next, we detail the experimental setup in wich the games between agents are played as well as the method used to run the experiments in a massively parallel setup to be able to record enough game to have statistically strong results.
+This section describes the statistical framework used to compare two agents and the method used to compare and rank multiple agents. Next, we detail the experimental setup in which the games between agents are played as well as the method used to run the experiments in a massively parallel setup to be able to record enough game to have statistically strong results.
 
 
 
@@ -1342,7 +1342,7 @@ How to compare A and B
 Because the outcome of a match between two agents is not deterministic, we can not rely on a single match to ascertain than the winner of a match is better than the looser. So the first step is to define a statistical method to compare two arbitrarily chosen agents: A and B.
 
 The probability that A wins is denoted by :math:`p` and is unknown (the probability that B wins is :math:`1-p`).
-Our null hypothesis is that both agents are equaly strong (:math:`p=0.50`) and the alternative hypothesis is that they are of different strength (:math:`p \neq 0.50`).
+Our null hypothesis is that both agents are equally strong (:math:`p=0.50`) and the alternative hypothesis is that they are of different strength (:math:`p \neq 0.50`).
 To compare agents A and B, we run :math:`N` matches and A wins :math:`n` times (thus B wins :math:`N-n` times).
 
 Using the SciPy function :code:`scipy.stats.binom_test`, we then compute the p-value.
@@ -1353,7 +1353,7 @@ To ensure that the probability of an incorrect decision, conditional on H1, be a
 
 Suppose the true probability :math:`p` is :math:`0.75`. This is very far from the null hypothesis. In that case, we want the probability of choosing H1 (not making an incorrect decision) to be high (for instance :math:`95\%`). This probability is the power and can be computed by means of the R function :code:`powerBinom` implemented in the R package :code:`exactci`. The output of this function is the number :math:`N` of matches needed to achieve the desired power and it is 49. As we always play a even number of matches between two agents (A vs. B and B vs. A), we decide that we need :math:`N=50` matches.
 
-Now that we know the number of matches we need to play to be able to assertain that H1 is probable enough, we still need to know how many matches of the 50 an agent needs to win so we may declare H1 true. This can be done with the :code:`scipy.stats.binom_test` function.
+Now that we know the number of matches we need to play to be able to ascertain that H1 is probable enough, we still need to know how many matches of the 50 an agent needs to win so we may declare H1 true. This can be done with the :code:`scipy.stats.binom_test` function.
 
 
 
@@ -1426,12 +1426,12 @@ So A wins more matches than B and we can say :math:`A \succ B`. By doing the sam
 How to compare more than two agents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As described above, transitivity can not be proved in all cases so we can not use a sorting algorithm to order our agents. We thus have to resort to a full tournament where the relation :math:`\succ` is eveluated between every pair of agent. 
+As described above, transitivity can not be proved in all cases so we can not use a sorting algorithm to order our agents. We thus have to resort to a full tournament where the relation :math:`\succ` is evaluated between every pair of agent. 
 
 We have 6 algorithms, each with some continuous or discrete parameters. Even if we restrict every parameter to a small finite set of values (let's say 100), we would still have 600 agents to compare. This would in turn make a tournament of size :math:`600^2` where each evaluation of the relation requires 50 matches. This method would thus require :math:`600^2 * 50 = 18\,000\,000` matches. Playing such a big number of matches is hardly feasible so we will resort to a more frugal approach.
 
 The approach that we take is to first select, for each algorithm, the parameters that result in the best agent (a champion). This will in turn reduce the number of agents playing in the tournament to 6 and the number of matches to play to :math:`6^2 * 50 = 180`, a much more reasonable number. While this approach reduces drastically the amount of computations needed, it might not be perfect.
-We have no guarantee that the champion whithin a family (all agents derived from a single algorithm) is also the best family member against agents from other families. This is a known limitation and verifying this assumption is outside of the scope of this work.  
+We have no guarantee that the champion within a family (all agents derived from a single algorithm) is also the best family member against agents from other families. This is a known limitation and verifying this assumption is outside of the scope of this work.  
 
 
 Champion selection
@@ -1455,7 +1455,7 @@ Tournament solution
 ~~~~~~~~~~~~~~~~~~~
 
 .. todo::
-  We will use the framework of tournament solutions :cite:`laslier` to analyze the results and eventualy find a total order or an overall best agent. This will be done once we have our final results.
+  We will use the framework of tournament solutions :cite:`laslier` to analyze the results and eventually find a total order or an overall best agent. This will be done once we have our final results.
 
 
 
@@ -1537,11 +1537,11 @@ Relevant data from the match can then be recorded in a dictionary like below whe
 
 
   
-Because the number of matches we expect to play is quite high and a match between two agents might take a few minutes of CPU time, we have to be able to play a big number of run matches in parralel.
+Because the number of matches we expect to play is quite high and a match between two agents might take a few minutes of CPU time, we have to be able to play a big number of run matches in parallel.
 
 We used the infrastructure of Amazon Web Services (AWS) to be able to access hundreds of CPU cores at the same time and used AWS Batch to schedule the jobs across the different machines.
 
-To this effect, we placed the code to run a match in a standalone Python script that accepts parameters to give to the agents via environment variables and packaged it in a Docker container. When a game is finished, the dictionary showed above is then outputed to the standard output.
+To this effect, we placed the code to run a match in a standalone Python script that accepts parameters to give to the agents via environment variables and packaged it in a Docker container. When a game is finished, the dictionary showed above is then outputted to the standard output.
 
 This Docker container is then used as a template to launch AWS Batch tasks in parallel, their standard output being sent to AWS Cloudwatch to be analyzed later.
 Each match was in a separate AWS Batch task was allowed 1 vCPU with 500MB of RAM. Those tasks were running on C5 compute optimized EC2 instances [#aws_c5]_. 
@@ -1601,7 +1601,7 @@ Because we can not be sure an agent has the same strength if it is allowed to be
 
 
   
-Results of the jobs submited to AWS Batch can then be found in AWS CloudWatch. They are downloaded with a script available in the Annex XXX and then stored in :code:`source/data/*.jsonl`. These results are then processed and normalised and made available in Pandas DataFrame :cite:`pandas` importable with the following code.
+Results of the jobs submitted to AWS Batch can then be found in AWS CloudWatch. They are downloaded with a script available in the Annex XXX and then stored in :code:`source/data/*.jsonl`. These results are then processed and normalized and made available in Pandas DataFrame :cite:`pandas` importable with the following code.
 
 
 
@@ -1637,7 +1637,7 @@ Champion selection
 :math:`\varepsilon`-Greedy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The first agent we have to tune is :math:`\varepsilon`-Greedy and it has one parameter, :math:`\varepsilon` that can very in the interval :math:`[0, 1]`. As running a match between two :math:`\varepsilon`-Greedy agents takes less than 100ms, playing thousands of matches is computaionaly feasible.
+The first agent we have to tune is :math:`\varepsilon`-Greedy and it has one parameter, :math:`\varepsilon` that can very in the interval :math:`[0, 1]`. As running a match between two :math:`\varepsilon`-Greedy agents takes less than 100ms, playing thousands of matches is computationally feasible.
 
 We thus pick evenly spaced values of :math:`\varepsilon` in the interval :math:`[0, 1]` and play 50 matches for each pair of values of :math:`\varepsilon`.
 
@@ -1664,7 +1664,7 @@ We thus pick evenly spaced values of :math:`\varepsilon` in the interval :math:`
 
 
   
-The results of these matches is shown in :numref:`Figure %s <eps-matrix>` below in wich we can see despite the noise that a higher value of :math:`\varepsilon` (meaning the agent choses most often the greedy approach) is stronger than a lower value. Due to the noise in the data despite the high number of games played it is hard to know for sure if :math:`\varepsilon = 1` is the optimium or if it is a bit lower. We will keep a value of :math:`\varepsilon = 0.95` for the rest of this work.
+The results of these matches is shown in :numref:`Figure %s <eps-matrix>` below in which we can see despite the noise that a higher value of :math:`\varepsilon` (meaning the agent chooses most often the greedy approach) is stronger than a lower value. Due to the noise in the data despite the high number of games played it is hard to know for sure if :math:`\varepsilon = 1` is the optimum or if it is a bit lower. We will keep a value of :math:`\varepsilon = 0.95` for the rest of this work.
 
 .. _eps-matrix:
 
@@ -1712,7 +1712,7 @@ As stated earlier, we know that the strength of the agent is an increasing funct
 
 
   
-While the results showin in :numref:`Figure %s <fig:mcts-time_5s>` are also noisy, we indeed see that the strength of MCTS increases with :math:`t` but the slope of the curve is not very important after :math:`t=5s` so we decide that :math:`t=5s` is a good compromise between strength and waiting time.
+While the results shown in in :numref:`Figure %s <fig:mcts-time_5s>` are also noisy, we indeed see that the strength of MCTS increases with :math:`t` but the slope of the curve is not very important after :math:`t=5s` so we decide that :math:`t=5s` is a good compromise between strength and waiting time.
 
 
 
@@ -1753,7 +1753,7 @@ UCT
 
 The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`c` the balance between exploration and exploitation. We will fix :math:`t=5s` so that we can fairly compare MCTS and UTC later.
 
-:cite:`kocsis2006bandit` has shown that :math:`c=\frac{\sqrt{2}}{2}` is a good starting value. We thus play matches of UCT(:math:`c=\frac{\sqrt{2}}{2}`) against a range of 11 values equaly spaced between 0.2 and 2.2
+:cite:`kocsis2006bandit` has shown that :math:`c=\frac{\sqrt{2}}{2}` is a good starting value. We thus play matches of UCT(:math:`c=\frac{\sqrt{2}}{2}`) against a range of 11 values equally spaced between 0.2 and 2.2
 
 
 

@@ -909,7 +909,7 @@ The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn
                 children.append((legal_action, captures, win))
             
             # order wins first, then by captures, then random
-            sorted_children = sorted(children, key=lambda a_c_w: (-a_c_w[2], -a_c_w[1], random.random()))
+            sorted_children = sorted(children, key=lambda c: (-c[2], -c[1], random.random()))
             if random.random() < self.eps:
                 action = random.choice(self.root.legal_actions)
             else:

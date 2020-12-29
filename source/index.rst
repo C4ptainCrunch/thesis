@@ -931,10 +931,9 @@ It is a recursive algorithm that computes the value of a node based on the value
 
 In Awale and other complex games, as shown before, generating the whole tree is computationally very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to the depth :math:`d`. Nodes at depth :math:`d` are then considered as leaves and their value are estimated using an heuristic instead of being computed by recursively computing the values of their children. 
 
-The heuristic used should estimate the value of the node only by inspecting the state of the game and can be of varying complexity. A simple approach as taken here is to count the difference of the number of seeds each player has captured. Because heuristics are most often crafted by hand using human knowledge of the game, exploring more complex ones are beyond the scope of this work.
+The heuristic used should estimate the value of the node only by inspecting the state of the game and can be of varying complexity. A simple approach as taken here is to count the difference of the number of seeds each player has captured. Because heuristics are most often crafted by hand using human knowledge of the game, exploring more complex ones is beyond the scope of this work.
 
-The complexity of the depth-limited minimax algorithm is :math:`O(b^d)` where :math:`b` is the average branching factor. A well known optimization of this algorithm called alpha-beta pruning minimax (:math:`\alpha\beta` minimax) returns the same result and has an average performance of :math:`O(\sqrt{b^d})`. 
-
+The complexity of the depth-limited minimax algorithm is :math:`O(b^d)` (TODO ref) where :math:`b` is the average branching factor. A well known optimization of this algorithm called alpha-beta pruning minimax (TODO source) (:math:`\alpha\beta` minimax) returns the same result and has an average performance of :math:`O(\sqrt{b^d})`. 
 The algorithm keeps track of two values, :math:`\alpha` and :math:`\beta`, which hold the minimum score that the maximizing player is assured of and the maximum score that the minimizing player is assured of.
 Initially, :math:`\alpha = -\infty` and :math:`\beta = +\infty`: both players begin with their worst possible score.
 If the maximum score that the minimizing player is assured of becomes less than the minimum score that the maximizing player is assured of (so :math:`\beta < \alpha`), the maximizing player does not need to consider further children of this node (it prunes the node) as they are certain that the minimizing player would never play this move.
@@ -1003,7 +1002,7 @@ Retrograde analysis
 -------------------
 
 Board games can mostly be divided into two separate categories. The first category consist
-of games where the number pieces on the board increases over time, because players add pieces on the board during their turn. The state space increases over time: these are called divergent games.
+of games where the number of pieces on the board increases over time, because players add pieces on the board during their turn. The state space increases over time: these are called divergent games.
 Examples of these games are Tick Tack Toe, Connect Four and Go.
 The second category consists of games where the number of pieces on the board decreases over time because players may capture pieces over time. Those are called convergent games.
 Games that belong to this category are Chess, Checkers, Backgammon and Awale :cite:`vandenherik2002`.
@@ -1074,20 +1073,17 @@ The estimation of the true game tree is constructed with the following algorithm
   of :math:`T`.
 
 
-Each node holds 3 counters : (:math:`W_S`), the number of simulations using this node ended that
-with a win for South;  and North (:math:`W_N`). From this
-counters, a probability of North winning conditional on a given action can be computed
-immediately: :math:`\frac{W_N}{N}`.
+Each node :math:`x` holds 3 counters : :math:`N` (the number of simulation that went through :math:`x`),:math:`W_S` and :math:`W_N` (the number of simulations going through :math:`x` and leading to a win respectively for South and North). From these counters, a probability of North winning can be estimated by :math:`\frac{W_N}{N}` if both players play randomly from :math:`x`. TODO: 
 
-This sampling can be ran as many times as allowed (most of the
+TODO This sampling can be ran as many times as allowed (most of the
 time, the agent is time constrained). One can also stop the sampling earlier if
 
-each time refining the probability of
+TODO each time refining the probability of
 winning when choosing a child of the root node. When we are done sampling, the
 agent chooses the child with the highest probability of winning and plays the
 corresponding action in the game.
 
-the total number of times a node has been played during a
+TODO the total number of times a node has been played during a
 sampling iteration (:math:`N`)
 
 TODO Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionally choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
@@ -1183,7 +1179,7 @@ Both policies in this implementation are random walks.
             return (node.wins[self.player_id] - node.wins[1 - self.player_id]) / node.n_playouts
         
         def final_selection(self):
-            return = max(self.root.legal_actions, key=self.action_score)
+            return max(self.root.legal_actions, key=self.action_score)
             
         
         def get_action(self):
@@ -1193,17 +1189,6 @@ Both policies in this implementation are random walks.
                 self.explore_tree()
             
             return self.final_selection()
-
-
-
-
-::
-
-
-      File "<ipython-input-25-c958f14404ad>", line 41
-        return = max(self.root.legal_actions, key=self.action_score)
-               ^
-    SyntaxError: invalid syntax
 
 
 
@@ -1277,25 +1262,6 @@ The tree policy from MCTS is then replaced by a policy always choosing the node 
                     node, _, _ = node.step(action)
             return node
 
-
-
-
-::
-
-
-    ---------------------------------------------------------------------------
-
-    NameError                                 Traceback (most recent call last)
-
-    <ipython-input-26-81748d17b49c> in <module>
-          1 from lib.utils import max_rand
-          2 
-    ----> 3 class UCTPlayer(MCTSPlayer):
-          4     def __init__(self, player_id, budget: Union[int, timedelta], c: float):
-          5         super().__init__(player_id, budget)
-
-
-    NameError: name 'MCTSPlayer' is not defined
 
 
 
@@ -1559,7 +1525,7 @@ Relevant data from the match can then be recorded in a dictionary like below whe
 
 .. parsed-literal::
 
-    {'duration': 0.0065, 'depth': 73, 'score': [25, 5], 'winner': 0}
+    {'duration': 0.0084, 'depth': 46, 'score': [3, 27], 'winner': 1}
 
 
 
@@ -1694,14 +1660,35 @@ We thus pick evenly spaced values of :math:`\varepsilon` in the interval :math:`
 
 
   
-The results of these matches is shown in :numref:`Figure %s <eps-matrix>` below in which we can see despite the noise that a higher value of :math:`\varepsilon` (meaning the agent chooses most often the greedy approach) is stronger than a lower value. Due to the noise in the data despite the high number of games played it is hard to know for sure if :math:`\varepsilon = 1` is the optimum or if it is a bit lower. We will keep a value of :math:`\varepsilon = 0.95` for the rest of this work.
+The results of these matches is shown in :numref:`Figure %s <fig:eps-matrix>` below in which we can see despite the noise that a higher value of :math:`\varepsilon` (meaning the agent chooses most often the greedy approach) is stronger than a lower value. Due to the noise in the data despite the high number of games played it is hard to know for sure if :math:`\varepsilon = 1` is the optimum or if it is a bit lower. We will keep a value of :math:`\varepsilon = 0.95` for the rest of this work.
 
-.. _eps-matrix:
 
-.. figure:: /notebooks/plot-eps.png
 
+
+  
+
+
+
+
+
+
+
+
+    
+.. _fig:eps-matrix:
+    
+
+    
+
+
+.. figure:: index_files/index_88_0.svg
+
+
+
+
+
+  
   Heatmap of the win ratio of the row player against the column player.
-
 
 
 
@@ -1763,7 +1750,7 @@ While the results shown in in :numref:`Figure %s <fig:mcts-time_5s>` are also no
     
 
 
-.. figure:: index_files/index_91_0.svg
+.. figure:: index_files/index_93_0.svg
 
 
 
@@ -1816,7 +1803,7 @@ As the maximum of the bell curve is around :math:`c = \sqrt(2) / 2` it seems to 
 
 .. figure:: notebooks/uct-value.png
 
-  Strength of UCT(:math:`c=\frac{\sqrt{2}}{2}`) against other values of :math:`c`.
+  Strength of UCT(:math:`c=\frac{\sqrt{2}}{2}`) against other values of :math:`c`. TODO: regenerate figure in svg
 
 
 
@@ -1847,14 +1834,35 @@ Under the assumption that the curve is smooth, we know that :math:`c = \sqrt(2) 
 
 
   
-While the curve in :numref:`Figure %s <uct-tuning-c-15>` is not as smooth as in the first experiment, the result of the matches against :math:`c = 1.5` seem to show the same curve with a maximum at :math:`c = \sqrt(2) / 2`.
+While the curve in :numref:`Figure %s <fig:uct-tuning-c-15>` is not as smooth as in the first experiment, the result of the matches against :math:`c = 1.5` seem to show the same curve with a maximum at :math:`c = \sqrt(2) / 2`.
 
-.. _uct-tuning-c-15:
 
-.. figure:: notebooks/uct-c-15.png
 
+
+  
+
+
+
+
+
+
+
+
+    
+
+    
+.. _fig:uct-tuning-c-15:
+    
+
+
+.. figure:: index_files/index_101_0.svg
+
+
+
+
+
+  
   Strength of UCT(:math:`c=1.5`) against other values of :math:`c`.
-
 
 
 
@@ -1892,12 +1900,37 @@ We select the best agent for every algorithm and make each of them play 50 match
 
 
   
-The results, displayed in a matrix in :numref:`Figure %s <matrix>`, show that UCT and GreedyUCT beat every other agent. There is no clear winner between those 2 champions though.
+The results, displayed in a matrix in :numref:`Figure %s <fig:matrix>`, show that UCT and GreedyUCT beat every other agent. There is no clear winner between those 2 champions though.
 
-.. _matrix:
 
-.. figure:: notebooks/matrix.png
 
+
+
+
+
+  
+
+
+
+
+
+
+
+
+    
+.. _fig:matrix:
+    
+
+    
+
+
+.. figure:: index_files/index_107_0.svg
+
+
+
+
+
+  
   Matrix representation of the valued tournament between every algorithm
   
 .. todo:: We still have to transform the values tournament in a binary one and then analyze it with the framework of tournament solutions.

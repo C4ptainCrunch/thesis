@@ -645,10 +645,9 @@ class GreedyPlayer(Player):
 #
 # In Awale and other complex games, as shown before, generating the whole tree is computationally very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to the depth :math:`d`. Nodes at depth :math:`d` are then considered as leaves and their value are estimated using an heuristic instead of being computed by recursively computing the values of their children. 
 #
-# The heuristic used should estimate the value of the node only by inspecting the state of the game and can be of varying complexity. A simple approach as taken here is to count the difference of the number of seeds each player has captured. Because heuristics are most often crafted by hand using human knowledge of the game, exploring more complex ones are beyond the scope of this work.
+# The heuristic used should estimate the value of the node only by inspecting the state of the game and can be of varying complexity. A simple approach as taken here is to count the difference of the number of seeds each player has captured. Because heuristics are most often crafted by hand using human knowledge of the game, exploring more complex ones is beyond the scope of this work.
 #
-# The complexity of the depth-limited minimax algorithm is :math:`O(b^d)` where :math:`b` is the average branching factor. A well known optimization of this algorithm called alpha-beta pruning minimax (:math:`\alpha\beta` minimax) returns the same result and has an average performance of :math:`O(\sqrt{b^d})`. 
-#
+# The complexity of the depth-limited minimax algorithm is :math:`O(b^d)` (TODO ref) where :math:`b` is the average branching factor. A well known optimization of this algorithm called alpha-beta pruning minimax (TODO source) (:math:`\alpha\beta` minimax) returns the same result and has an average performance of :math:`O(\sqrt{b^d})`. 
 # The algorithm keeps track of two values, :math:`\alpha` and :math:`\beta`, which hold the minimum score that the maximizing player is assured of and the maximum score that the minimizing player is assured of.
 # Initially, :math:`\alpha = -\infty` and :math:`\beta = +\infty`: both players begin with their worst possible score.
 # If the maximum score that the minimizing player is assured of becomes less than the minimum score that the maximizing player is assured of (so :math:`\beta < \alpha`), the maximizing player does not need to consider further children of this node (it prunes the node) as they are certain that the minimizing player would never play this move.
@@ -705,7 +704,7 @@ class AlphaBetaMinimaxPlayer(Player):
 # -------------------
 #
 # Board games can mostly be divided into two separate categories. The first category consist
-# of games where the number pieces on the board increases over time, because players add pieces on the board during their turn. The state space increases over time: these are called divergent games.
+# of games where the number of pieces on the board increases over time, because players add pieces on the board during their turn. The state space increases over time: these are called divergent games.
 # Examples of these games are Tick Tack Toe, Connect Four and Go.
 # The second category consists of games where the number of pieces on the board decreases over time because players may capture pieces over time. Those are called convergent games.
 # Games that belong to this category are Chess, Checkers, Backgammon and Awale :cite:`vandenherik2002`.
@@ -776,20 +775,17 @@ class AlphaBetaMinimaxPlayer(Player):
 #   of :math:`T`.
 #
 #
-# Each node holds 3 counters : (:math:`W_S`), the number of simulations using this node ended that
-# with a win for South;  and North (:math:`W_N`). From this
-# counters, a probability of North winning conditional on a given action can be computed
-# immediately: :math:`\frac{W_N}{N}`.
+# Each node :math:`x` holds 3 counters : :math:`N` (the number of simulation that went through :math:`x`),:math:`W_S` and :math:`W_N` (the number of simulations going through :math:`x` and leading to a win respectively for South and North). From these counters, a probability of North winning can be estimated by :math:`\frac{W_N}{N}` if both players play randomly from :math:`x`. TODO: 
 #
-# This sampling can be ran as many times as allowed (most of the
+# TODO This sampling can be ran as many times as allowed (most of the
 # time, the agent is time constrained). One can also stop the sampling earlier if
 #
-# each time refining the probability of
+# TODO each time refining the probability of
 # winning when choosing a child of the root node. When we are done sampling, the
 # agent chooses the child with the highest probability of winning and plays the
 # corresponding action in the game.
 #
-# the total number of times a node has been played during a
+# TODO the total number of times a node has been played during a
 # sampling iteration (:math:`N`)
 #
 # TODO Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionally choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
@@ -862,7 +858,7 @@ class MCTSPlayer(Player):
         return (node.wins[self.player_id] - node.wins[1 - self.player_id]) / node.n_playouts
     
     def final_selection(self):
-        return = max(self.root.legal_actions, key=self.action_score)
+        return max(self.root.legal_actions, key=self.action_score)
         
     
     def get_action(self):
@@ -1197,14 +1193,42 @@ for i in range(25):
             sumbit_symmetric_match(player, opponent, "local-eps-matrix")
 
 # + active=""
-# The results of these matches is shown in :numref:`Figure %s <eps-matrix>` below in which we can see despite the noise that a higher value of :math:`\varepsilon` (meaning the agent chooses most often the greedy approach) is stronger than a lower value. Due to the noise in the data despite the high number of games played it is hard to know for sure if :math:`\varepsilon = 1` is the optimum or if it is a bit lower. We will keep a value of :math:`\varepsilon = 0.95` for the rest of this work.
-#
-# .. _eps-matrix:
-#
-# .. figure:: /notebooks/plot-eps.png
-#
+# The results of these matches is shown in :numref:`Figure %s <fig:eps-matrix>` below in which we can see despite the noise that a higher value of :math:`\varepsilon` (meaning the agent chooses most often the greedy approach) is stronger than a lower value. Due to the noise in the data despite the high number of games played it is hard to know for sure if :math:`\varepsilon = 1` is the optimum or if it is a bit lower. We will keep a value of :math:`\varepsilon = 0.95` for the rest of this work.
+
+# + tags=["fig:eps-matrix", "hc"]
+eps = results[results.pool == 'local-eps-matrix'].copy()
+
+eps['player_eps'] = eps.player_eval.apply(lambda x: x.args[1])
+eps['opponent_eps'] = eps.opponent_eval.apply(lambda x: x.args[1])
+
+grouped = eps.groupby(['player_eps', 'opponent_eps']).winner.agg(['mean', 'count'])
+
+im = grouped.drop('count', axis=1).unstack()
+folded = fold(im.values)
+
+fig = plt.figure(figsize=(10, 6))
+
+plt.xticks(rotation=45)
+ax1 = plt.gca()
+ax1.set_title("Win ratios of greedy agents for multiple values of $\epsilon$")
+ax1.tick_params(axis='both', direction='out')
+
+ax1.set_xticks(range(len(im.columns)))
+ax1.set_xticklabels([round(x[1], 2) for x in im.columns])
+ax1.set_yticks(range(len(im.index)))
+ax1.set_yticklabels([round(x, 2) for x in im.index])
+
+ax1.set_xlabel("$\epsilon$ of the column player")
+ax1.set_ylabel("$\epsilon$ of the row player")
+
+img = ax1.imshow(folded , origin='lower')
+
+cbar = fig.colorbar(img)
+cbar.set_label('Ratio of win of the row player', rotation=270)
+cbar.ax.get_yaxis().labelpad = 15
+
+# + active=""
 #   Heatmap of the win ratio of the row player against the column player.
-#
 
 # + active=""
 # .. _sec:mcts-tuning:
@@ -1246,11 +1270,11 @@ plt.scatter(
     s=100
 )
 
-plt.vlines(5, 0, 1, linestyles='dashed', label="5s", color="grey")
+plt.vlines(5, 0, 1.2, linestyles='dashed', label="5s", color="grey")
 plt.hlines(0.5, grouped.index.min() , grouped.index.max(), linestyles='dotted', label="0.5 win ratio", color="grey")
-plt.legend()
+plt.legend(loc='lower right')
 
-plt.ylim(0, 1)
+plt.ylim(0, 1.1)
 
 plt.title("Win ratios of different time values against 5s");
 plt.xlabel("Opponent's time limit")
@@ -1288,7 +1312,7 @@ for i in range(25):
 #
 # .. figure:: notebooks/uct-value.png
 #
-#   Strength of UCT(:math:`c=\frac{\sqrt{2}}{2}`) against other values of :math:`c`.
+#   Strength of UCT(:math:`c=\frac{\sqrt{2}}{2}`) against other values of :math:`c`. TODO: regenerate figure in svg
 
 # + active=""
 # Under the assumption that the curve is smooth, we know that :math:`c = \sqrt(2) / 2` is will win against any value of :math:`c \in [0.2, 2.2]`. While this result might be convenient, we don't know if the relation of one agent winning against another is transitive, so while :math:`c = \sqrt(2) / 2` beats every value, we might have another value of :math:`c = \sqrt(2) / 2` that beats every :math:`c \neq \sqrt(2) / 2` by a bigger margin. To have a better intuition it is the case or not, we can also run the same experiment as above but with :math:`c = 1.5` to see if we were not lucky by using :math:`c = \sqrt(2) / 2` the first time. 
@@ -1304,14 +1328,39 @@ for i in range(25):
             sumbit_symmetric_match(player, opponent, "uct-tuning-c-15")
 
 # + active=""
-# While the curve in :numref:`Figure %s <uct-tuning-c-15>` is not as smooth as in the first experiment, the result of the matches against :math:`c = 1.5` seem to show the same curve with a maximum at :math:`c = \sqrt(2) / 2`.
-#
-# .. _uct-tuning-c-15:
-#
-# .. figure:: notebooks/uct-c-15.png
-#
+# While the curve in :numref:`Figure %s <fig:uct-tuning-c-15>` is not as smooth as in the first experiment, the result of the matches against :math:`c = 1.5` seem to show the same curve with a maximum at :math:`c = \sqrt(2) / 2`.
+
+# + tags=["hc", "fig:uct-tuning-c-15"]
+uct = results[results.pool == 'uct-1_5-vs-range'].copy()
+uct['c'] = uct.opponent_eval.map(lambda x: x.kwargs['c'])
+grouped = uct.groupby('c').winner.agg(['mean', 'count'])
+
+plt.figure(figsize=(10, 6))
+
+plt.scatter(
+    grouped.index,
+    grouped['mean'],
+    #c=grouped['count'],
+    label='win ratio',
+    s=100
+)
+
+plt.vlines(1.5, 0, 1, linestyles='dashed', label="$1.5$", color="grey")
+plt.hlines(0.5, grouped.index.min() , grouped.index.max(), linestyles='dotted', label="0.5 win ratio", color="grey")
+plt.legend()
+#cb = plt.colorbar()
+#cb.set_label('# of matches', rotation=270)
+#cb.ax.set_yticklabels([int(i) for i in cb.get_ticks()])
+#cb.ax.get_yaxis().labelpad = 15
+
+plt.ylim(0, 1)
+
+plt.title("Win ratios of different $c$ values against $c = 1.5$");
+plt.xlabel("Opponent's value of $c$")
+plt.ylabel("Opponent's win ratio");
+
+# + active=""
 #   Strength of UCT(:math:`c=1.5`) against other values of :math:`c`.
-#
 
 # + active=""
 # Tournament results
@@ -1334,12 +1383,42 @@ for i in range(25):
             sumbit_symmetric_match(a, b, "tournament")
 
 # + active=""
-# The results, displayed in a matrix in :numref:`Figure %s <matrix>`, show that UCT and GreedyUCT beat every other agent. There is no clear winner between those 2 champions though.
-#
-# .. _matrix:
-#
-# .. figure:: notebooks/matrix.png
-#
+# The results, displayed in a matrix in :numref:`Figure %s <fig:matrix>`, show that UCT and GreedyUCT beat every other agent. There is no clear winner between those 2 champions though.
+
+# + tags=["ha"]
+from lib.utils import fold
+
+# + tags=["fig:matrix", "hc"]
+tournament = results[results.pool == 'tournament-1'].copy()
+
+tournament['player_algo'] = tournament.player.str.split("(").map(lambda x: x[0])
+tournament['opponent_algo'] = tournament.opponent.str.split("(").map(lambda x: x[0])
+
+grouped = tournament.groupby(['player_algo', 'opponent_algo']).head(25).groupby(['player_algo', 'opponent_algo']).winner.agg(['mean', 'count'])
+
+im = grouped.drop('count', axis=1).unstack()
+folded = fold(im.values)
+
+fig = plt.figure(figsize=(10, 6))
+
+plt.xticks(rotation=45)
+ax1 = plt.gca()
+ax1.set_title("Win ratios of each algorithm in the tournament")
+ax1.tick_params(axis='both', direction='out')
+ax1.set_xticks(range(len(im.columns)))
+ax1.set_xticklabels([x[1] for x in im.columns])
+ax1.set_yticks(range(len(im.index)))
+ax1.set_yticklabels(im.index)
+
+
+
+img = ax1.imshow(folded , origin='lower');
+
+cbar = fig.colorbar(img)
+cbar.set_label('Win ratio of the column player', rotation=270)
+cbar.ax.get_yaxis().labelpad = 15
+
+# + active=""
 #   Matrix representation of the valued tournament between every algorithm
 #   
 # .. todo:: We still have to transform the values tournament in a binary one and then analyze it with the framework of tournament solutions.

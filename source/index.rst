@@ -1197,6 +1197,17 @@ Both policies in this implementation are random walks.
 
 
 
+::
+
+
+      File "<ipython-input-25-c958f14404ad>", line 41
+        return = max(self.root.legal_actions, key=self.action_score)
+               ^
+    SyntaxError: invalid syntax
+
+
+
+
 
 
   
@@ -1266,6 +1277,25 @@ The tree policy from MCTS is then replaced by a policy always choosing the node 
                     node, _, _ = node.step(action)
             return node
 
+
+
+
+::
+
+
+    ---------------------------------------------------------------------------
+
+    NameError                                 Traceback (most recent call last)
+
+    <ipython-input-26-81748d17b49c> in <module>
+          1 from lib.utils import max_rand
+          2 
+    ----> 3 class UCTPlayer(MCTSPlayer):
+          4     def __init__(self, player_id, budget: Union[int, timedelta], c: float):
+          5         super().__init__(player_id, budget)
+
+
+    NameError: name 'MCTSPlayer' is not defined
 
 
 
@@ -1529,7 +1559,7 @@ Relevant data from the match can then be recorded in a dictionary like below whe
 
 .. parsed-literal::
 
-    {'duration': 0.0089, 'depth': 57, 'score': [25, 8], 'winner': 0}
+    {'duration': 0.0065, 'depth': 73, 'score': [25, 5], 'winner': 0}
 
 
 

@@ -35,7 +35,7 @@ At each turn, the players move some seeds and can potentially capture some of th
 
 .. figure:: /_static/initial.jpg
 
-   A typical Awalé board in the initial state with both players on their side of the board.
+   A typical Awale board in the initial state with both players on their side of the board.
    
 
 .. todo:: Explain here what i'm going to do in my thesis, why it is interesting and why it is new.
@@ -805,17 +805,15 @@ Artificial Intelligence approaches to play Awale
 ================================================
 
 Many algorithms have been proposed and studied to play sequential perfect information games.
-A few examples detailed here are retrograde analysis, depth-limited :math:`\alpha\beta` pruning Minimax,
-Monte Carlo tree search (MCTS) and the most recent approach from Deepmind: Alpha Zero :cite:`AlphaGoZero`.
+We start by describing simple algorithms to be used as a baseline (random and greedy). Then follow with algorithms computing the exact minimax tree, either starting from the root (:math:`\alpha\beta` pruning Minimax) or the leaves (retrograde analysis). As those are often impractical for big game trees, we present their depth-limited variants (depth-limited minimax and end-game databases). We then explore approches that overcome the limitation of the previous algorithms by iteratively estimating the value of promising sub-trees of the game such as Monte Carlo tree search (MCTS) and the most recent approach from Deepmind: Alpha Zero :cite:`AlphaZero`.
 
-We will quickly present and implement those and then focus on MCTS and its variants as they are computationally feasible and do not require expert knowledge about the given game to make reasonable decisions.
-Before prensenting those, we describe a :code:`Player` class that every implementation will then reuse and implement two basic agents to be used as a baseline in our comparisons.
-
+We will quickly present and implement the above mentioned and then focus on MCTS and its variants as they are computationally feasible and do not require expert knowledge about the given game to make reasonable decisions.
 
 
 
 
   
+Before prensenting those, we describe a :code:`Player` class that every implementation will then reuse and implement two basic agents to be used as a baseline in our comparisons.
 The :code:`Player` class keeps track of the game state internaly.
 At each turn of the game, the :code:`Player` is called with the method :code:`play()` to inform it of the action played by their opponent
 (and thus update their internal state) and then chooses an action with :code:`get_action()`,
@@ -855,7 +853,7 @@ Naive agents
 In addition algorithms listed above, we also implement two most basic agents: a random and a greedy player.
 While not having any interest per se due to their simplicity and low strength, these wille serve us later as a baseline to compare their strength to some more advanced algorithms.
 
-The first agent is the most simple we can think of and does not use any intelligence at all: it lists all the legal actions it can take and chooses one uniformly at random.
+The first agent is the most simple we can think of and does not use any intelligence at all: it lists all the legal actions it can play and chooses one uniformly at random.
 
 
 
@@ -928,18 +926,20 @@ The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn
 Depth-limited Minimax
 ---------------------
 
-The minimax method presented before and used to find the value of a game state needs to generate the whole game tree, all the way down to the terminal states.
-In Awalé and other complex games, as shown before, generating the whole tree is computationaly very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to the depth :math:`d`. Nodes at depth :math:`d` are then considered as leafs and their value are estimated using an heuristic instead of being computed by looking at the values of their children. 
+The minimax algorithm performs a complete depth-first search used to compute the minimax tree.
+It is a recursive algorithm that computes the value of a node based on the value of its children. In the case of a terminal node, the value is trivial to compute and depends solely on the winner. Otherwise, for "inner" (non-terminal) nodes, the value is computed as the max (resp. min) of the value of the children if the node is at an even (resp. odd) depth.
 
-The heuristic used should try to estimate the value of the node only by inspecting the state of the game and can be of varying complexity. A simple approach as taken here is to count the difference of the number of seeds each player has captured. As heuristics are most often crafted by hand using human knowledge of the game, exploring more complex ones are beyond the scope of this work.
+In Awale and other complex games, as shown before, generating the whole tree is computationaly very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to the depth :math:`d`. Nodes at depth :math:`d` are then considered as leaves and their value are estimated using an heuristic instead of being computed by recursively computing the values of their children. 
+
+The heuristic used should estimate the value of the node only by inspecting the state of the game and can be of varying complexity. A simple approach as taken here is to count the difference of the number of seeds each player has captured. Because heuristics are most often crafted by hand using human knowledge of the game, exploring more complex ones are beyond the scope of this work.
 
 The complexity of the depth-limited minimax algorithm is :math:`O(b^d)` where :math:`b` is the average branching factor. A well known optimisation of this algorithm called alpha-beta pruning minimax (:math:`\alpha\beta` minimax) returns the same result and has an average performance of :math:`O(\sqrt{b^d})`. 
 
 The algorithm keeps track of two values, :math:`\alpha` and :math:`\beta`, which hold the minimum score that the maximizing player is assured of and the maximum score that the minimizing player is assured of.
 Initially, :math:`\alpha = -\infty` and :math:`\beta = +\infty`: both players begin with their worst possible score.
-If the maximum score that the minimizing player is assured of becomes less than the minimum score that the maximizing player is assured of (so :math:`\beta < \alpha`), the maximizing player does not need to consider further children of this node (it prunes the node), as they are certain that the minimizer player would never play this move.
-This pruning of entires sub-trees is where the complexity gain comes from. 
-As :math:`\alpha\beta` minimax has no disadvantage over minimax, this is the one we implement.
+If the maximum score that the minimizing player is assured of becomes less than the minimum score that the maximizing player is assured of (so :math:`\beta < \alpha`), the maximizing player does not need to consider further children of this node (it prunes the node) as they are certain that the minimizer player would never play this move.
+This pruning of entire sub-trees is where the complexity gain arises from. 
+As :math:`\alpha\beta` minimax has no disadvantage over minimax and has a lower computational complexity, this is the one we implement.
 
 
 
@@ -1006,9 +1006,9 @@ Board games can mostly be divided into two separate categories. The first catego
 of games where the number pieces on the board increases over time, because players add pieces on the board during their turn. The state space increases over time: these are called divergent games.
 Examples of these games are Tick Tack Toe, Connect Four and Go.
 The second category consists of games where the number of pieces on the board decreases over time because players may capture pieces over time. Those are called convergent games.
-Games that belong to this category are Chess, Checkers, Backgammon and Awalé :cite:`vandenherik2002`.
+Games that belong to this category are Chess, Checkers, Backgammon and Awale :cite:`vandenherik2002`.
 
-For both divergent and convergent games, search algorithms can prove the game result for positions near
+For both divergent and convergent games, search algorithms can compute the game value for positions near
 the end of a game. However, for divergent games the number of endgame
 positions is so big that enumerating all of them is computationally impossible (except for trivial
 games like Tic-Tac-Toe). However, for convergent games, the number of positions
@@ -1018,7 +1018,7 @@ their game values in a database, a so called endgame database.
 Retrograde Analysis computes endgame databases by going backward from values of final
 positions towards the initial position :cite:`goot2001`.
 First, Retrograde Analysis identifies all final positions in which the game value is known.
-By making reverse moves from these final positions the game value of some non-final positions can be deduced. And by making reverse moves from these newly proven non-final positions, the game value of other non-final positions can be deduced. This can continue either by running of available memory or by having enumerated all the legal positions in the game.
+By making reverse moves from these final positions the game value of some non-final positions can be deduced. And by making reverse moves from these newly computed non-final positions, the game value of other non-final positions can be deduced. This can continue either by running of available memory or by having enumerated all the legal positions in the game.
 
 Ströhlein is the first researcher who came up with the idea to create endgame databases and applied his idea to chess :cite:`endgame1970`.
 The first endgame database for Awale has been created by :cite:`allis1995` and was followed by many others, while the quest was ended by :cite:`romein2003solving` publishing a database for all legal positions.
@@ -1034,36 +1034,40 @@ exhaustive database, even if the agent is not capable of a perfect play.
 Monte Carlo Tree Search
 -----------------------
 
-Monte Carlo Tree Search (MCTS) has been introduced by :cite:`coulom2006mcts` as formalization of Monte Carlo methods applied to tree search that were previously explored by others, among which :cite:`Bouzy2004montecarlo`. Since then, MCTS has been a major advancement and topic of interest in the field of AI research, particularly for games and planning problems.
+Monte Carlo Tree Search (MCTS) has been introduced by :cite:`coulom2006mcts` as a formalization of Monte Carlo methods applied to tree search that were previously explored by others, among which :cite:`Bouzy2004montecarlo`. Since then, MCTS has been a major advancement and topic of interest in the field of AI research, particularly for games and planning problems.
 
-A tree is built in an incremental and asymmetric manner.
+
+--cc-- The focus of MCTS is on the analysis of the most promising moves, expanding the search tree based on random sampling of the game space. The application of Monte Carlo tree search in games is based on many playouts, also called roll-outs. In each playout, the game is played out to the very end by selecting moves at random. The final game result of each playout is then used to weight the nodes in the game tree so that better nodes are more likely to be chosen in future playouts.
+
+--cc-- The most basic way to use playouts is to apply the same number of playouts after each legal move of the current player, then choose the move which led to the most victories.[10] The efficiency of this method—called Pure Monte Carlo Game Search—often increases with time as more playouts are assigned to the moves that have frequently resulted in the current player's victory according to previous playouts. Each round of Monte Carlo tree search consists of four steps:[35]
+
+
+--cc-- A tree is built in an incremental and asymmetric manner.
 For each iteration of the algorithm, a tree policy is used to find the most urgent node of the current tree.
 The tree policy attempts to balance considerations of exploration (look in areas that have not been well sampled yet) and exploitation (look in areas which appear to be promising).
 
-A simulation is then run from the selected node and the search tree updated according to the result.
+--cc-- A simulation is then run from the selected node and the search tree updated according to the result.
 This involves the addition of a child node corresponding to the action taken from the selected node, and an update of the statistics of its ancestors.
 Moves are made during this simulation according to some default policy, which in the simplest case is to make uniform random moves.
 
+TODO The MCTS algorithm constructs an estimation of the game tree by sampling. 
 
-Due to the above, a great benefit of MCTS is that unlinke depth-limited minimax, there is no need to estimate the values of non-terminal nodes with an heuristic. This in turn, greatrly reduces (or even removes) the need to acquire and incorporate domain knowledge. This explains our interest on the subject and the title of this work.
+A great benefit of MCTS is that unlinke depth-limited minimax, MCTS is aheuristic: there is no need to estimate the values of non-terminal nodes with an domain specific heuristic. This in turn, greatrly reduces (or even removes) the need to acquire and incorporate domain knowledge. This explains our interest on the subject and the title of this work.
 
 
 
 Algorithm
 ~~~~~~~~~
 
-.. figure:: _static/mcts-algorithm.png
+.. figure:: _static/mcts-algorithm.svg
 
    The 4 steps of MCTS :cite:`chaslot2008monte`
 
+The estimation of the true game tree is constructed with the following algorithm: The estimation starts with a single node, the current state of the game. Then these four steps are repeated until the budget (usualy a time or memory constraint) is exhausted. 
 
-The (partial) tree is constructed as follows:
-
-* Selection: starting at the root node, recursively choose a child until
-  a leaf :math:`L` is reached
-* Expansion: if :math:`L` is not a terminal node\footnote{As the tree is
-  not complete, a leaf could be a node that is missing its children, not
-  necessarily a terminal state}, create a child :math:`C`
+* Selection: first, a node from the estimated tree is selected by starting at the root node and repeatedly
+  choosing (using a tree policy, defined lated) a child until a leaf :math:`L` is reached.
+* Expansion: then, if :math:`L` is not a terminal node, create a child :math:`C` by playing a move at random.
 * Simulation: run a playout from :math:`C` until a terminal node :math:`T` is
   reached (play a full game)
 * Back-propagation: update the counters described below of each ancestor
@@ -1086,7 +1090,7 @@ corresponding action in the game.
 the total number of times a node has been played during a
 sampling iteration (:math:`N`)
 
-TODO Every game are played at full random so the value of a node (wins - losses / total_games) will converge to the mean of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionaly choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
+TODO Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionaly choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
 
 
 
@@ -1094,6 +1098,12 @@ TODO Every game are played at full random so the value of a node (wins - losses 
   
 Implementation
 ~~~~~~~~~~~~~~
+
+
+
+
+  
+First, we subclass :code:`TreeGame` so in addition to holding the game state, each node also hold three counters needed for MCTS and its variants: the amount of simulations this node was used into and the amount of those simulations that resulted in a win for each player.
 
 
 
@@ -1303,7 +1313,7 @@ Due to the popularity of AMAF, these methods are mentioned here for completeness
 Alpha Zero
 ----------
 
-To replace the random play in the simulation step, :cite:`AlphaGoZero` proposes
+To replace the random play in the simulation step, :cite:`AlphaGo,AlphaGoZero,AlphaZero` proposes
 to use a neural network to estimate the value of a
 game state without having to play it. This can greatly enhance the performance
 of the algorithm because much less playouts are required.
@@ -1723,7 +1733,7 @@ While the results showin in :numref:`Figure %s <fig:mcts-time_5s>` are also nois
     
 
 
-.. figure:: index_files/index_90_0.svg
+.. figure:: index_files/index_91_0.svg
 
 
 

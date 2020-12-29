@@ -24,6 +24,12 @@ div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
   white-space: nowrap;
 }
 
+.figure img {
+  width: 80%;
+  max-height: 75vh;
+  /* object-fit: scale-down; */
+}
+
 /* Document width */
 @media screen {
   div.document {

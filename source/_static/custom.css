@@ -169,3 +169,23 @@ table.docutils {
 table.docutils.caption {
   margin-bottom: 1em;
 }
+
+
+.proof.proof-type-theorem .proof-title .proof-type{
+ font-weight: bold;
+}
+
+.proof.proof-type-application {
+  border: 1px solid grey;
+  padding: 1em;
+  margin-top: 1em;
+}
+
+.proof.proof-type-application .proof-title .proof-type{
+  font-style: italic;
+}
+
+
+.problematic {
+  color: red;
+}

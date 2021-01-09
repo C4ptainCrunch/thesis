@@ -223,7 +223,7 @@ As an example, in the initial state (:numref:`See Figure %s <fig:initial_board>`
 
 
   
-  The board after the first move, where South played pit 4.
+  The board after the first move, where South played pit 4, in red.
 
 
 
@@ -694,6 +694,160 @@ Awale and Game Theory
 
 
   
+The notation and most conventions used in this section are taken from :cite:`MaschlerSolanZamir2013`.
+
+Basic game theoretic concepts
+----------------------------
+
+The two main representations of games are the strategic form and the extensive form. Since the extensive-form representation is particularly  convenient for describing algorithms playing Awale, we  only present the extensive form. We also restrict this section to zero-sum  two-players finite games.
+A  *zero-sum two-players finite game in extensive form*  is an ordered vector
+
+.. math::
+  \Gamma = (N, V, E, x^{0}, (V_{i})_{i \in N}, O, u),
+
+where:
+
+ * :math:`N= \{0,1\}` is the  set of  players,
+ * :math:`x^{0}` is the initial state of the game,
+ * :math:`(V , E, x_{0})` is a  finite tree with root :math:`x^{0}` called the game tree,
+ * :math:`(V_{0}, V_{1})` is a partition of the set of nodes that are not leaves,
+ * :math:`O \subseteq \mathbb{R}` is the set of possible game outcomes,
+ * :math:`u` is a function associating every leaf of the tree with a game outcome in the set :math:`O`.
+
+An outcome is a description of what happens when the game terminates. For zero-sum games, it is a real number corresponding to the gain of player 0 or, equivalently, the loss of player 1.
+
+The set :math:`V_{i}` contains all nodes at which player :math:`i` is to play. In *sequential games*, players take turns.  This implies that a node at depth :math:`i` belongs to :math:`V_{0}` iff :math:`i` is even.
+
+.. proof:application::
+
+  Awale is a sequential zero-sum game where the  players 0 and 1 are respectively called South and North and :math:`O=\{+1,-1,0\}`, respectively  meaning South wins, North wins or draw. Each node represents a state of the game and belongs either to :math:`V_{0}` or :math:`V_{1}`. In the first case, South is to play whereas, in the second one, North is to play. Each node has between 0 and 6 children corresponding to the possible states resulting from the move of the player "owning" that node.
+
+  For instance, the root :math:`x^{0}` of the game tree (the initial state) belongs to :math:`V_{0}`, meaning South is to play in the initial state (see :numref:`Figure %s <fig:initial_board>`).  The root :math:`x^{0}` has six children corresponding to the six possible states resulting from  South's move. Each of these children belongs to :math:`V_{1}`, meaning North is to play in these six states. Each of these six states at depth 1  in turn has six children corresponding to the six possible states resulting from North's move. We thus have 36 states at depth 2 and they all belong to :math:`V_{0}`, and so on.
+
+A *perfect information* game is such that that every player who is to take an action knows the current state of the game, meaning that he knows all the actions in the game that led to the current point in the play. This is not the case if, for instance, the players have cards and hide them as in poker.
+
+.. proof:application::
+
+  It is easy to see that Awale is a perfect information game.
+
+
+Let us define a mapping :math:`A` associating to each node `x` of a game tree the set :math:`A(x)` of its children.  A *strategy* for player :math:`i` is a function :math:`s_{i}` mapping each node :math:`x \in V_{i}` to an element in :math:`A(x)`. In other words, a strategy for player :math:`i` tells us what player :math:`i` is going to play at each node of the tree where he is to play. The set of all possible strategies for player :math:`i` is denoted by :math:`S_{i}`.
+A *strategy vector* is a pair of strategies :math:`s = (s_{0}, s_{1} )`, one for each player. Notice that a strategy vector completely specifies a path in the game tree down to a leaf. A strategy vector :math:`s` therefore identifies a single outcome and :math:`u(s)` can be used to denote that outcome.
+
+.. proof:application::
+
+  In the case of Awale, for any :math:`x`, :math:`A(x)` contains at most six nodes.
+
+When the only outcomes of a two-player game are "player 0 wins", "player 1 wins" and "draw", 
+it is convenient to code these outcomes by :math:`+1, -1` and :math:`0` respectively, as we did higher for Awale.
+A *winning strategy for player 0*  is then defined as a strategy :math:`(s_{0},s_{1})`
+such that :math:`u(s_{0},s_{1}) = 1`  for all :math:`s_{1} \in S_{1}`. A strategy :math:`s_{0}` of
+player 0 is called a strategy guaranteeing at least a draw if
+:math:`u(s_{0}, s_{1}) \in \{0, 1\}`, for all :math:`s_{1} \in S_{1}`.
+Similar definitions hold  for player 1.
+We can now state an important result due to the founder of game theory.
+
+.. _theo:vonNeumann:
+
+.. proof:theorem:: :cite:`vonNeumann1928`
+
+   In every two-player extensive form game with perfect information in which the set of outcomes is  :math:`\{-1, 0, +1\}`, one and only one of the following three alternatives holds:
+
+   1. Player 0 has a winning strategy.
+   2. Player 1 has a winning strategy.
+   3. Each of the two players has a strategy guaranteeing at least a draw.
+
+.. proof:application::
+
+  This theorem obviously applies to Awale but the game tree of Awale is so large that it is very difficult which of the three statements is correct. This question has been solved only in 2003 (see Section XXXX Analyse retrograde).
+
+If player 0 chooses strategy :math:`s_{0}`, he gets :math:`u(s_{0},s_{1})`, depending on the strategy :math:`s_{1}` chosen by player 1. In the worst case, player 0 gets :math:`\min_{s_{1} \in S_{1}} u(s_{0},s_{1})`. If player 0 wants to play safe, he better chooses a strategy maximizing :math:`\min_{s_{1} \in S_{1}} u(s_{0},s_{1})`.
+Hence the *security level  of a game for player 0* is defined by
+
+.. math::
+
+  \underline{v} = \max_{s_{0} \in S_{0}} \min_{s_{1} \in S_{1}} u(s_{0},s_{1}).
+
+It is also called the *maximin value* of the game.
+This is the payoff player 0 can  guarantee for himself, whatever the other player does.
+A strategy :math:`s^{*}_{0} \in S_{0}` is a *maximin strategy*  if :math:`u(s^{*}_{0},s_{1}) \geq
+\underline{v}_{0}` for all :math:`s_{1} \in S_{1}`. A maximin strategy needs not be unique.
+
+We can also define the *minimax value* of a game as
+
+.. math::
+  \overline{v} = \min_{s_{1} \in S_{1}} \max_{s_{0} \in S_{0}} u(s_{0},s_{1}).
+
+Player 1 can guarantee that he will pay no more than :math:`\overline{v}`.  A strategy of Player 1 that guarantees :math:`\overline{v}` is called a minimax strategy. The maximin strategy of player 0 and the minimax strategy of player 1 are called *optimal strategies*.
+Since we consider zero-sum games, a payment made by player 1 is a gain for player 0 and player 0 is guaranteed to receive no more than :math:`\overline{v}` (if player 1 plays his minimax strategy). Hence, if  players 0 and 1 respectively play their maximin and minimax strategies, the gain of player 0 is at least :math:`\underline{v}` and at most :math:`\overline{v}`. It follows that :math:`\underline{v} \leq \overline{v}`.
+
+If :math:`\underline{v} = \overline{v}`, then we say *the game has a value* and :math:`\underline{v}=\overline{v}` is called the *value of the game*,  simply denoted by :math:`v`. The value of the game represents the gain of player 0 (or the loss of player 1). Any of the  maximin and minimax strategies of players 0 and 1 respectively are then called *optimal strategies*.
+Calculating the value of a game (when it exists), is called *solving the game*. it can be done by computing the maximin value or the minimax value (because they are equal).
+
+Consider  a finite two-players zero-sum game with perfect information with :math:`O=\{-1, 0, +1\}`  and let us apply :numref:`theo:vonNeumann`.  There are three cases.
+
+ 1. If player 0 has a winning strategy, then :math:`\underline{v}=1` and by the zero-sum property, :math:`\underline{v}=1`. Whence the game has a value and it is 1.
+ 2. If player 1 has a winning strategy, then :math:`\underline{v}=-1` and by the zero-sum property, :math:`\underline{v}=-1`. Whence the game has a value and it is -1.
+ 3. If each of the two players has a strategy guaranteeing at least a draw, then each of them  plays such a strategy and the outcome of the game is a draw. So, :math:`\underline{v}=0` and  :math:`\underline{v}=0`. Whence anew the game has a value and it is 0.
+
+We have just proved the following:
+
+.. _theo:value:
+
+.. proof:theorem::
+
+  Every finite two-player zero-sum extensive-form game with perfect information and with :math:`O=\{-1, 0, +1\}` has a value.
+
+This is a special case of Theorem 4.43 in :cite:`MaschlerSolanZamir2013`.
+
+.. proof:application::
+
+  Awale has a value :math:`v` and it belongs to :math:`\{-1, 0, +1\}`. It is therefore possible  to solve Awale (see Section 4.3 XXXXX, passage \`a propos de Romein 2003).
+  When both players play their optimal strategy, South wins :math:`v` and North pays :math:`v`. If a player has a winning strategy, then it is also an optimal strategy. Any maximin strategy is an optimal policy.
+
+Let us consider a game :math:`\Gamma` with game tree :math:`(V,E,x^{0})`.
+Given a node :math:`x \in V`, we may consider the subtree with root :math:`x`, which is  obtained by removing all nodes of :math:`V` that are not descendants of :math:`x`. The partition :math:`(V_{0},V_{1})` of the original game :math:`\Gamma` naturally defines a partition of the nodes of the subtree. Similarly, the function :math:`u` of the original game naturally associates every leaf of the subtree to a game outcome. Therefore,
+the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresponds to a game that is called the subgame beginning at :math:`x`.
+
+.. proof:application::
+
+  Every subgame of Awale is a finite two-player zero-sum extensive-form game with perfect information and we can therefore appeal to Theorem :numref:`theo:value`. So, for every node :math:`x \in V`, the subgame :math:`\Gamma(x)` has a value, which is equal to the maximin value and the minimax value. It is also called the value of node :math:`x`, denoted :math:`v(x)`. It represents the gain of player 0 if, starting from node :math:`x`, both players play their optimal strategy, i.e.\  maximin for player 0 and minimax for player 1.
+
+  Example. Suppose North has two seeds in pit  6' while South has one seed in pit 2 and one in 4 (see :numref:`Figure %s <fig:game>`).
+  Suppose also both South and North have  captured 22 seeds. Suppose finally  South is to play. If South plays 2, then North plays 6' and has no more seeds in his half board. The game ends with a draw because no player has captured more seeds than the other. If, on the contrary, South plays 4, then North plays 6', captures two seeds in pit 2 and has no more seeds in his half board.  The game ends with a win for North because he has captured more seeds than South. This subgame tree is represented in :numref:`Figure %s <fig:tree>`. The optimal strategy for South is obviously to play 2 whereas the optimal strategy for North is the only available strategy, that is playing 6'. If both players apply their optimal strategy, the outcome is a draw and the value of the game is 0.
+
+    
+.. _fig:game:
+    
+.. figure:: game.pdf
+
+  An nearly final position of Awale
+
+    
+.. _fig:tree:
+    
+.. figure:: tree.pdf
+
+  The subgame tree corresponding to the position depicted in :numref:`Figure %s <fig:game>`.
+
+
+
+The minimax tree of a game with game tree :math:`(V,E,x^{0})` is the 4-tuple :math:`(V,E,x^{0},m)` where :math:`m:V\to \mathbb{R}` associates to each node its minimax value.
+
+.. proof:application::
+
+  By Theorem :numref:`theo:value`, the minimax value of an Awale subgame is equal to the value of the subgame. The minimax tree can thus be used to find the optimal strategies.
+
+
+
+
+
+  
+Implementation of the tree representation
+-----------------------------------------
+
+
+
 We now implement this tree representation in Python by inheriting from :code:`Game()` class previously defined so that a state can hold references to its parent and children.
 
 
@@ -807,7 +961,7 @@ Artificial Intelligence approaches to play Awale
 Many algorithms have been proposed and studied to play sequential perfect information games.
 We start by describing simple algorithms to be used as a baseline (random and greedy). Then follow with algorithms computing the exact minimax tree, either starting from the root (:math:`\alpha\beta` pruning Minimax) or the leaves (retrograde analysis). As those are often impractical for big game trees, we present their depth-limited variants (depth-limited minimax and end-game databases). We then explore approaches that overcome the limitation of the previous algorithms by iteratively estimating the value of promising sub-trees of the game such as Monte Carlo tree search (MCTS) and the most recent approach from Deepmind: Alpha Zero :cite:`AlphaZero`.
 
-We will quickly present and implement the above mentioned and then focus on MCTS and its variants as they are computationally feasible and do not require expert knowledge about the given game to make reasonable decisions.
+We will quickly present and implement the above-mentioned and then focus on MCTS and its variants as they are computationally feasible and do not require expert knowledge about the given game to make reasonable decisions.
 
 
 
@@ -850,7 +1004,7 @@ updates once more their internal state and then outputs their action for the opp
 Naive agents
 ------------
 
-In addition algorithms listed above, we also implement two most basic agents: a random and a greedy player.
+In addition to the above-listed algorithms, we also implement two most basic agents: a random and a greedy player.
 While not having any interest per se due to their simplicity and low strength, these will serve us later as a baseline to compare their strength to some more advanced algorithms.
 
 The first agent is the most simple we can think of and does not use any intelligence at all: it lists all the legal actions it can play and chooses one uniformly at random.
@@ -878,7 +1032,7 @@ The first agent is the most simple we can think of and does not use any intellig
 
   
 The second is :math:`\varepsilon`-Greedy: an agent that tries to maximize an immediate reward at each turn: the number of seeds captured during that turn.
-The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn, the agent draws an number :math:`e` in the uniform distribution :math:`\mathcal{U}(0, 1)`, if :math:`e > \varepsilon`, the agent chooses an action uniformly at random, else it maximizes the reward.
+The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn, the agent draws a number :math:`e` in the uniform distribution :math:`\mathcal{U}(0, 1)`, if :math:`e > \varepsilon`, the agent chooses an action uniformly at random, else it maximizes the immediate reward.
 
 
 
@@ -929,7 +1083,7 @@ Depth-limited Minimax
 The minimax algorithm performs a complete depth-first search used to compute the minimax tree.
 It is a recursive algorithm that computes the value of a node based on the value of its children. In the case of a terminal node, the value is trivial to compute and depends solely on the winner. Otherwise, for "inner" (non-terminal) nodes, the value is computed as the max (resp. min) of the value of the children if the node is at an even (resp. odd) depth.
 
-In Awale and other complex games, as shown before, generating the whole tree is computationally very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to the depth :math:`d`. Nodes at depth :math:`d` are then considered as leaves and their value are estimated using an heuristic instead of being computed by recursively computing the values of their children. 
+In Awale and other complex games, as shown before, generating the whole tree is computationally very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to depth :math:`d`. Nodes at depth :math:`d` are then considered as leaves and their value are estimated using an heuristic instead of being computed by recursively computing the values of their children. 
 
 The heuristic used should estimate the value of the node only by inspecting the state of the game and can be of varying complexity. A simple approach as taken here is to count the difference of the number of seeds each player has captured. Because heuristics are most often crafted by hand using human knowledge of the game, exploring more complex ones is beyond the scope of this work.
 
@@ -1009,7 +1163,7 @@ Games that belong to this category are Chess, Checkers, Backgammon and Awale :ci
 
 For both divergent and convergent games, search algorithms can compute the game value for positions near
 the end of a game. However, for divergent games the number of endgame
-positions is so big that enumerating all of them is computationally impossible (except for trivial
+positions is so big that enumerating them all is computationally impossible (except for trivial
 games like Tic-Tac-Toe). However, for convergent games, the number of positions
 near the end of the game is small. Usually small enough to traverse them all, and collect
 their game values in a database, a so called endgame database.
@@ -1073,7 +1227,7 @@ The estimation of the true game tree is constructed with the following algorithm
   of :math:`T`.
 
 
-Each node :math:`x` holds 3 counters : :math:`N` (the number of simulation that went through :math:`x`),:math:`W_S` and :math:`W_N` (the number of simulations going through :math:`x` and leading to a win respectively for South and North). From these counters, a probability of North winning can be estimated by :math:`\frac{W_N}{N}` if both players play randomly from :math:`x`. TODO: 
+Each node :math:`x` holds 3 counters : :math:`N_x` (the number of simulation that went through :math:`x`),:math:`W^S_x` and :math:`W^N_x` (the number of simulations going through :math:`x` and leading to a win respectively for South and North). From these counters, a probability of North winning can be estimated by :math:`\frac{W^N_x}{N_x}` if both players play randomly from :math:`x`. TODO: 
 
 TODO This sampling can be ran as many times as allowed (most of the
 time, the agent is time constrained). One can also stop the sampling earlier if
@@ -1084,9 +1238,21 @@ agent chooses the child with the highest probability of winning and plays the
 corresponding action in the game.
 
 TODO the total number of times a node has been played during a
-sampling iteration (:math:`N`)
+sampling iteration (:math:`N_x`)
 
 TODO Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionally choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
+
+We can show that this simple MCTS method is better than a random agent.
+
+We can show that estimated value :math:`\hat{v_x}: (W^S_x- W^N_x)/N_x` of node :math:`x` when :math:`N_x` is big converges to a weighted average of the true value of the leaves of the subtree where :math:`x` is the root.
+For every leaf :math:`l`, :math:`\hat{v_l} = v_l` if :math:`N_l > 0`. For every other node, :math:`\lim_{N_{X} \to\infty} \hat{v_x} = \sum_{x' \in A(x)} \hat{v_{x'}} / |A(x)|`. Donc pour un noeud qui n'a que des feuilles, sa valeur estimée est la moyenne des vraies valeurs des feuilles. Pour un autre noeud, sa valeur estimée sera la moyenne pondérée (en fct de la topologie du ss arbre) des v des feuilles du ss arbre 
+
+SI tu pars de x0 et que tu joues un coup de MCTS en manximisant l'espérence de gain sous l'hypothèse que les coups suivants sont joués au hasard. Tu es meilleur que le harad car il fait soit pire, soit aussi bien.
+C'est vrai pour tout jeu. Et comme chaque sous jeu est un jeu, c'est vrai à chaque itération.
+
+Des gens ont aessayé de biaiser en diminuant l'importance des choxi que tu ne prendras jamais. 
+
+Kocis a réussi à suffisament biaiser pour ne plus jamais prendre les choix sub-optimaux et du coup ça converge vers le minimax
 
 
 
@@ -1337,19 +1503,26 @@ How to compare A and B
 
 Because the outcome of a match between two agents is not deterministic, we can not rely on a single match to ascertain than the winner of a match is better than the looser. So the first step is to define a statistical method to compare two arbitrarily chosen agents: A and B.
 
-The probability that A wins is denoted by :math:`p` and is unknown (the probability that B wins is :math:`1-p`).
-Our null hypothesis is that both agents are equally strong (:math:`p=0.50`) and the alternative hypothesis is that they are of different strength (:math:`p \neq 0.50`).
-To compare agents A and B, we run :math:`N` matches and A wins :math:`n` times (thus B wins :math:`N-n` times).
+The probability that A wins is denoted by :math:`p_A`, the probability that B wins is :math:`p_B` and the probability of a draw is :math:`p_d`. All are unknown. Because every game outcome is either A wins, B wins or a draw, :math:`p_A + p_B + p_d = 1`.
+Our null hypothesis (:math:`H_0`) is that both agents are equally strong (:math:`p_A=p_B`) and the alternative hypothesis is that they are of different strength (:math:`p_A \neq p_B`).
+
+We define :math:`\pi_A` as :math:`p_A + \frac{1}{2}\ p_d` and :math:`\pi_B` as :math:`p_B + \frac{1}{2}\ p_d` and put forward another hypothesis :math:`H'_0: \pi_A = 0.5`. We then prove with the following that :math:`H_0` and :math:`H'_0` are equivalent. Let us start from :math:`H'_0`:
+
+.. figure:: _static/proof-h0.svg
+  
+which is our initial hypothesis :math:`H_0`.
+
+To compare agents A and B, we run :math:`N` matches and A wins :math:`n_A` times, B :math:`n_B` and there are :math:`n_d` draws.
 
 Using the SciPy function :code:`scipy.stats.binom_test`, we then compute the p-value.
 If it is lower than :math:`5\%`, we traditionally reject the null hypothesis.
-This guarantees that, conditional on H0 being true, the probability of making an incorrect decision is :math:`5\%`.
-But if H1 is true, the probability of an incorrect decision is not necessarily :math:`5\%`: it depends on the number :math:`N` of matches and on the true value of :math:`p`.
-To ensure that the probability of an incorrect decision, conditional on H1, be acceptable, we resort to the concept of statistical power.
+This guarantees that, conditional on :math:`H_0` being true, the probability of making an incorrect decision is :math:`5\%`.
+But if :math:`H_1` is true, the probability of an incorrect decision is not necessarily :math:`5\%`: it depends on the number :math:`N` of matches and on the true value of :math:`\pi_A`.
+To ensure that the probability of an incorrect decision, conditional on :math:`H_1`, be acceptable, we resort to the concept of statistical power.
 
-Suppose the true probability :math:`p` is :math:`0.75`. This is very far from the null hypothesis. In that case, we want the probability of choosing H1 (not making an incorrect decision) to be high (for instance :math:`95\%`). This probability is the power and can be computed by means of the R function :code:`powerBinom` implemented in the R package :code:`exactci`. The output of this function is the number :math:`N` of matches needed to achieve the desired power and it is 49. As we always play a even number of matches between two agents (A vs. B and B vs. A), we decide that we need :math:`N=50` matches.
+Suppose the true probability :math:`\pi_A` is :math:`0.75`. This is very far from the null hypothesis. In that case, we want the probability of choosing :math:`H_1` (not making an incorrect decision) to be high (for instance :math:`95\%`). This probability is the power and can be computed by means of the R function :code:`powerBinom` implemented in the R package :code:`exactci`. The output of this function is the number :math:`N` of matches needed to achieve the desired power and it is 49. As we always play a even number of matches between two agents (A vs. B and B vs. A), we decide that we need :math:`N=50` matches.
 
-Now that we know the number of matches we need to play to be able to ascertain that H1 is probable enough, we still need to know how many matches of the 50 an agent needs to win so we may declare H1 true. This can be done with the :code:`scipy.stats.binom_test` function.
+Now that we know the number of matches we need to play to be able to ascertain that :math:`H_1` is probable enough, we still need to know how big :math:`n_A` (or :math:`n_B`) needs to win so we may declare :math:`H_1` true. This can be done with the :code:`scipy.stats.binom_test` function.
 
 
 
@@ -1362,10 +1535,10 @@ Now that we know the number of matches we need to play to be able to ascertain t
 
   .. code:: ipython3
 
-    for wins in range(50):
-        pvalue = scipy.stats.binom_test(wins, 50, p=0.5, alternative="greater")
+    for value in range(50):
+        pvalue = scipy.stats.binom_test(value, 50, p=0.5, alternative="greater")
         if pvalue < 0.05:
-            print("If a agent wins", wins, "matches, we can reject H0 with a p-value of", round(pvalue, 4))
+            print("If nₐ is at least", value, "we can reject H₀' with a p-value of", round(pvalue, 4))
             break
 
 
@@ -1375,7 +1548,7 @@ Now that we know the number of matches we need to play to be able to ascertain t
 
 .. parsed-literal::
 
-    If a agent wins 32 matches, we can reject H0 with a p-value of 0.0325
+    If nₐ is at least 32 we can reject H₀' with a p-value of 0.0325
 
 
 
@@ -1384,7 +1557,7 @@ Now that we know the number of matches we need to play to be able to ascertain t
 
 
   
-With this method, we can then define a relation "is stronger than" or "relation of strength", noted :math:`\succ` over the set of agents where :math:`A \succ B` if when playing 50 matches between A and B, A wins more than 31 matches. 
+With this method, we can then define a strength relation "is stronger than", noted :math:`\succ` over the set of agents where :math:`A \succ B` if when playing 50 matches between A and B, :math:`n_A + \frac{1}{2}\ n_d \geq 32`.
 
 
 
@@ -1397,27 +1570,34 @@ We have a method to determine if an agent is stronger than another but we don't 
 
 In the following mind experiment, we prove that the relation of strength between two agents is not transitive and thus a total order between all possible agents does not exist.
 
-Lets define 3 theoretical algorithms: each of them play the first move at random and the next moves of the match depending on the first move in three different ways: always playing the best move (noted :math:`+`), always playing the worst move (noted :math:`-`) or playing at random (noted :math:`r`).
+Let us define a theoretical algorithm A: if the algorithm plays South, its first move, :math:`s_0(x^0)`, is played uniformly at random. For the subsequent moves as well as all the moves if the algroithm plays North, the moves depend on :math:`s_0(x^0)` in the following manner:
+ * if :math:`s_0(x^0) \in {1, 2}` play the optimal strategy (noted :math:`+` in the following table)
+ * if :math:`s_0(x^0) \in {3, 4}` play the worst strategy (noted :math:`-`)
+ * if :math:`s_0(x^0) \in {5, 6}` play uniformly at random (noted :math:`r`).
+ 
+In a similar fashion, we define the theoretical algorithms B and C with a permutation of the strategies as shown in the table below.
 
 .. table:: Moves of the theoretical algorithms A, B and C depending on the first move of the game.
 
-    +------------+-----------+-----------+-----------+
-    | First move | A         | B         | C         |
-    +------------+-----------+-----------+-----------+
-    | 1, 2       | :math:`+` | :math:`r` | :math:`-` |
-    +------------+-----------+-----------+-----------+
-    | 3, 4       | :math:`r` | :math:`-` | :math:`+` |
-    +------------+-----------+-----------+-----------+
-    | 5, 6       | :math:`-` | :math:`+` | :math:`r` |
-    +------------+-----------+-----------+-----------+
+  +------------------+-----------+-----------+-----------+
+  | :math:`s_0(x^0)` | A         | B         | C         |
+  +------------------+-----------+-----------+-----------+
+  | 1, 2             | :math:`+` | :math:`r` | :math:`-` |
+  +------------------+-----------+-----------+-----------+
+  | 3, 4             | :math:`r` | :math:`-` | :math:`+` |
+  +------------------+-----------+-----------+-----------+
+  | 5, 6             | :math:`-` | :math:`+` | :math:`r` |
+  +------------------+-----------+-----------+-----------+
 
 
-If A and B are playing matches, if the match starts with move:
- - 1 or 2: A wins,
- - 3 or 4: A wins more than half the matches,
+When playing matches between any two of these agents, :math:`s_0(x^0)` will be uniformly distributed between the 6 possible moves. 
+If A and B play a match and :math:`s_0(x^0)` is
+ - 1 or 2 : A plays :math:`+`, B plays :math:`r`. Thus A wins,
+ - 3 or 4: A either wins the game is a draw,
  - 5 or 6: B wins.
- 
-So A wins more matches than B and we can say :math:`A \succ B`. By doing the same with B vs. C and C vs. A we have :math:`B \succ C` and :math:`C \succ A`. Thus the relation between these 3 theoretical algorithms is not transitive.
+
+A thus wins more than :math:`\frac{1}{3}` of the matches (up to :math:`\frac{2}{3}`) whereas B wins exactly :math:`\frac{1}{3}` of the matches.
+A wins more matches than B so we can say :math:`A \succ B`. The same reasoning with B vs. C and C vs. A yields :math:`B \succ C` and :math:`C \succ A`. Thus the relation between these 3 theoretical algorithms is not transitive.
 
 How to compare more than two agents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1441,7 +1621,7 @@ So, for :math:`x_1` close to :math:`x_1` and :math:`y_1` close to :math:`y_2`, t
 This assumption and the fact that we evaluate :math:`f_n` over a dense sample of the parameter space allows us to compare agents from a single family by playing much less matches than the 50 matches derived from our statistical power analysis.
 
 
-During the champion selection, contrary to the full tournament, we also assume that the strength relation :math:`\succ` over agents of a family is "approximately" transitive: we expect that :math:`\forall y \in X, \exists x \neq y, y \in X | f_{\infty}(A_{x}, A_{y}) > n/2`: there exists an agent that wins more than half the time against every other agent of its family.
+During the champion selection, contrary to the full tournament, we also assume that the strength relation :math:`\succ` over agents of a family a weaker property than transitivity: :math:`\forall y \in X, \exists x \neq y, y \in X` such that :math:`f_{n \to \infty}(A_{x}, A_{y}) / n > f_{n \to \infty}(A_{y}, A_{x}) / n`: there exists an agent that wins more than half the time against every other agent of its family.
 
 
 
@@ -1525,7 +1705,7 @@ Relevant data from the match can then be recorded in a dictionary like below whe
 
 .. parsed-literal::
 
-    {'duration': 0.0084, 'depth': 46, 'score': [3, 27], 'winner': 1}
+    {'duration': 0.0099, 'depth': 81, 'score': [25, 10], 'winner': 0}
 
 
 
@@ -1537,7 +1717,7 @@ Because the number of matches we expect to play is quite high and a match betwee
 
 We used the infrastructure of Amazon Web Services (AWS) to be able to access hundreds of CPU cores at the same time and used AWS Batch to schedule the jobs across the different machines.
 
-To this effect, we placed the code to run a match in a standalone Python script that accepts parameters to give to the agents via environment variables and packaged it in a Docker container. When a game is finished, the dictionary showed above is then outputted to the standard output.
+To this effect, we placed the code to run a match in a standalone Python script that accepts parameters to give to the agents via environment variables and packaged it in a Docker container. When the match is finished, the dictionary showed above is then outputted to the standard output.
 
 This Docker container is then used as a template to launch AWS Batch tasks in parallel, their standard output being sent to AWS Cloudwatch to be analyzed later.
 Each match was in a separate AWS Batch task was allowed 1 vCPU with 500MB of RAM. Those tasks were running on C5 compute optimized EC2 instances [#aws_c5]_. 
@@ -1577,7 +1757,7 @@ AWS Batch tasks can be launched with the :code:`submit_match()` function, using 
 
 
   
-Because we can not be sure an agent has the same strength if it is allowed to be the first player as if it is the second to play, each time we play a match between two agents (A and B), we play the match A vs B and B vs A.
+Because we can not be sure an agent has the same strength if it is allowed to be the first player as if it is the second to play, each time we play a match between two agents (A and B), we play the match A vs. B and B vs. A.
 
 
 
@@ -1633,7 +1813,7 @@ Champion selection
 :math:`\varepsilon`-Greedy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The first agent we have to tune is :math:`\varepsilon`-Greedy and it has one parameter, :math:`\varepsilon` that can very in the interval :math:`[0, 1]`. As running a match between two :math:`\varepsilon`-Greedy agents takes less than 100ms, playing thousands of matches is computationally feasible.
+The first agent we have to tune is :math:`\varepsilon`-Greedy and it has one parameter :math:`\varepsilon` that can vary in the interval :math:`[0, 1]`. As running a match between two :math:`\varepsilon`-Greedy agents takes less than 100ms, playing thousands of matches is computationally feasible.
 
 We thus pick evenly spaced values of :math:`\varepsilon` in the interval :math:`[0, 1]` and play 50 matches for each pair of values of :math:`\varepsilon`.
 
@@ -1671,17 +1851,22 @@ The results of these matches is shown in :numref:`Figure %s <fig:eps-matrix>` be
 
 
 
+::
 
 
+    ---------------------------------------------------------------------------
 
-    
-.. _fig:eps-matrix:
-    
+    NameError                                 Traceback (most recent call last)
 
-    
+    <ipython-input-38-fe125af09f93> in <module>
+          7 
+          8 im = grouped.drop('count', axis=1).unstack()
+    ----> 9 folded = fold(im.values)
+         10 
+         11 fig = plt.figure(figsize=(10, 6))
 
 
-.. figure:: index_files/index_88_0.svg
+    NameError: name 'fold' is not defined
 
 
 
@@ -1742,20 +1927,6 @@ While the results shown in in :numref:`Figure %s <fig:mcts-time_5s>` are also no
 
 
 
-
-    
-
-    
-.. _fig:mcts-time_5s:
-    
-
-
-.. figure:: index_files/index_93_0.svg
-
-
-
-
-
   
   Strength of MCTS related to the allowed simulation time budget
 
@@ -1788,6 +1959,9 @@ The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`
                 opponent = f"UCTPlayer(%s, td(seconds=5), c={c:.2f})"
     
                 sumbit_symmetric_match(player, opponent, "uct-tuning-c")
+
+
+
 
 
 
@@ -1847,20 +2021,6 @@ While the curve in :numref:`Figure %s <fig:uct-tuning-c-15>` is not as smooth as
 
 
 
-
-    
-
-    
-.. _fig:uct-tuning-c-15:
-    
-
-
-.. figure:: index_files/index_101_0.svg
-
-
-
-
-
   
   Strength of UCT(:math:`c=1.5`) against other values of :math:`c`.
 
@@ -1905,26 +2065,9 @@ The results, displayed in a matrix in :numref:`Figure %s <fig:matrix>`, show tha
 
 
 
-
-
-
   
 
 
-
-
-
-
-
-
-    
-.. _fig:matrix:
-    
-
-    
-
-
-.. figure:: index_files/index_107_0.svg
 
 
 

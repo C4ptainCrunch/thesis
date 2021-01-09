@@ -49,6 +49,7 @@ extensions = [
     "sphinx.ext.ifconfig",
     "sphinxcontrib.bibtex",
     "nbsphinx",
+    "sphinxcontrib.proof",
     # "numsec",
 ]
 
@@ -162,6 +163,20 @@ nitpicky = True
 
 # -- Extension configuration -------------------------------------------------
 
+
+proof_theorem_types = {
+   "algorithm": "Algorithm",
+   "conjecture": "Conjecture",
+   "corollary": "Corollary",
+   "definition": "Definition",
+   "example": "Example",
+   "lemma": "Lemma",
+   "observation": "Observation",
+   "proof": "Proof",
+   "property": "Property",
+   "theorem": "Theorem",
+   "application": "Application",
+}
 
 from pybtex.plugin import register_plugin  # noqa
 from pybtex.style.formatting.unsrt import Style as UnsrtStyle  # noqa

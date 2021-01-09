@@ -1705,7 +1705,7 @@ Relevant data from the match can then be recorded in a dictionary like below whe
 
 .. parsed-literal::
 
-    {'duration': 0.0099, 'depth': 81, 'score': [25, 10], 'winner': 0}
+    {'duration': 0.0097, 'depth': 56, 'score': [6, 25], 'winner': 1}
 
 
 
@@ -1845,28 +1845,26 @@ The results of these matches is shown in :numref:`Figure %s <fig:eps-matrix>` be
 
 
 
+
+
+
   
 
 
 
 
 
-::
 
 
-    ---------------------------------------------------------------------------
 
-    NameError                                 Traceback (most recent call last)
+    
+.. _fig:eps-matrix:
+    
 
-    <ipython-input-38-fe125af09f93> in <module>
-          7 
-          8 im = grouped.drop('count', axis=1).unstack()
-    ----> 9 folded = fold(im.values)
-         10 
-         11 fig = plt.figure(figsize=(10, 6))
+    
 
 
-    NameError: name 'fold' is not defined
+.. figure:: index_files/index_90_0.svg
 
 
 
@@ -1927,6 +1925,20 @@ While the results shown in in :numref:`Figure %s <fig:mcts-time_5s>` are also no
 
 
 
+
+    
+
+    
+.. _fig:mcts-time_5s:
+    
+
+
+.. figure:: index_files/index_95_0.svg
+
+
+
+
+
   
   Strength of MCTS related to the allowed simulation time budget
 
@@ -1959,9 +1971,6 @@ The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`
                 opponent = f"UCTPlayer(%s, td(seconds=5), c={c:.2f})"
     
                 sumbit_symmetric_match(player, opponent, "uct-tuning-c")
-
-
-
 
 
 
@@ -2021,6 +2030,20 @@ While the curve in :numref:`Figure %s <fig:uct-tuning-c-15>` is not as smooth as
 
 
 
+
+    
+
+    
+.. _fig:uct-tuning-c-15:
+    
+
+
+.. figure:: index_files/index_103_0.svg
+
+
+
+
+
   
   Strength of UCT(:math:`c=1.5`) against other values of :math:`c`.
 
@@ -2068,6 +2091,20 @@ The results, displayed in a matrix in :numref:`Figure %s <fig:matrix>`, show tha
   
 
 
+
+
+
+
+
+
+    
+.. _fig:matrix:
+    
+
+    
+
+
+.. figure:: index_files/index_108_0.svg
 
 
 

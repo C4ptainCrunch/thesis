@@ -109,7 +109,7 @@ Mancala
 -------
 
 The Mancala games are an ancient family of game that are played on many continents :cite:`deVoogt2008`, Awale being one of them.
-The word mancala comes from the Arabic word "نقلة", transliterated as "naqala" and literally meaning "to move".
+The word mancala comes from the Arabic word 'نقلة', transliterated as 'naqala' and literally meaning 'to move'.
 
 Like Awale, Mancala games can consist of rows of pits, some of them having more than two rows (:numref:`see Figure %s <bao>`) and sometimes extra pits with a special role. Mancala games can sometimes be played by more than two players.
  
@@ -312,7 +312,7 @@ and subsequent passes.
 
 If the current player's opponent has no seed left in his half board, the
 current player has to play a move that gives him seeds if such a move exists.
-This rule is called the "feed your opponent".
+This rule is called the 'feed your opponent'.
 In :numref:`Figure %s <fig:feed>`, South has to play pit 5 because playing pit 1 would leave the opponent without any move to play.
 
 
@@ -694,7 +694,8 @@ Awale and Game Theory
 
 
   
-The notation and most conventions used in this section are taken from :cite:`MaschlerSolanZamir2013`.
+In this section, we introduce the game-theoretic notions that are needed to understand the algorithms of Section XX. After introducing each notion, we apply it to Awale.
+The notation and most conventions used for game-theoretic concepts are taken from :cite:`MaschlerSolanZamir2013`.
 
 Basic game theoretic concepts
 ----------------------------
@@ -720,7 +721,7 @@ The set :math:`V_{i}` contains all nodes at which player :math:`i` is to play. I
 
 .. proof:application::
 
-  Awale is a sequential zero-sum game where the  players 0 and 1 are respectively called South and North and :math:`O=\{+1,-1,0\}`, respectively  meaning South wins, North wins or draw. Each node represents a state of the game and belongs either to :math:`V_{0}` or :math:`V_{1}`. In the first case, South is to play whereas, in the second one, North is to play. Each node has between 0 and 6 children corresponding to the possible states resulting from the move of the player "owning" that node.
+  Awale is a sequential zero-sum game where the  players 0 and 1 are respectively called South and North and :math:`O=\{+1,-1,0\}`, respectively  meaning South wins, North wins or draw. Each node represents a state of the game and belongs either to :math:`V_{0}` or :math:`V_{1}`. In the first case, South is to play whereas, in the second one, North is to play. Each node has between 0 and 6 children corresponding to the possible states resulting from the move of the player 'owning' that node.
 
   For instance, the root :math:`x^{0}` of the game tree (the initial state) belongs to :math:`V_{0}`, meaning South is to play in the initial state (see :numref:`Figure %s <fig:initial_board>`).  The root :math:`x^{0}` has six children corresponding to the six possible states resulting from  South's move. Each of these children belongs to :math:`V_{1}`, meaning North is to play in these six states. Each of these six states at depth 1  in turn has six children corresponding to the six possible states resulting from North's move. We thus have 36 states at depth 2 and they all belong to :math:`V_{0}`, and so on.
 
@@ -759,7 +760,7 @@ We can now state an important result due to the founder of game theory.
 
 .. proof:application::
 
-  This theorem obviously applies to Awale but the game tree of Awale is so large that it is very difficult which of the three statements is correct. This question has been solved only in 2003 (see Section XXXX Analyse retrograde).
+  This theorem obviously applies to Awale but the game tree of Awale is so large that it is very difficult to know which of the three statements is correct. This question has been solved only in 2003 (see Section XXXX Analyse retrograde).
 
 If player 0 chooses strategy :math:`s_{0}`, he gets :math:`u(s_{0},s_{1})`, depending on the strategy :math:`s_{1}` chosen by player 1. In the worst case, player 0 gets :math:`\min_{s_{1} \in S_{1}} u(s_{0},s_{1})`. If player 0 wants to play safe, he better chooses a strategy maximizing :math:`\min_{s_{1} \in S_{1}} u(s_{0},s_{1})`.
 Hence the *security level  of a game for player 0* is defined by
@@ -816,18 +817,66 @@ the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresp
   Example. Suppose North has two seeds in pit  6' while South has one seed in pit 2 and one in 4 (see :numref:`Figure %s <fig:game>`).
   Suppose also both South and North have  captured 22 seeds. Suppose finally  South is to play. If South plays 2, then North plays 6' and has no more seeds in his half board. The game ends with a draw because no player has captured more seeds than the other. If, on the contrary, South plays 4, then North plays 6', captures two seeds in pit 2 and has no more seeds in his half board.  The game ends with a win for North because he has captured more seeds than South. This subgame tree is represented in :numref:`Figure %s <fig:tree>`. The optimal strategy for South is obviously to play 2 whereas the optimal strategy for North is the only available strategy, that is playing 6'. If both players apply their optimal strategy, the outcome is a draw and the value of the game is 0.
 
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
     
 .. _fig:game:
     
-.. figure:: game.pdf
 
+    
+
+
+.. figure:: index_files/index_41_0.svg
+
+
+
+
+
+
+  
   An nearly final position of Awale
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+    
 
     
 .. _fig:tree:
     
-.. figure:: tree.pdf
 
+
+.. figure:: index_files/index_43_0.svg
+
+
+
+
+
+
+  
   The subgame tree corresponding to the position depicted in :numref:`Figure %s <fig:game>`.
 
 
@@ -846,6 +895,7 @@ The minimax tree of a game with game tree :math:`(V,E,x^{0})` is the 4-tuple :ma
 Implementation of the tree representation
 -----------------------------------------
 
+TODO: On vient de voir que ça peut être représenté comme un arbre, les aglos utilisent des arbres donc on le fait
 
 
 We now implement this tree representation in Python by inheriting from :code:`Game()` class previously defined so that a state can hold references to its parent and children.
@@ -958,16 +1008,16 @@ Next, we overload the ``Game.step(i)`` method so that we do not compute twice st
 Artificial Intelligence approaches to play Awale
 ================================================
 
-Many algorithms have been proposed and studied to play sequential perfect information games.
-We start by describing simple algorithms to be used as a baseline (random and greedy). Then follow with algorithms computing the exact minimax tree, either starting from the root (:math:`\alpha\beta` pruning Minimax) or the leaves (retrograde analysis). As those are often impractical for big game trees, we present their depth-limited variants (depth-limited minimax and end-game databases). We then explore approaches that overcome the limitation of the previous algorithms by iteratively estimating the value of promising sub-trees of the game such as Monte Carlo tree search (MCTS) and the most recent approach from Deepmind: Alpha Zero :cite:`AlphaZero`.
+Many algorithms have been proposed and studied to play zero-sum sequential perfect information games.
+We start by describing simple algorithms to be used as a baseline (random and greedy) and then continue with algorithms computing the exact minimax tree, either starting from the root (:math:`\alpha\beta` pruning Minimax) or the leaves (retrograde analysis). As those are often impractical for big game trees, we present their depth-limited variants (depth-limited minimax and end-game databases). We then explore approaches that overcome the limitation of the previous algorithms by iteratively estimating the value of promising sub-trees of the game such as Monte Carlo tree search (MCTS) and the most recent approach from Deepmind: Alpha Zero :cite:`AlphaZero`.
 
-We will quickly present and implement the above-mentioned and then focus on MCTS and its variants as they are computationally feasible and do not require expert knowledge about the given game to make reasonable decisions.
+We will quickly present and implement the above-mentioned algorithms and then focus on MCTS and its variants as they are computationally feasible and do not require expert knowledge about the given game to make reasonable decisions.
 
 
 
 
   
-Before presenting those, we describe a :code:`Player` class that every implementation will then reuse and implement two basic agents to be used as a baseline in our comparisons.
+Before presenting those, we describe a :code:`Player` class that every implementation will then reuse.
 The :code:`Player` class keeps track of the game state internally.
 At each turn of the game, the :code:`Player` is called with the method :code:`play()` to inform it of the action played by their opponent
 (and thus update their internal state) and then chooses an action with :code:`get_action()`,
@@ -1377,7 +1427,7 @@ Upper Confidence Bounds for Trees
 ---------------------------------
 
 Because basic MCTS samples uniformly the game tree, it spends compute time estimating the value of uninteresting nodes that will never be played in a real game. A more efficient method would instead explore more often the interesting parts of the tree: an asymmetric method.
-:cite:`kocsis2006bandit` defined Upper Confidence Bounds for Trees (UCT), a method combining during the selection process vanilla MCTS and Upper Confidence Bounds (UCB) used in the multi-armed bandit problem.
+:cite:`kocsis2006bandit` defined Upper Confidence Bounds for Trees (UCT): during the selection process, this method combines basic MCTS and Upper Confidence Bounds (UCB), as used in the multi-armed bandit problem.
 
 Basic MCTS, during the tree policy, chooses a child at random even if the children is likely of having a poor mean value. UCT instead treats the choice of child as a multi-armed bandit problem: picking a child for which we have an estimation of the true value to make a simulation is analogous to picking a slot machine for which we have an estimation of the true reward probability. 
 
@@ -1488,7 +1538,7 @@ of the algorithm because much less playouts are required.
 Method
 ======
 
-This section describes the statistical framework used to compare two agents and the method used to compare and rank multiple agents. Next, we detail the experimental setup in which the games between agents are played as well as the method used to run the experiments in a massively parallel setup to be able to record enough game to have statistically strong results.
+This section describes methods used to compare agents and details the experimental setup in which the games between agents are played as well as the method used to run the experiments in a massively parallel setup to be able to record enough games to have statistically strong results.
 
 
 
@@ -1496,6 +1546,9 @@ This section describes the statistical framework used to compare two agents and 
   
 Comparing algorithms
 --------------------
+
+We first describe the statistical framework used to compare two agents and show that the strength relation is not necessarily transitive.
+Then we suggest to play a tournament to compare and rank multiple agents and we show how to limit the size of the tournament under some plausible assumptions.
 
 
 How to compare A and B
@@ -1599,6 +1652,58 @@ If A and B play a match and :math:`s_0(x^0)` is
 A thus wins more than :math:`\frac{1}{3}` of the matches (up to :math:`\frac{2}{3}`) whereas B wins exactly :math:`\frac{1}{3}` of the matches.
 A wins more matches than B so we can say :math:`A \succ B`. The same reasoning with B vs. C and C vs. A yields :math:`B \succ C` and :math:`C \succ A`. Thus the relation between these 3 theoretical algorithms is not transitive.
 
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    from graphviz import Digraph
+    
+    f = Digraph()
+    
+    f.attr('node', shape='circle')
+    
+    f.edge("1", "2")
+    f.edge("1", "3")
+    f.edge("1", "4")
+    
+    f.edge("2", "5")
+    f.edge("2", "6")
+    
+    f.edge("3", "7")
+    f.edge("3", "8")
+    
+    f.edge("4", "9")
+    f.edge("4", "10")
+    
+    for i in range(6):
+        if i % 2 == 0:
+            f.node("res_%i" % i, label="1", shape="none")
+        else:
+            f.node("res_%i" % i, label="-1", shape="none")
+        f.edge("%i" % (i + 5), "res_%i" % i, style="invis")
+        
+    f
+
+
+
+
+
+
+
+
+
+.. figure:: index_files/index_78_0.svg
+
+
+
+
+
+
+  
 How to compare more than two agents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1803,7 +1908,7 @@ Results of the jobs submitted to AWS Batch can then be found in AWS CloudWatch. 
 Experiments
 ===========
 
-We run our experiments, analyze their results and present a ranking between the different agents.
+We first run a series of experiments for selecting a champion in each family of agents then play a tournament involving each champion and analyze the tournament result to present a ranking of the different agents.
 
 Champion selection
 ------------------
@@ -1864,7 +1969,7 @@ The results of these matches is shown in :numref:`Figure %s <fig:eps-matrix>` be
     
 
 
-.. figure:: index_files/index_90_0.svg
+.. figure:: index_files/index_96_0.svg
 
 
 
@@ -1933,7 +2038,7 @@ While the results shown in in :numref:`Figure %s <fig:mcts-time_5s>` are also no
     
 
 
-.. figure:: index_files/index_95_0.svg
+.. figure:: index_files/index_101_0.svg
 
 
 
@@ -2038,7 +2143,7 @@ While the curve in :numref:`Figure %s <fig:uct-tuning-c-15>` is not as smooth as
     
 
 
-.. figure:: index_files/index_103_0.svg
+.. figure:: index_files/index_109_0.svg
 
 
 
@@ -2104,7 +2209,7 @@ The results, displayed in a matrix in :numref:`Figure %s <fig:matrix>`, show tha
     
 
 
-.. figure:: index_files/index_108_0.svg
+.. figure:: index_files/index_114_0.svg
 
 
 

@@ -19,3 +19,4 @@ boto3
 sphinx-autobuild
 nbsphinx
 nbconvert<6
+graphviz

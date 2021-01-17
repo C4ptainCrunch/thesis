@@ -1781,11 +1781,13 @@ Because most games finish in less than 200 moves, we limit games to 500 moves to
 
 
   
-Relevant data from the match can then be recorded in a dictionary like below where:
+Relevant data from the match is then available in the following variables:
  * :code:`duration` is the total duration of the game in seconds,
  * :code:`depth` is the number of moves played by both agents,
  * :code:`score` is a tuple of score of South followed by the score of North,
  * :code:`winner` is :code:`0` if South won, :code:`1` if North won and :code:`None` is the game was a draw.
+
+Those can be can then be recorded in a dictionary like below for further analysis.
 
 
 
@@ -1809,7 +1811,7 @@ Relevant data from the match can then be recorded in a dictionary like below whe
 
 .. parsed-literal::
 
-    {'duration': 0.0097, 'depth': 56, 'score': [6, 25], 'winner': 1}
+    {'duration': 0.0277, 'depth': 163, 'score': [24, 23], 'winner': 0}
 
 
 

@@ -91,11 +91,9 @@ div.body p.caption {
   display: none;
 }
 
-/* Citations but conflicts with code
-blockquote div {
-    font-style: italic;
-    opacity: 0.85;
-} */
+blockquote {
+    margin: 0;
+}
 
 #bibliography td.label {
     width: 7em;
@@ -128,12 +126,19 @@ dl pre, blockquote pre, li pre {
 }
 
 .highlight-ipython3:before {
-   content: "[In]:";
-   font-family: monospace;
-   color: blue;
-   float: left;
-   width: 4.1em;
-   font-size: 0.75em
+  content: "[In]:";
+  font-family: monospace;
+  color: blue;
+  float: left;
+  width: 4.1em;
+  font-size: 0.75em;
+  position: relative;
+  top: 9px;
+  height: 0;
+}
+
+div.highlight pre {
+  margin-left: 4em;
 }
 
 .highlight-none:before {
@@ -142,7 +147,10 @@ dl pre, blockquote pre, li pre {
    color: red;
    float: left;
    width: 4.1em;
-   font-size: 0.75em
+   font-size: 0.75em;
+   position: relative;
+   top: 9px;
+   height: 0;
 }
 
 .highlight-default {

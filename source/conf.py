@@ -64,6 +64,7 @@ numfig_format = {
     "code-block": "Listing %s.",
     "section": "Section %s.",
 }
+numfig_secnum_depth = 0
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -177,6 +178,8 @@ proof_theorem_types = {
    "theorem": "Theorem",
    "application": "Application",
 }
+
+proof_html_nonumbers = ['application']
 
 from pybtex.plugin import register_plugin  # noqa
 from pybtex.style.formatting.unsrt import Style as UnsrtStyle  # noqa

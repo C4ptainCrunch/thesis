@@ -885,7 +885,7 @@ The minimax tree of a game with game tree :math:`(V,E,x^{0})` is the 4-tuple :ma
 
 .. proof:application::
 
-  By Theorem :numref:`theo:value`, the minimax value of an Awale subgame is equal to the value of the subgame. The minimax tree can thus be used to find the optimal strategies.
+  By :numref:`Theorem %s <theo:value>`, the minimax value of an Awale subgame is equal to the value of the subgame. The minimax tree can thus be used to find the optimal strategies.
 
 
 

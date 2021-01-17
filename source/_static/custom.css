@@ -67,8 +67,17 @@ section.first-page h2 {
   }
 
   section.first-page {
-    margin-top: 55vh;
+    margin-top: 40vh;
     page-break-after: always;
+  }
+
+  pre, table, .figure, .proof.proof-type-application {
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3 {
+    page-break-inside: avoid;
+    page-break-after: avoid;
   }
 
 }

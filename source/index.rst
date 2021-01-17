@@ -482,7 +482,7 @@ Now that the base is set, we start implementing the rules,
 some of them being deliberately excluded from this implementation:
 
 -  Loops in the game state are not checked (this considerably speeds up the computations and we did not encounter a loop in our preliminary work);
--  The "feed your opponent" rule is removed; This makes the
+-  The 'feed your opponent' rule is removed; This makes the
    rules simpler and we expect it does not tremendously change the complexity of the game.
 
 .. todo We did later encounter loops after running way more simulations. But this only happened yet using basic algorithms (greedy vs greedy for example). For now, we simulate 500 turns, if we hit this threshold, we declare a tie. This should be detailed in the experimental setup
@@ -895,10 +895,7 @@ The minimax tree of a game with game tree :math:`(V,E,x^{0})` is the 4-tuple :ma
 Implementation of the tree representation
 -----------------------------------------
 
-TODO: On vient de voir que ça peut être représenté comme un arbre, les aglos utilisent des arbres donc on le fait
-
-
-We now implement this tree representation in Python by inheriting from :code:`Game()` class previously defined so that a state can hold references to its parent and children.
+We just saw that Awale can be represented as a tree where each node represents a state of the game and edges represent actions of the players. As many alorithms use this tree representation, we implement it in Python by inheriting from the :code:`Game()` class previously defined so that a state can hold references to its parent and children.
 
 
 
@@ -1292,17 +1289,19 @@ sampling iteration (:math:`N_x`)
 
 TODO Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionally choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
 
-We can show that this simple MCTS method is better than a random agent.
+We show that this simple MCTS method is better than a random agent.
+The estimated value :math:`\hat{v_x} = (W^S_x- W^N_x)/N_x` of node :math:`x` when :math:`N_x` is large converges to a weighted average of the true value of the leaves of the subtree :math:`\Gamma(x)`.
+Indeed, for every leaf :math:`l`, :math:`\hat{v_l} = v_l` if :math:`N_l > 0` and for every other node, :math:`\lim_{N_{X} \to\infty} \hat{v(x)} = m(x)`, where
 
-We can show that estimated value :math:`\hat{v_x}: (W^S_x- W^N_x)/N_x` of node :math:`x` when :math:`N_x` is big converges to a weighted average of the true value of the leaves of the subtree where :math:`x` is the root.
-For every leaf :math:`l`, :math:`\hat{v_l} = v_l` if :math:`N_l > 0`. For every other node, :math:`\lim_{N_{X} \to\infty} \hat{v_x} = \sum_{x' \in A(x)} \hat{v_{x'}} / |A(x)|`. Donc pour un noeud qui n'a que des feuilles, sa valeur estimée est la moyenne des vraies valeurs des feuilles. Pour un autre noeud, sa valeur estimée sera la moyenne pondérée (en fct de la topologie du ss arbre) des v des feuilles du ss arbre 
+.. math::
+    m(x) = \sum_{y \in A(x)} \frac{\hat{v}(y)}{|A(x)|}.
+    
+So, if all children of a node are leaves, the estimated value of the node is the mean of the true values of its children. For any other node, its estimated value will be a weighted (depending on the topology of the sub-tree) average of the values of all the leaves in its sub-tree.
 
-SI tu pars de x0 et que tu joues un coup de MCTS en manximisant l'espérence de gain sous l'hypothèse que les coups suivants sont joués au hasard. Tu es meilleur que le harad car il fait soit pire, soit aussi bien.
-C'est vrai pour tout jeu. Et comme chaque sous jeu est un jeu, c'est vrai à chaque itération.
+Suppose a node :math:`x` where an agent A is to play and :math:`A(x)` only contains terminal nodes. If A plays :math:`\operatorname{arg max}_{y \in A(x)} \hat{v}(y)`, since :math:`\hat{v}(y) = v(y)`, it plays the best move and always wins :math:`v(y)`. If A plays at random, it wins on average :math:`m(y)`. For every other :math:`x`, if A plays :math:`\operatorname{arg max}_{y \in A(x)} \hat{v}(y)` and the opponent plays at random, A wins on average :math:`\max_{y \in A(x)} \hat{v}(y)`, where if A plays at random, A wins :math:`m(y)`.
 
-Des gens ont aessayé de biaiser en diminuant l'importance des choxi que tu ne prendras jamais. 
 
-Kocis a réussi à suffisament biaiser pour ne plus jamais prendre les choix sub-optimaux et du coup ça converge vers le minimax
+We have thus shown that MCTS is better than playing at random. However, it is still sub-optimal as branches of the game with a low value that will never be taken by the player still influence the estimated values of node above them. A lot of research has been done, as early as the first mention of MCTS :cite:`coulom2006mcts` to limit the impact of those branches by playing more simulations starting from nodes that look best according to various heuristics, often specific to the game and driven by human knowledge. 
 
 
 

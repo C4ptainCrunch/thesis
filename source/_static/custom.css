@@ -187,6 +187,7 @@ table.docutils.caption {
   border: 1px solid grey;
   padding: 1em;
   margin-top: 1em;
+  padding-bottom: 0;
 }
 
 .proof.proof-type-application .proof-title .proof-type{

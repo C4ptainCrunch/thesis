@@ -17,12 +17,13 @@
 .. contents:: Table of Contents
    :depth: 3
 
-.. sectnum::
 
 
 
 
   
+.. _sec:intro:
+
 ============
 Introduction
 ============
@@ -40,15 +41,17 @@ At each turn, the players move some seeds and can potentially capture some of th
 
 .. todo:: Explain here what i'm going to do in my thesis, why it is interesting and why it is new.
 
-In Section 2, we present Awale in detail. We then introduce Game Theory frameworks in Section 3.
-Section 4 reviews various approaches to solve Awale: retrograde analysis, :math:`\alpha\beta`-pruning Minimax, and basic Monte Carlo Tree Search.
-In Section 5, we describe more advanced versions of MCTS and in particular UCT.
-Section 6 presents some empirical results (simulations) allowing to compare several MCTS algorithms and Section 7 concludes.
+In :numref:`sec:awale`, we present Awale in detail. We then introduce Game Theory frameworks in :numref:`sec:game-theory`.
+:numref:`sec:ai-awale` reviews various approaches to solve Awale: retrograde analysis, :math:`\alpha\beta`-pruning Minimax, and basic Monte Carlo Tree Search.
+In :numref:`sec:variants`, we describe more advanced versions of MCTS and in particular UCT.
+:numref:`sec:method` presents the mothod used in :numref:`sec:experiments` where we show some empirical results (simulations) allowing to compare several MCTS algorithms and :numref:`sec:conclusion` concludes.
 
 
 
 
   
+.. _sec:awale:
+
 =====
 Awale
 =====
@@ -58,15 +61,15 @@ This game is also sometimes called Awele, Oware, Owari or Ayo in the neighboring
 
 Originally, the game is played on the ground, by digging two rows of six small pits, each containing
 stones, seeds or shells. In the present document, we will name them seeds. The game is also often played on a wooden board symbolizing the original dirt pits.
-The board can be schematized as in :numref:`Figure %s <fig:initial_board>`, every big circle representing a pit and every small disc representing a seed.
+The board can be schematized as in :numref:`fig:initial_board`, every big circle representing a pit and every small disc representing a seed.
 Numbers at the bottom right of each pit are the counts of seeds in each pit for better readability.
-Each row of pits is owned by a player that sits in front of it (:numref:`see Figure %s <board>`).
+Each row of pits is owned by a player that sits in front of it (see :numref:`board`).
 For the sake of convenience, the players are named North and South.
 The 6 pits from the top row belong to North and the 6 from the bottom to South.
 
 The players take turns, a player removing all the seeds from a pit and placing them in other pits following the rules. This is called sowing the seeds. This can result in a configuration in which the player is allowed to capture some seeds according to the rules.
 The goal for each player is to capture more seeds than his opponent.
-The rules vary slightly across countries and will be detailed in :numref:`Section %s <sec:rules>`.
+The rules vary slightly across countries and will be detailed in :numref:`sec:rules`.
 
 
 
@@ -106,13 +109,15 @@ The rules vary slightly across countries and will be detailed in :numref:`Sectio
 
 
   
+.. _sec:mancala:
+
 Mancala
 -------
 
 The Mancala games are an ancient family of game that are played on many continents :cite:`deVoogt2008`, Awale being one of them.
 The word mancala comes from the Arabic word 'نقلة', transliterated as 'naqala' and literally meaning 'to move'.
 
-Like Awale, Mancala games can consist of rows of pits, some of them having more than two rows (:numref:`see Figure %s <bao>`) and sometimes extra pits with a special role. Mancala games can sometimes be played by more than two players.
+Like Awale, Mancala games can consist of rows of pits, some of them having more than two rows (see :numref:`bao`) and sometimes extra pits with a special role. Mancala games can sometimes be played by more than two players.
  
 .. _bao:
 
@@ -157,7 +162,7 @@ each turn (one per non-empty pit owned by him).
 
 Usually, the player that starts the game is the oldest player. In this work, South will always play first.
 
-In this work, the pits of a player are numbered left to right from his point of view as shown in :numref:`Figure %s <fig:pit_numbering>`, :math:`1` being the leftmost pit of South, until :math:`6` at the far right. The same holds for North: :math:`1'` to :math:`6'`.
+In this work, the pits of a player are numbered left to right from his point of view as shown in :numref:`fig:pit_numbering`, :math:`1` being the leftmost pit of South, until :math:`6` at the far right. The same holds for North: :math:`1'` to :math:`6'`.
 
 
 
@@ -194,7 +199,7 @@ In this work, the pits of a player are numbered left to right from his point of 
 
   
 
-As an example, in the initial state (:numref:`See Figure %s <fig:initial_board>`), the first player to move is South (on the bottom) and he plays :math:`4` (highlighted in the figure in red), the board will then be in the  state shown in :numref:`Figure %s <fig:first_move>`.
+As an example, in the initial state (:numref:`fig:initial_board`), the first player to move is South (on the bottom) and he plays :math:`4` (highlighted in the figure in red), the board will then be in the  state shown in :numref:`fig:first_move`.
 
 
 
@@ -240,8 +245,8 @@ next player's turn starts.
 Otherwise, when the last sowed seed is placed in a pit that, after sowing, contains one seed, more
 than 3 seeds or in the current player's own pits, the turn of the player is ended without
 any capture.
-For example, if South plays :math:`4` in the configuration shown in :numref:`Figure %s <fig:pre_capture>`, he will
-be able to capture the seeds in pits 2' and 3' (highlighted in red in :numref:`Figure %s <fig:post_capture>`).
+For example, if South plays :math:`4` in the configuration shown in :numref:`fig:pre_capture`, he will
+be able to capture the seeds in pits :math:`2'` and :math:`3'` (highlighted in red in :numref:`fig:post_capture`).
 
 
 
@@ -301,7 +306,7 @@ be able to capture the seeds in pits 2' and 3' (highlighted in red in :numref:`F
 
 
   
-  The resulting board after South played 4 in :numref:`Fig %s <fig:pre_capture>`. Pits 2' and 3' in red will be captured.
+  The resulting board after South played 4 in :numref:`fig:pre_capture`. Pits 2' and 3' in red will be captured.
 
 
 
@@ -314,7 +319,7 @@ and subsequent passes.
 If the current player's opponent has no seed left in his half board, the
 current player has to play a move that gives him seeds if such a move exists.
 This rule is called the 'feed your opponent'.
-In :numref:`Figure %s <fig:feed>`, South has to play pit 5 because playing pit 1 would leave the opponent without any move to play.
+In :numref:`fig:feed`, South has to play pit 5 because playing pit 1 would leave the opponent without any move to play.
 
 
 
@@ -362,6 +367,8 @@ wins.
 
 
   
+.. _sec:implem:
+
 Implementation of the rules
 ---------------------------
 
@@ -678,6 +685,10 @@ To show a minimal example of the implementation, we can now play a move and have
 
 
 
+    
+.. _fig:svg:
+    
+
 
 .. figure:: index_files/index_38_0.svg
 
@@ -687,6 +698,14 @@ To show a minimal example of the implementation, we can now play a move and have
 
 
   
+  An example of the SVG representation of a game state
+
+
+
+
+  
+.. _sec:game-theory:
+
 =====================
 Awale and Game Theory
 =====================
@@ -695,7 +714,7 @@ Awale and Game Theory
 
 
   
-In this section, we introduce the game-theoretic notions that are needed to understand the algorithms of Section XX. After introducing each notion, we apply it to Awale.
+In this section, we introduce the game-theoretic notions that are needed to understand the algorithms of :numref:`sec:ai-awale`. After introducing each notion, we apply it to Awale.
 The notation and most conventions used for game-theoretic concepts are taken from :cite:`MaschlerSolanZamir2013`.
 
 Basic game theoretic concepts
@@ -724,7 +743,7 @@ The set :math:`V_{i}` contains all nodes at which player :math:`i` is to play. I
 
   Awale is a sequential zero-sum game where the  players 0 and 1 are respectively called South and North and :math:`O=\{+1,-1,0\}`, respectively  meaning South wins, North wins or draw. Each node represents a state of the game and belongs either to :math:`V_{0}` or :math:`V_{1}`. In the first case, South is to play whereas, in the second one, North is to play. Each node has between 0 and 6 children corresponding to the possible states resulting from the move of the player 'owning' that node.
 
-  For instance, the root :math:`x^{0}` of the game tree (the initial state) belongs to :math:`V_{0}`, meaning South is to play in the initial state (see :numref:`Figure %s <fig:initial_board>`).  The root :math:`x^{0}` has six children corresponding to the six possible states resulting from  South's move. Each of these children belongs to :math:`V_{1}`, meaning North is to play in these six states. Each of these six states at depth 1  in turn has six children corresponding to the six possible states resulting from North's move. We thus have 36 states at depth 2 and they all belong to :math:`V_{0}`, and so on.
+  For instance, the root :math:`x^{0}` of the game tree (the initial state) belongs to :math:`V_{0}`, meaning South is to play in the initial state (see :numref:`fig:initial_board`).  The root :math:`x^{0}` has six children corresponding to the six possible states resulting from  South's move. Each of these children belongs to :math:`V_{1}`, meaning North is to play in these six states. Each of these six states at depth 1  in turn has six children corresponding to the six possible states resulting from North's move. We thus have 36 states at depth 2 and they all belong to :math:`V_{0}`, and so on.
 
 A *perfect information* game is such that that every player who is to take an action knows the current state of the game, meaning that he knows all the actions in the game that led to the current point in the play. This is not the case if, for instance, the players have cards and hide them as in poker.
 
@@ -761,7 +780,7 @@ We can now state an important result due to the founder of game theory.
 
 .. proof:application::
 
-  This theorem obviously applies to Awale but the game tree of Awale is so large that it is very difficult to know which of the three statements is correct. This question has been solved only in 2003 (see Section XXXX Analyse retrograde).
+  This theorem obviously applies to Awale but the game tree of Awale is so large that it is very difficult to know which of the three statements is correct. This question has been solved only in 2003 (see :numref:`sec:retrograde`).
 
 If player 0 chooses strategy :math:`s_{0}`, he gets :math:`u(s_{0},s_{1})`, depending on the strategy :math:`s_{1}` chosen by player 1. In the worst case, player 0 gets :math:`\min_{s_{1} \in S_{1}} u(s_{0},s_{1})`. If player 0 wants to play safe, he better chooses a strategy maximizing :math:`\min_{s_{1} \in S_{1}} u(s_{0},s_{1})`.
 Hence the *security level  of a game for player 0* is defined by
@@ -804,7 +823,7 @@ This is a special case of Theorem 4.43 in :cite:`MaschlerSolanZamir2013`.
 
 .. proof:application::
 
-  Awale has a value :math:`v` and it belongs to :math:`\{-1, 0, +1\}`. It is therefore possible  to solve Awale (see Section 4.3 XXXXX, passage \`a propos de Romein 2003).
+  Awale has a value :math:`v` and it belongs to :math:`\{-1, 0, +1\}`. It is therefore possible  to solve Awale (see :numref:`sec:retrograde`).
   When both players play their optimal strategy, South wins :math:`v` and North pays :math:`v`. If a player has a winning strategy, then it is also an optimal strategy. Any maximin strategy is an optimal policy.
 
 Let us consider a game :math:`\Gamma` with game tree :math:`(V,E,x^{0})`.
@@ -813,10 +832,10 @@ the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresp
 
 .. proof:application::
 
-  Every subgame of Awale is a finite two-player zero-sum extensive-form game with perfect information and we can therefore appeal to Theorem :numref:`theo:value`. So, for every node :math:`x \in V`, the subgame :math:`\Gamma(x)` has a value, which is equal to the maximin value and the minimax value. It is also called the value of node :math:`x`, denoted :math:`v(x)`. It represents the gain of player 0 if, starting from node :math:`x`, both players play their optimal strategy, i.e.\  maximin for player 0 and minimax for player 1.
+  Every subgame of Awale is a finite two-player zero-sum extensive-form game with perfect information and we can therefore appeal to :numref:`theo:value`. So, for every node :math:`x \in V`, the subgame :math:`\Gamma(x)` has a value, which is equal to the maximin value and the minimax value. It is also called the value of node :math:`x`, denoted :math:`v(x)`. It represents the gain of player 0 if, starting from node :math:`x`, both players play their optimal strategy, i.e.\  maximin for player 0 and minimax for player 1.
 
-  Example. Suppose North has two seeds in pit  6' while South has one seed in pit 2 and one in 4 (see :numref:`Figure %s <fig:game>`).
-  Suppose also both South and North have  captured 22 seeds. Suppose finally  South is to play. If South plays 2, then North plays 6' and has no more seeds in his half board. The game ends with a draw because no player has captured more seeds than the other. If, on the contrary, South plays 4, then North plays 6', captures two seeds in pit 2 and has no more seeds in his half board.  The game ends with a win for North because he has captured more seeds than South. This subgame tree is represented in :numref:`Figure %s <fig:tree>`. The optimal strategy for South is obviously to play 2 whereas the optimal strategy for North is the only available strategy, that is playing 6'. If both players apply their optimal strategy, the outcome is a draw and the value of the game is 0.
+  Example. Suppose North has two seeds in pit  6' while South has one seed in pit 2 and one in 4 (see :numref:`fig:game`).
+  Suppose also both South and North have  captured 22 seeds. Suppose finally  South is to play. If South plays 2, then North plays 6' and has no more seeds in his half board. The game ends with a draw because no player has captured more seeds than the other. If, on the contrary, South plays 4, then North plays 6', captures two seeds in pit 2 and has no more seeds in his half board.  The game ends with a win for North because he has captured more seeds than South. This subgame tree is represented in :numref:`fig:tree`. The optimal strategy for South is obviously to play 2 whereas the optimal strategy for North is the only available strategy, that is playing 6'. If both players apply their optimal strategy, the outcome is a draw and the value of the game is 0.
 
 
 
@@ -840,7 +859,7 @@ the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresp
     
 
 
-.. figure:: index_files/index_41_0.svg
+.. figure:: index_files/index_42_0.svg
 
 
 
@@ -870,7 +889,7 @@ the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresp
     
 
 
-.. figure:: index_files/index_43_0.svg
+.. figure:: index_files/index_44_0.svg
 
 
 
@@ -878,7 +897,7 @@ the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresp
 
 
   
-  The subgame tree corresponding to the position depicted in :numref:`Figure %s <fig:game>`.
+  The subgame tree corresponding to the position depicted in :numref:`fig:game`.
 
 
 
@@ -886,13 +905,15 @@ The minimax tree of a game with game tree :math:`(V,E,x^{0})` is the 4-tuple :ma
 
 .. proof:application::
 
-  By :numref:`Theorem %s <theo:value>`, the minimax value of an Awale subgame is equal to the value of the subgame. The minimax tree can thus be used to find the optimal strategies.
+  By :numref:`theo:value`, the minimax value of an Awale subgame is equal to the value of the subgame. The minimax tree can thus be used to find the optimal strategies.
 
 
 
 
 
   
+.. _sec:implem-tree:
+
 Implementation of the tree representation
 -----------------------------------------
 
@@ -1002,6 +1023,8 @@ Next, we overload the ``Game.step(i)`` method so that we do not compute twice st
 
 
   
+.. _sec:ai-awale:
+
 ================================================
 Artificial Intelligence approaches to play Awale
 ================================================
@@ -1049,6 +1072,8 @@ updates once more their internal state and then outputs their action for the opp
 
 
   
+.. _sec:naive:
+
 Naive agents
 ------------
 
@@ -1125,6 +1150,8 @@ The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn
 
 
   
+.. _sec:minimax:
+
 Depth-limited Minimax
 ---------------------
 
@@ -1200,6 +1227,8 @@ As :math:`\alpha\beta` minimax has no disadvantage over minimax and has a lower 
 
 
   
+.. _sec:retrograde:
+
 Retrograde analysis
 -------------------
 
@@ -1231,6 +1260,8 @@ Such a huge database is of course not practical and we thus think there is still
 improvement if we can create an agent with a policy that does not need a
 exhaustive database, even if the agent is not capable of a perfect play.
 
+.. _sec:mcts:
+
 
 Monte Carlo Tree Search
 -----------------------
@@ -1238,16 +1269,16 @@ Monte Carlo Tree Search
 Monte Carlo Tree Search (MCTS) has been introduced by :cite:`coulom2006mcts` as a formalization of Monte Carlo methods applied to tree search that were previously explored by others, among which :cite:`Bouzy2004montecarlo`. Since then, MCTS has been a major advancement and topic of interest in the field of AI research, particularly for games and planning problems.
 
 
---cc-- The focus of MCTS is on the analysis of the most promising moves, expanding the search tree based on random sampling of the game space. The application of Monte Carlo tree search in games is based on many playouts, also called roll-outs. In each playout, the game is played out to the very end by selecting moves at random. The final game result of each playout is then used to weight the nodes in the game tree so that better nodes are more likely to be chosen in future playouts.
+TODO --cc-- The focus of MCTS is on the analysis of the most promising moves, expanding the search tree based on random sampling of the game space. The application of Monte Carlo tree search in games is based on many playouts, also called roll-outs. In each playout, the game is played out to the very end by selecting moves at random. The final game result of each playout is then used to weight the nodes in the game tree so that better nodes are more likely to be chosen in future playouts.
 
---cc-- The most basic way to use playouts is to apply the same number of playouts after each legal move of the current player, then choose the move which led to the most victories.[10] The efficiency of this method—called Pure Monte Carlo Game Search—often increases with time as more playouts are assigned to the moves that have frequently resulted in the current player's victory according to previous playouts. Each round of Monte Carlo tree search consists of four steps:[35]
+TODO --cc-- The most basic way to use playouts is to apply the same number of playouts after each legal move of the current player, then choose the move which led to the most victories.[10] The efficiency of this method—called Pure Monte Carlo Game Search—often increases with time as more playouts are assigned to the moves that have frequently resulted in the current player's victory according to previous playouts. Each round of Monte Carlo tree search consists of four steps:[35]
 
 
---cc-- A tree is built in an incremental and asymmetric manner.
+TODO --cc-- A tree is built in an incremental and asymmetric manner.
 For each iteration of the algorithm, a tree policy is used to find the most urgent node of the current tree.
 The tree policy attempts to balance considerations of exploration (look in areas that have not been well sampled yet) and exploitation (look in areas which appear to be promising).
 
---cc-- A simulation is then run from the selected node and the search tree updated according to the result.
+TODO --cc-- A simulation is then run from the selected node and the search tree updated according to the result.
 This involves the addition of a child node corresponding to the action taken from the selected node, and an update of the statistics of its ancestors.
 Moves are made during this simulation according to some default policy, which in the simplest case is to make uniform random moves.
 
@@ -1412,6 +1443,8 @@ Both policies in this implementation are random walks.
 
 
   
+.. _sec:variants:
+
 ================================
 Monte Carlo tree search variants
 ================================
@@ -1423,6 +1456,8 @@ The basic version of MCTS presented above has proven to be effective in a variet
 
 
   
+.. _sec:uct:
+
 Upper Confidence Bounds for Trees
 ---------------------------------
 
@@ -1514,7 +1549,7 @@ Informed UCT
 All moves as first
 ------------------
 
-"All Moves As First" (AMAF) and its successor "Rapid Action Value Estimation" (RAVE) are enhancements that have often been proved very successful when applying MCTS to the game of Go :cite:`gelly20111rave`.
+'All Moves As First' (AMAF) and its successor 'Rapid Action Value Estimation' (RAVE) are enhancements that have often been proved very successful when applying MCTS to the game of Go :cite:`gelly20111rave`.
 The basic idea is to update statistics for all actions selected during a simulation as if they were the first action applied. This method is particularly well suited for incremental games such as Go, where the value of a move is often dependent on the state of the board in its close proximity and unaffected by moves played elsewhere on the board. 
 Due to the popularity of AMAF, these methods are mentioned here for completeness but will not be pursued further due to the lack of applicability to Awale where the value of moves are dependent on the whole board and on the advancement of the game.
 
@@ -1534,6 +1569,8 @@ of the algorithm because much less playouts are required.
 
 
   
+.. _sec:method:
+
 ======
 Method
 ======
@@ -1544,6 +1581,8 @@ This section describes methods used to compare agents and details the experiment
 
 
   
+.. _sec:compare:
+
 Comparing algorithms
 --------------------
 
@@ -1659,45 +1698,17 @@ A wins more matches than B so we can say :math:`A \succ B`. The same reasoning w
   
 
 
-  .. code:: ipython3
 
-    from graphviz import Digraph
+
+
+
+
+
+
     
-    f = Digraph()
-    
-    f.attr('node', shape='circle')
-    
-    f.edge("1", "2")
-    f.edge("1", "3")
-    f.edge("1", "4")
-    
-    f.edge("2", "5")
-    f.edge("2", "6")
-    
-    f.edge("3", "7")
-    f.edge("3", "8")
-    
-    f.edge("4", "9")
-    f.edge("4", "10")
-    
-    for i in range(6):
-        if i % 2 == 0:
-            f.node("res_%i" % i, label="1", shape="none")
-        else:
-            f.node("res_%i" % i, label="-1", shape="none")
-        f.edge("%i" % (i + 5), "res_%i" % i, style="invis")
-        
-    f
 
 
-
-
-
-
-
-
-
-.. figure:: index_files/index_78_0.svg
+.. figure:: index_files/index_79_0.svg
 
 
 
@@ -1720,7 +1731,7 @@ Champion selection
 ~~~~~~~~~~~~~~~~~~
 
 Let  :math:`A_x` be an algorithm :math:`A` with a continuous parameter :math:`x \in X` and :math:`f_n(A_{x}, A_{y})`, the number of wins of :math:`A_{x}` against :math:`A_{y}` after :math:`n` matches.
-We make the assumption that with :math:`n` big enough, :math:`f_n(A_{x}, A_{y})` is smooth for all :math:`x,y \in X` due to the fact that both agents :math:`A_{x}` and :math:`A_{y}` share the same algorithm. This smoothness property will be empirically confirmed later (see :ref:`sec:eps-tuning` and :ref:`sec:uct-tuning`).
+We make the assumption that with :math:`n` big enough, :math:`f_n(A_{x}, A_{y})` is smooth for all :math:`x,y \in X` due to the fact that both agents :math:`A_{x}` and :math:`A_{y}` share the same algorithm. This smoothness property will be empirically confirmed later (see Sections :numref:`%s <sec:eps-tuning>` and :numref:`%s <sec:uct-tuning>`).
 
 
 So, for :math:`x_1` close to :math:`x_1` and :math:`y_1` close to :math:`y_2`, the value of :math:`f_n(A_{x_1}, A_{y_1})` gives us an indication about the value of :math:`f_n(A_{x_2}, A_{y_2})`.
@@ -1743,6 +1754,8 @@ Tournament solution
 
 
   
+.. _sec:setup:
+
 
 Experimental setup
 ------------------
@@ -1907,6 +1920,8 @@ Results of the jobs submitted to AWS Batch can then be found in AWS CloudWatch. 
 
 
   
+.. _sec:experiments:
+
 ===========
 Experiments
 ===========
@@ -1948,7 +1963,7 @@ We thus pick evenly spaced values of :math:`\varepsilon` in the interval :math:`
 
 
   
-The results of these matches is shown in :numref:`Figure %s <fig:eps-matrix>` below in which we can see despite the noise that a higher value of :math:`\varepsilon` (meaning the agent chooses most often the greedy approach) is stronger than a lower value. Due to the noise in the data despite the high number of games played it is hard to know for sure if :math:`\varepsilon = 1` is the optimum or if it is a bit lower. We will keep a value of :math:`\varepsilon = 0.95` for the rest of this work.
+The results of these matches is shown in :numref:`fig:eps-matrix` below in which we can see despite the noise that a higher value of :math:`\varepsilon` (meaning the agent chooses most often the greedy approach) is stronger than a lower value. Due to the noise in the data despite the high number of games played it is hard to know for sure if :math:`\varepsilon = 1` is the optimum or if it is a bit lower. We will keep a value of :math:`\varepsilon = 0.95` for the rest of this work.
 
 
 
@@ -1972,7 +1987,7 @@ The results of these matches is shown in :numref:`Figure %s <fig:eps-matrix>` be
     
 
 
-.. figure:: index_files/index_96_0.svg
+.. figure:: index_files/index_97_0.svg
 
 
 
@@ -2020,7 +2035,7 @@ As stated earlier, we know that the strength of the agent is an increasing funct
 
 
   
-While the results shown in in :numref:`Figure %s <fig:mcts-time_5s>` are also noisy, we indeed see that the strength of MCTS increases with :math:`t` but the slope of the curve is not very important after :math:`t=5s` so we decide that :math:`t=5s` is a good compromise between strength and waiting time.
+While the results shown in in :numref:`fig:mcts-time_5s` are also noisy, we indeed see that the strength of MCTS increases with :math:`t` but the slope of the curve is not very important after :math:`t=5s` so we decide that :math:`t=5s` is a good compromise between strength and waiting time.
 
 
 
@@ -2041,7 +2056,7 @@ While the results shown in in :numref:`Figure %s <fig:mcts-time_5s>` are also no
     
 
 
-.. figure:: index_files/index_101_0.svg
+.. figure:: index_files/index_102_0.svg
 
 
 
@@ -2086,7 +2101,7 @@ The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`
 
 
   
-What we see in :numref:`Figure %s <utc-tuning-c>` is a bell curve with some noise and a plateau around :math:`c = \sqrt(2) / 2`. The noise is louder on the right than on on the left of its maximum. An explanation for this could be that on the left, as :math:`c` is lower, there is not much exploration so the algorithm is more deterministic while it's the opposite on the right and each simulation could be either really good or really bad depending on luck.
+What we see in :numref:`utc-tuning-c` is a bell curve with some noise and a plateau around :math:`c = \sqrt(2) / 2`. The noise is louder on the right than on on the left of its maximum. An explanation for this could be that on the left, as :math:`c` is lower, there is not much exploration so the algorithm is more deterministic while it's the opposite on the right and each simulation could be either really good or really bad depending on luck.
 
 As the maximum of the bell curve is around :math:`c = \sqrt(2) / 2` it seems to confirm that it is the optimum value for UCT.
 
@@ -2125,7 +2140,7 @@ Under the assumption that the curve is smooth, we know that :math:`c = \sqrt(2) 
 
 
   
-While the curve in :numref:`Figure %s <fig:uct-tuning-c-15>` is not as smooth as in the first experiment, the result of the matches against :math:`c = 1.5` seem to show the same curve with a maximum at :math:`c = \sqrt(2) / 2`.
+While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the first experiment, the result of the matches against :math:`c = 1.5` seem to show the same curve with a maximum at :math:`c = \sqrt(2) / 2`.
 
 
 
@@ -2146,7 +2161,7 @@ While the curve in :numref:`Figure %s <fig:uct-tuning-c-15>` is not as smooth as
     
 
 
-.. figure:: index_files/index_109_0.svg
+.. figure:: index_files/index_110_0.svg
 
 
 
@@ -2159,6 +2174,8 @@ While the curve in :numref:`Figure %s <fig:uct-tuning-c-15>` is not as smooth as
 
 
   
+.. _sec:tournament:
+
 Tournament results
 ------------------
 
@@ -2191,7 +2208,7 @@ We select the best agent for every algorithm and make each of them play 50 match
 
 
   
-The results, displayed in a matrix in :numref:`Figure %s <fig:matrix>`, show that UCT and GreedyUCT beat every other agent. There is no clear winner between those 2 champions though.
+The results, displayed in a matrix in :numref:`fig:matrix`, show that UCT and GreedyUCT beat every other agent. There is no clear winner between those 2 champions though.
 
 
 
@@ -2212,7 +2229,7 @@ The results, displayed in a matrix in :numref:`Figure %s <fig:matrix>`, show tha
     
 
 
-.. figure:: index_files/index_114_0.svg
+.. figure:: index_files/index_115_0.svg
 
 
 
@@ -2227,6 +2244,8 @@ The results, displayed in a matrix in :numref:`Figure %s <fig:matrix>`, show tha
 
 
   
+.. _sec:conclusion:
+
 ==========
 Conclusion
 ==========

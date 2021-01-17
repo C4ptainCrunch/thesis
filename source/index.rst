@@ -66,7 +66,8 @@ The 6 pits from the top row belong to North and the 6 from the bottom to South.
 
 The players take turns, a player removing all the seeds from a pit and placing them in other pits following the rules. This is called sowing the seeds. This can result in a configuration in which the player is allowed to capture some seeds according to the rules.
 The goal for each player is to capture more seeds than his opponent.
-The rules vary slightly across countries and will be detailed in Section (:ref:`sec:rules`). 
+The rules vary slightly across countries and will be detailed in :numref:`Section %s <sec:rules>`.
+
 
 
 
@@ -698,7 +699,7 @@ In this section, we introduce the game-theoretic notions that are needed to unde
 The notation and most conventions used for game-theoretic concepts are taken from :cite:`MaschlerSolanZamir2013`.
 
 Basic game theoretic concepts
-----------------------------
+-----------------------------
 
 The two main representations of games are the strategic form and the extensive form. Since the extensive-form representation is particularly  convenient for describing algorithms playing Awale, we  only present the extensive form. We also restrict this section to zero-sum  two-players finite games.
 A  *zero-sum two-players finite game in extensive form*  is an ordered vector
@@ -1644,6 +1645,7 @@ In a similar fashion, we define the theoretical algorithms B and C with a permut
 
 When playing matches between any two of these agents, :math:`s_0(x^0)` will be uniformly distributed between the 6 possible moves. 
 If A and B play a match and :math:`s_0(x^0)` is
+
  - 1 or 2 : A plays :math:`+`, B plays :math:`r`. Thus A wins,
  - 3 or 4: A either wins the game is a draw,
  - 5 or 6: B wins.

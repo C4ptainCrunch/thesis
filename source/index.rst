@@ -1826,7 +1826,7 @@ Those can be can then be recorded in a dictionary like below for further analysi
 
 .. parsed-literal::
 
-    {'duration': 0.0277, 'depth': 163, 'score': [24, 23], 'winner': 0}
+    {'duration': 0.0041, 'depth': 21, 'score': [28, 2], 'winner': 0}
 
 
 
@@ -2282,7 +2282,5 @@ Footnotes
   
 Appendix
 --------
-
-:doc:`removed`
 
 

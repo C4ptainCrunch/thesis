@@ -759,7 +759,7 @@ A *strategy vector* is a pair of strategies :math:`s = (s_{0}, s_{1} )`, one for
 
   In the case of Awale, for any :math:`x`, :math:`A(x)` contains at most six nodes.
 
-When the only outcomes of a two-player game are "player 0 wins", "player 1 wins" and "draw", 
+When the only outcomes of a two-player game are 'player 0 wins', 'player 1 wins' and 'draw', 
 it is convenient to code these outcomes by :math:`+1, -1` and :math:`0` respectively, as we did higher for Awale.
 A *winning strategy for player 0*  is then defined as a strategy :math:`(s_{0},s_{1})`
 such that :math:`u(s_{0},s_{1}) = 1`  for all :math:`s_{1} \in S_{1}`. A strategy :math:`s_{0}` of
@@ -1156,7 +1156,7 @@ Depth-limited Minimax
 ---------------------
 
 The minimax algorithm performs a complete depth-first search used to compute the minimax tree.
-It is a recursive algorithm that computes the value of a node based on the value of its children. In the case of a terminal node, the value is trivial to compute and depends solely on the winner. Otherwise, for "inner" (non-terminal) nodes, the value is computed as the max (resp. min) of the value of the children if the node is at an even (resp. odd) depth.
+It is a recursive algorithm that computes the value of a node based on the value of its children. In the case of a terminal node, the value is trivial to compute and depends solely on the winner. Otherwise, for 'inner' (non-terminal) nodes, the value is computed as the max (resp. min) of the value of the children if the node is at an even (resp. odd) depth.
 
 In Awale and other complex games, as shown before, generating the whole tree is computationally very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to depth :math:`d`. Nodes at depth :math:`d` are then considered as leaves and their value are estimated using an heuristic instead of being computed by recursively computing the values of their children. 
 
@@ -1322,8 +1322,8 @@ sampling iteration (:math:`N_x`)
 TODO Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionally choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
 
 We show that this simple MCTS method is better than a random agent.
-The estimated value :math:`\hat{v_x} = (W^S_x- W^N_x)/N_x` of node :math:`x` when :math:`N_x` is large converges to a weighted average of the true value of the leaves of the subtree :math:`\Gamma(x)`.
-Indeed, for every leaf :math:`l`, :math:`\hat{v_l} = v_l` if :math:`N_l > 0` and for every other node, :math:`\lim_{N_{X} \to\infty} \hat{v(x)} = m(x)`, where
+The estimated value :math:`\hat{v}(x) = (W^S_x- W^N_x)/N_x` of node :math:`x` when :math:`N_x` is large converges to a weighted average of the true value of the leaves of the subtree :math:`\Gamma(x)`.
+Indeed, for every leaf :math:`l`, :math:`\hat{v}(l) = v(l)` if :math:`N_l > 0` and for every other node, :math:`\lim_{N_{X} \to\infty} \hat{v}(x) = m(x)`, where
 
 .. math::
     m(x) = \sum_{y \in A(x)} \frac{\hat{v}(y)}{|A(x)|}.
@@ -1649,7 +1649,7 @@ Now that we know the number of matches we need to play to be able to ascertain t
 
 
   
-With this method, we can then define a strength relation "is stronger than", noted :math:`\succ` over the set of agents where :math:`A \succ B` if when playing 50 matches between A and B, :math:`n_A + \frac{1}{2}\ n_d \geq 32`.
+With this method, we can then define a strength relation 'is stronger than', noted :math:`\succ` over the set of agents where :math:`A \succ B` if when playing 50 matches between A and B, :math:`n_A + \frac{1}{2}\ n_d \geq 32`.
 
 
 

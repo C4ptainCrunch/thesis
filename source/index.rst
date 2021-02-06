@@ -1268,20 +1268,23 @@ Monte Carlo Tree Search
 Monte Carlo Tree Search (MCTS) has been introduced by :cite:`coulom2006mcts` as a formalization of Monte Carlo methods applied to tree search that were previously explored by others, among which :cite:`Bouzy2004montecarlo`. Since then, MCTS has been a major advancement and topic of interest in the field of AI research, particularly for games and planning problems.
 
 
-TODO --cc-- The focus of MCTS is on the analysis of the most promising moves, expanding the search tree based on random sampling of the game space. The application of Monte Carlo tree search in games is based on many playouts, also called roll-outs. In each playout, the game is played out to the very end by selecting moves at random. The final game result of each playout is then used to weight the nodes in the game tree so that better nodes are more likely to be chosen in future playouts.
-
-TODO --cc-- The most basic way to use playouts is to apply the same number of playouts after each legal move of the current player, then choose the move which led to the most victories.[10] The efficiency of this method—called Pure Monte Carlo Game Search—often increases with time as more playouts are assigned to the moves that have frequently resulted in the current player's victory according to previous playouts. Each round of Monte Carlo tree search consists of four steps:[35]
+.. todo:: This section is still a work in progress
 
 
-TODO --cc-- A tree is built in an incremental and asymmetric manner.
-For each iteration of the algorithm, a tree policy is used to find the most urgent node of the current tree.
-The tree policy attempts to balance considerations of exploration (look in areas that have not been well sampled yet) and exploitation (look in areas which appear to be promising).
+..
+    TODO --cc-- The focus of MCTS is on the analysis of the most promising moves, expanding the search tree based on random sampling of the game space. The application of Monte Carlo tree search in games is based on many playouts, also called roll-outs. In each playout, the game is played out to the very end by selecting moves at random. The final game result of each playout is then used to weight the nodes in the game tree so that better nodes are more likely to be chosen in future playouts.
 
-TODO --cc-- A simulation is then run from the selected node and the search tree updated according to the result.
-This involves the addition of a child node corresponding to the action taken from the selected node, and an update of the statistics of its ancestors.
-Moves are made during this simulation according to some default policy, which in the simplest case is to make uniform random moves.
+    TODO --cc-- The most basic way to use playouts is to apply the same number of playouts after each legal move of the current player, then choose the move which led to the most victories.[10] The efficiency of this method—called Pure Monte Carlo Game Search—often increases with time as more playouts are assigned to the moves that have frequently resulted in the current player's victory according to previous playouts. Each round of Monte Carlo tree search consists of four steps:[35]
 
-TODO The MCTS algorithm constructs an estimation of the game tree by sampling. 
+    TODO --cc-- A tree is built in an incremental and asymmetric manner.
+    For each iteration of the algorithm, a tree policy is used to find the most urgent node of the current tree.
+    The tree policy attempts to balance considerations of exploration (look in areas that have not been well sampled yet) and exploitation (look in areas which appear to be promising).
+
+    TODO --cc-- A simulation is then run from the selected node and the search tree updated according to the result.
+    This involves the addition of a child node corresponding to the action taken from the selected node, and an update of the statistics of its ancestors.
+    Moves are made during this simulation according to some default policy, which in the simplest case is to make uniform random moves.
+
+    TODO The MCTS algorithm constructs an estimation of the game tree by sampling. 
 
 A great benefit of MCTS is that unlike depth-limited minimax, MCTS is aheuristic: there is no need to estimate the values of non-terminal nodes with an domain specific heuristic. This in turn, greatly reduces (or even removes) the need to acquire and incorporate domain knowledge. This explains our interest on the subject and the title of this work.
 
@@ -1305,20 +1308,25 @@ The estimation of the true game tree is constructed with the following algorithm
   of :math:`T`.
 
 
-Each node :math:`x` holds 3 counters : :math:`N_x` (the number of simulation that went through :math:`x`),:math:`W^S_x` and :math:`W^N_x` (the number of simulations going through :math:`x` and leading to a win respectively for South and North). From these counters, a probability of North winning can be estimated by :math:`\frac{W^N_x}{N_x}` if both players play randomly from :math:`x`. TODO: 
+Each node :math:`x` holds 3 counters : :math:`N_x` (the number of simulation that went through :math:`x`),:math:`W^S_x` and :math:`W^N_x` (the number of simulations going through :math:`x` and leading to a win respectively for South and North). From these counters, a probability of North winning can be estimated by :math:`\frac{W^N_x}{N_x}` if both players play randomly from :math:`x`.
 
-TODO This sampling can be ran as many times as allowed (most of the
-time, the agent is time constrained). One can also stop the sampling earlier if
 
-TODO each time refining the probability of
-winning when choosing a child of the root node. When we are done sampling, the
-agent chooses the child with the highest probability of winning and plays the
-corresponding action in the game.
+.. todo:: This section is still a work in progress
 
-TODO the total number of times a node has been played during a
-sampling iteration (:math:`N_x`)
 
-TODO Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionally choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
+..
+    TODO This sampling can be ran as many times as allowed (most of the
+    time, the agent is time constrained). One can also stop the sampling earlier if
+
+    TODO each time refining the probability of
+    winning when choosing a child of the root node. When we are done sampling, the
+    agent chooses the child with the highest probability of winning and plays the
+    corresponding action in the game.
+
+    TODO the total number of times a node has been played during a
+    sampling iteration (:math:`N_x`)
+
+    TODO Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionally choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
 
 We show that this simple MCTS method is better than a random agent.
 The estimated value :math:`\hat{v}(x) = (W^S_x- W^N_x)/N_x` of node :math:`x` when :math:`N_x` is large converges to a weighted average of the true value of the leaves of the subtree :math:`\Gamma(x)`.
@@ -1373,7 +1381,7 @@ First, we subclass :code:`TreeGame` so in addition to holding the game state, ea
 
 
   
-The MCTS first chooses a node to expand with the `tree_policy()` when the node is found, it is expanded with the `default_policy()`. When reaching a terminal node, the counters are updated. This is repeated `BUDGET` times and then the final action is chosen as the action that has the highest mean of game values (game value is 1 for wins, 0 for draws, -1 for losses).
+The MCTS first chooses a node to expand with the :code:`tree_policy()` when the node is found, it is expanded with the :code:`default_policy()`. When reaching a terminal node, the counters are updated. This is repeated :code:`budget` times and then the final action is chosen as the action that has the highest mean of game values (game value is 1 for wins, 0 for draws, -1 for losses).
 
 Both policies in this implementation are random walks.
 
@@ -1465,7 +1473,11 @@ Because basic MCTS samples uniformly the game tree, it spends compute time estim
 
 Basic MCTS, during the tree policy, chooses a child at random even if the children is likely of having a poor mean value. UCT instead treats the choice of child as a multi-armed bandit problem: picking a child for which we have an estimation of the true value to make a simulation is analogous to picking a slot machine for which we have an estimation of the true reward probability. 
 
-TODO When a node has not been visited much, the ratio of wins to visits is an estimation of the mean value of the children. But after a time, UCT prioritizes more the good moves so the value drifts and converges to the game theoretic value (:cite:`kocsis2006bandit`). This means that the bandit is non stationary but this is ok as it does not drift too much.
+.. todo:: This section is still a work in progress
+
+
+..
+    TODO When a node has not been visited much, the ratio of wins to visits is an estimation of the mean value of the children. But after a time, UCT prioritizes more the good moves so the value drifts and converges to the game theoretic value (:cite:`kocsis2006bandit`). This means that the bandit is non stationary but this is ok as it does not drift too much.
 
 
 UCT adapts UCB to a game tree and gives us the following formula for the upper confidence bound:
@@ -1563,6 +1575,9 @@ To replace the random play in the simulation step, :cite:`AlphaGo,AlphaGoZero,Al
 to use a neural network to estimate the value of a
 game state without having to play it. This can greatly enhance the performance
 of the algorithm because much less playouts are required.
+
+
+.. todo:: This section is still a work in progress
 
 
 
@@ -2281,5 +2296,8 @@ Footnotes
   
 Appendix
 --------
+
+.. todo:: This section is still a work in progress. It will mostly contain links to some relevant code
+
 
 

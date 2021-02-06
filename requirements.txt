@@ -15,6 +15,7 @@ tqdm
 
 sphinx
 sphinxcontrib-bibtex<2.0.0
+sphinxcontrib-proof
 boto3
 sphinx-autobuild
 nbsphinx

@@ -60,7 +60,7 @@ The subject of our study, Awale is an ancient, two player board game originating
 This game is also sometimes called Awele, Oware, Owari or Ayo in the neighboring countries, languages and cultures :cite:`crane1982`.
 
 Originally, the game is played on the ground, by digging two rows of six small pits, each containing
-stones, seeds or shells. In the present document, we will name them seeds. The game is also often played on a wooden board symbolizing the original dirt pits.
+stones, seeds or shells. In the present document, we name them seeds. The game is also often played on a wooden board symbolizing the original dirt pits.
 The board can be schematized as in :numref:`fig:initial_board`, every big circle representing a pit and every small disc representing a seed.
 Numbers at the bottom right of each pit are the counts of seeds in each pit for better readability.
 Each row of pits is owned by a player that sits in front of it (see :numref:`board`).
@@ -69,7 +69,7 @@ The 6 pits from the top row belong to North and the 6 from the bottom to South.
 
 The players take turns, a player removing all the seeds from a pit and placing them in other pits following the rules. This is called sowing the seeds. This can result in a configuration in which the player is allowed to capture some seeds according to the rules.
 The goal for each player is to capture more seeds than his opponent.
-The rules vary slightly across countries and will be detailed in :numref:`sec:rules`.
+The rules vary slightly across countries and are detailed in :numref:`sec:rules`.
 
 
 
@@ -160,7 +160,7 @@ contained in the pit and sowing them one by one in every consecutive pits on the
 (rotating counter-clockwise). The player thus has at most 6 possible moves at
 each turn (one per non-empty pit owned by him).
 
-Usually, the player that starts the game is the oldest player. In this work, South will always play first.
+Usually, the player that starts the game is the oldest player. In this work, South always plays first.
 
 In this work, the pits of a player are numbered left to right from his point of view as shown in :numref:`fig:pit_numbering`, :math:`1` being the leftmost pit of South, until :math:`6` at the far right. The same holds for North: :math:`1'` to :math:`6'`.
 
@@ -199,7 +199,7 @@ In this work, the pits of a player are numbered left to right from his point of 
 
   
 
-As an example, in the initial state (:numref:`fig:initial_board`), the first player to move is South (on the bottom) and he plays :math:`4` (highlighted in the figure in red), the board will then be in the  state shown in :numref:`fig:first_move`.
+As an example, in the initial state (:numref:`fig:initial_board`), the first player to move is South (on the bottom) and they play :math:`4` (highlighted in the figure in red), the board is in the state shown in :numref:`fig:first_move`.
 
 
 
@@ -245,8 +245,7 @@ next player's turn starts.
 Otherwise, when the last sowed seed is placed in a pit that, after sowing, contains one seed, more
 than 3 seeds or in the current player's own pits, the turn of the player is ended without
 any capture.
-For example, if South plays :math:`4` in the configuration shown in :numref:`fig:pre_capture`, he will
-be able to capture the seeds in pits :math:`2'` and :math:`3'` (highlighted in red in :numref:`fig:post_capture`).
+For example, if South plays :math:`4` in the configuration shown in :numref:`fig:pre_capture`, they are able to capture the seeds in pits :math:`2'` and :math:`3'` (highlighted in red in :numref:`fig:post_capture`).
 
 
 
@@ -355,7 +354,7 @@ In :numref:`fig:feed`, South has to play pit 5 because playing pit 1 would leave
 
 
   
-When a player has captured more than 25 seeds the game ends and he wins. If both
+When a player has captured more than 25 seeds the game ends and they win. If both
 players have captured 24 seeds, the game ends by a draw. If the current player's
 pits are all empty, the game ends and the player with the most captures wins.
 
@@ -403,7 +402,7 @@ Sections containing code are prefixed by :code:`In[]:` and the output of the cod
 
 
   
-In this subsection, we use the use the power of Jupyter Notebooks to define in multiple steps a Python :code:`Game()` class holding the state of the game. We will then successively inherit from it to add an implementation of the rules and some convenience methods.
+In this subsection, we use the use the power of Jupyter Notebooks to define in multiple steps a Python :code:`Game()` class holding the state of the game. We then successively inherit from it to add an implementation of the rules and some convenience methods.
 
 We set the following encoding conventions:
  - :code:`0` is South, :code:`1` is North,
@@ -745,14 +744,14 @@ The set :math:`V_{i}` contains all nodes at which player :math:`i` is to play. I
 
   For instance, the root :math:`x^{0}` of the game tree (the initial state) belongs to :math:`V_{0}`, meaning South is to play in the initial state (see :numref:`fig:initial_board`).  The root :math:`x^{0}` has six children corresponding to the six possible states resulting from  South's move. Each of these children belongs to :math:`V_{1}`, meaning North is to play in these six states. Each of these six states at depth 1  in turn has six children corresponding to the six possible states resulting from North's move. We thus have 36 states at depth 2 and they all belong to :math:`V_{0}`, and so on.
 
-A *perfect information* game is such that that every player who is to take an action knows the current state of the game, meaning that he knows all the actions in the game that led to the current point in the play. This is not the case if, for instance, the players have cards and hide them as in poker.
+A *perfect information* game is such that that every player who is to take an action knows the current state of the game, meaning that they know all the actions in the game that led to the current point in the play. This is not the case if, for instance, the players have cards and hide them as in poker.
 
 .. proof:application::
 
   It is easy to see that Awale is a perfect information game.
 
 
-Let us define a mapping :math:`A` associating to each node `x` of a game tree the set :math:`A(x)` of its children.  A *strategy* for player :math:`i` is a function :math:`s_{i}` mapping each node :math:`x \in V_{i}` to an element in :math:`A(x)`. In other words, a strategy for player :math:`i` tells us what player :math:`i` is going to play at each node of the tree where he is to play. The set of all possible strategies for player :math:`i` is denoted by :math:`S_{i}`.
+Let us define a mapping :math:`A` associating to each node `x` of a game tree the set :math:`A(x)` of its children.  A *strategy* for player :math:`i` is a function :math:`s_{i}` mapping each node :math:`x \in V_{i}` to an element in :math:`A(x)`. In other words, a strategy for player :math:`i` tells us what player :math:`i` is going to play at each node of the tree where they are to play. The set of all possible strategies for player :math:`i` is denoted by :math:`S_{i}`.
 A *strategy vector* is a pair of strategies :math:`s = (s_{0}, s_{1} )`, one for each player. Notice that a strategy vector completely specifies a path in the game tree down to a leaf. A strategy vector :math:`s` therefore identifies a single outcome and :math:`u(s)` can be used to denote that outcome.
 
 .. proof:application::
@@ -782,7 +781,7 @@ We can now state an important result due to the founder of game theory.
 
   This theorem obviously applies to Awale but the game tree of Awale is so large that it is very difficult to know which of the three statements is correct. This question has been solved only in 2003 (see :numref:`sec:retrograde`).
 
-If player 0 chooses strategy :math:`s_{0}`, he gets :math:`u(s_{0},s_{1})`, depending on the strategy :math:`s_{1}` chosen by player 1. In the worst case, player 0 gets :math:`\min_{s_{1} \in S_{1}} u(s_{0},s_{1})`. If player 0 wants to play safe, he better chooses a strategy maximizing :math:`\min_{s_{1} \in S_{1}} u(s_{0},s_{1})`.
+If player 0 chooses strategy :math:`s_{0}`, they get :math:`u(s_{0},s_{1})`, depending on the strategy :math:`s_{1}` chosen by player 1. In the worst case, player 0 gets :math:`\min_{s_{1} \in S_{1}} u(s_{0},s_{1})`. If player 0 wants to play safe, they better choose a strategy maximizing :math:`\min_{s_{1} \in S_{1}} u(s_{0},s_{1})`.
 Hence the *security level  of a game for player 0* is defined by
 
 .. math::
@@ -799,7 +798,7 @@ We can also define the *minimax value* of a game as
 .. math::
   \overline{v} = \min_{s_{1} \in S_{1}} \max_{s_{0} \in S_{0}} u(s_{0},s_{1}).
 
-Player 1 can guarantee that he will pay no more than :math:`\overline{v}`.  A strategy of Player 1 that guarantees :math:`\overline{v}` is called a minimax strategy. The maximin strategy of player 0 and the minimax strategy of player 1 are called *optimal strategies*.
+Player 1 can guarantee that they will pay no more than :math:`\overline{v}`.  A strategy of Player 1 that guarantees :math:`\overline{v}` is called a minimax strategy. The maximin strategy of player 0 and the minimax strategy of player 1 are called *optimal strategies*.
 Since we consider zero-sum games, a payment made by player 1 is a gain for player 0 and player 0 is guaranteed to receive no more than :math:`\overline{v}` (if player 1 plays his minimax strategy). Hence, if  players 0 and 1 respectively play their maximin and minimax strategies, the gain of player 0 is at least :math:`\underline{v}` and at most :math:`\overline{v}`. It follows that :math:`\underline{v} \leq \overline{v}`.
 
 If :math:`\underline{v} = \overline{v}`, then we say *the game has a value* and :math:`\underline{v}=\overline{v}` is called the *value of the game*,  simply denoted by :math:`v`. The value of the game represents the gain of player 0 (or the loss of player 1). Any of the  maximin and minimax strategies of players 0 and 1 respectively are then called *optimal strategies*.
@@ -835,7 +834,7 @@ the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresp
   Every subgame of Awale is a finite two-player zero-sum extensive-form game with perfect information and we can therefore appeal to :numref:`theo:value`. So, for every node :math:`x \in V`, the subgame :math:`\Gamma(x)` has a value, which is equal to the maximin value and the minimax value. It is also called the value of node :math:`x`, denoted :math:`v(x)`. It represents the gain of player 0 if, starting from node :math:`x`, both players play their optimal strategy, i.e.\  maximin for player 0 and minimax for player 1.
 
   Example. Suppose North has two seeds in pit  6' while South has one seed in pit 2 and one in 4 (see :numref:`fig:game`).
-  Suppose also both South and North have  captured 22 seeds. Suppose finally  South is to play. If South plays 2, then North plays 6' and has no more seeds in his half board. The game ends with a draw because no player has captured more seeds than the other. If, on the contrary, South plays 4, then North plays 6', captures two seeds in pit 2 and has no more seeds in his half board.  The game ends with a win for North because he has captured more seeds than South. This subgame tree is represented in :numref:`fig:tree`. The optimal strategy for South is obviously to play 2 whereas the optimal strategy for North is the only available strategy, that is playing 6'. If both players apply their optimal strategy, the outcome is a draw and the value of the game is 0.
+  Suppose also both South and North have  captured 22 seeds. Suppose finally  South is to play. If South plays 2, then North plays 6' and has no more seeds in his half board. The game ends with a draw because no player has captured more seeds than the other. If, on the contrary, South plays 4, then North plays 6', captures two seeds in pit 2 and has no more seeds in his half board.  The game ends with a win for North because they have captured more seeds than South. This subgame tree is represented in :numref:`fig:tree`. The optimal strategy for South is obviously to play 2 whereas the optimal strategy for North is the only available strategy, that is playing 6'. If both players apply their optimal strategy, the outcome is a draw and the value of the game is 0.
 
 
 
@@ -1032,13 +1031,13 @@ Artificial Intelligence approaches to play Awale
 Many algorithms have been proposed and studied to play zero-sum sequential perfect information games.
 We start by describing simple algorithms to be used as a baseline (random and greedy) and then continue with algorithms computing the exact minimax tree, either starting from the root (:math:`\alpha\beta` pruning Minimax) or the leaves (retrograde analysis). As those are often impractical for big game trees, we present their depth-limited variants (depth-limited minimax and end-game databases). We then explore approaches that overcome the limitation of the previous algorithms by iteratively estimating the value of promising sub-trees of the game such as Monte Carlo tree search (MCTS) and the most recent approach from Deepmind: Alpha Zero :cite:`AlphaZero`.
 
-We will quickly present and implement the above-mentioned algorithms and then focus on MCTS and its variants as they are computationally feasible and do not require expert knowledge about the given game to make reasonable decisions.
+We quickly present and implement the above-mentioned algorithms and then focus on MCTS and its variants as they are computationally feasible and do not require expert knowledge about the given game to make reasonable decisions.
 
 
 
 
   
-Before presenting those, we describe a :code:`Player` class that every implementation will then reuse.
+Before presenting those, we describe a :code:`Player` class that every implementation then reuses.
 The :code:`Player` class keeps track of the game state internally.
 At each turn of the game, the :code:`Player` is called with the method :code:`play()` to inform it of the action played by their opponent
 (and thus update their internal state) and then chooses an action with :code:`get_action()`,
@@ -1328,7 +1327,7 @@ Indeed, for every leaf :math:`l`, :math:`\hat{v}(l) = v(l)` if :math:`N_l > 0` a
 .. math::
     m(x) = \sum_{y \in A(x)} \frac{\hat{v}(y)}{|A(x)|}.
     
-So, if all children of a node are leaves, the estimated value of the node is the mean of the true values of its children. For any other node, its estimated value will be a weighted (depending on the topology of the sub-tree) average of the values of all the leaves in its sub-tree.
+So, if all children of a node are leaves, the estimated value of the node is the mean of the true values of its children. For any other node, its estimated value is a weighted (depending on the topology of the sub-tree) average of the values of all the leaves in its sub-tree.
 
 Suppose a node :math:`x` where an agent A is to play and :math:`A(x)` only contains terminal nodes. If A plays :math:`\operatorname{arg max}_{y \in A(x)} \hat{v}(y)`, since :math:`\hat{v}(y) = v(y)`, it plays the best move and always wins :math:`v(y)`. If A plays at random, it wins on average :math:`m(y)`. For every other :math:`x`, if A plays :math:`\operatorname{arg max}_{y \in A(x)} \hat{v}(y)` and the opponent plays at random, A wins on average :math:`\max_{y \in A(x)} \hat{v}(y)`, where if A plays at random, A wins :math:`m(y)`.
 
@@ -1682,7 +1681,7 @@ In a similar fashion, we define the theoretical algorithms B and C with a permut
   +------------------+-----------+-----------+-----------+
 
 
-When playing matches between any two of these agents, :math:`s_0(x^0)` will be uniformly distributed between the 6 possible moves. 
+When playing matches between any two of these agents, :math:`s_0(x^0)` is uniformly distributed between the 6 possible moves. 
 If A and B play a match and :math:`s_0(x^0)` is
 
  - 1 or 2 : A plays :math:`+`, B plays :math:`r`. Thus A wins,
@@ -1721,9 +1720,9 @@ How to compare more than two agents
 
 As described above, transitivity can not be proved in all cases so we can not use a sorting algorithm to order our agents. We thus have to resort to a full tournament where the relation :math:`\succ` is evaluated between every pair of agent. 
 
-We have 6 algorithms, each with some continuous or discrete parameters. Even if we restrict every parameter to a small finite set of values (let's say 100), we would still have 600 agents to compare. This would in turn make a tournament of size :math:`600^2` where each evaluation of the relation requires 50 matches. This method would thus require :math:`600^2 * 50 = 18\,000\,000` matches. Playing such a big number of matches is hardly feasible so we will resort to a more frugal approach.
+We have 6 algorithms, each with some continuous or discrete parameters. Even if we restrict every parameter to a small finite set of values (let's say 100), we would still have 600 agents to compare. This would in turn make a tournament of size :math:`600^2` where each evaluation of the relation requires 50 matches. This method would thus require :math:`600^2 * 50 = 18\,000\,000` matches. Playing such a big number of matches is hardly feasible so we resort to a more frugal approach.
 
-The approach that we take is to first select, for each algorithm, the parameters that result in the best agent (a champion). This will in turn reduce the number of agents playing in the tournament to 6 and the number of matches to play to :math:`6^2 * 50 = 180`, a much more reasonable number. While this approach reduces drastically the amount of computations needed, it might not be perfect.
+The approach that we take is to first select, for each algorithm, the parameters that result in the best agent (a champion). This in turn reduces the number of agents playing in the tournament to 6 and the number of matches to play to :math:`6^2 * 50 = 180`, a much more reasonable number. While this approach reduces drastically the amount of computations needed, it might not be perfect.
 We have no guarantee that the champion within a family (all agents derived from a single algorithm) is also the best family member against agents from other families. This is a known limitation and verifying this assumption is outside of the scope of this work.  
 
 
@@ -1963,7 +1962,7 @@ We thus pick evenly spaced values of :math:`\varepsilon` in the interval :math:`
 
 
   
-The results of these matches is shown in :numref:`fig:eps-matrix` below in which we can see despite the noise that a higher value of :math:`\varepsilon` (meaning the agent chooses most often the greedy approach) is stronger than a lower value. Due to the noise in the data despite the high number of games played it is hard to know for sure if :math:`\varepsilon = 1` is the optimum or if it is a bit lower. We will keep a value of :math:`\varepsilon = 0.95` for the rest of this work.
+The results of these matches is shown in :numref:`fig:eps-matrix` below in which we can see despite the noise that a higher value of :math:`\varepsilon` (meaning the agent chooses most often the greedy approach) is stronger than a lower value. Due to the noise in the data despite the high number of games played it is hard to know for sure if :math:`\varepsilon = 1` is the optimum or if it is a bit lower. We keep a value of :math:`\varepsilon = 0.95` for the rest of this work.
 
 
 
@@ -2006,7 +2005,7 @@ MCTS
 ~~~~
 
 The MCTS agent has a parameter :math:`t` that states how much time the agent may spend on simulation during its turn.
-As :cite:`kocsis2006bandit` have shown that given enough time MCTS (TODO UTC converges, not MCTS) converges to the minimax tree and thus is optimal, we know that the higher is :math:`t`, the better the agent will be. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
+As :cite:`kocsis2006bandit` have shown that given enough time MCTS (TODO UTC converges, not MCTS) converges to the minimax tree and thus is optimal, we know that the higher is :math:`t`, the better the agent is. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
 
 Given our objective of producing an agent capable of playing against a human, choosing a value of :math:`t` higher than 1 minute is unrealistic as the human will not want to wait more than that at each turn of the game. While 1 minute is an upper bound, having a much smaller waiting time at each turn would be valuable. We think that  :math:`t = 5s` is a reasonable value.
 
@@ -2074,7 +2073,7 @@ While the results shown in in :numref:`fig:mcts-time_5s` are also noisy, we inde
 UCT
 ~~~
 
-The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`c` the balance between exploration and exploitation. We will fix :math:`t=5s` so that we can fairly compare MCTS and UTC later.
+The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`c` the balance between exploration and exploitation. We fix :math:`t=5s` so that we can fairly compare MCTS and UTC later.
 
 :cite:`kocsis2006bandit` has shown that :math:`c=\frac{\sqrt{2}}{2}` is a good starting value. We thus play matches of UCT(:math:`c=\frac{\sqrt{2}}{2}`) against a range of 11 values equally spaced between 0.2 and 2.2
 
@@ -2115,7 +2114,7 @@ As the maximum of the bell curve is around :math:`c = \sqrt(2) / 2` it seems to 
 
 
   
-Under the assumption that the curve is smooth, we know that :math:`c = \sqrt(2) / 2` is will win against any value of :math:`c \in [0.2, 2.2]`. While this result might be convenient, we don't know if the relation of one agent winning against another is transitive, so while :math:`c = \sqrt(2) / 2` beats every value, we might have another value of :math:`c = \sqrt(2) / 2` that beats every :math:`c \neq \sqrt(2) / 2` by a bigger margin. To have a better intuition it is the case or not, we can also run the same experiment as above but with :math:`c = 1.5` to see if we were not lucky by using :math:`c = \sqrt(2) / 2` the first time. 
+Under the assumption that the curve is smooth, we know that :math:`c = \sqrt(2) / 2` wins against any value of :math:`c \in [0.2, 2.2]`. While this result might be convenient, we don't know if the relation of one agent winning against another is transitive, so while :math:`c = \sqrt(2) / 2` beats every value, we might have another value of :math:`c = \sqrt(2) / 2` that beats every :math:`c \neq \sqrt(2) / 2` by a bigger margin. To have a better intuition it is the case or not, we can also run the same experiment as above but with :math:`c = 1.5` to see if we were not lucky by using :math:`c = \sqrt(2) / 2` the first time. 
 
 
 

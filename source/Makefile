@@ -12,5 +12,5 @@ watch_notebooks:
 		make index.rst; \
 		make lib/results.rst; \
 		make lib/utils.rst; \
-		inotifywait -qre close_write .; \
+		fswatch -1 .; \
 	done

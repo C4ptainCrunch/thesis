@@ -39,7 +39,7 @@ At each turn, the players move some seeds and can potentially capture some of th
    A typical Awale board in the initial state with both players on their side of the board.
    
 
-.. todo:: Explain here what i'm going to do in my thesis, why it is interesting and why it is new.
+.. todo:: Explain here what i'm going to do in my thesis, why it is interesting and why it is new. (Will be done at the very end, at the same time as the abstract)
 
 In :numref:`sec:awale`, we present Awale in detail. We then introduce Game Theory frameworks in :numref:`sec:game-theory`.
 :numref:`sec:ai-awale` reviews various approaches to solve Awale: retrograde analysis, :math:`\alpha\beta`-pruning Minimax, and basic Monte Carlo Tree Search.
@@ -1161,7 +1161,7 @@ In Awale and other complex games, as shown before, generating the whole tree is 
 
 The heuristic used should estimate the value of the node only by inspecting the state of the game and can be of varying complexity. A simple approach as taken here is to count the difference of the number of seeds each player has captured. Because heuristics are most often crafted by hand using human knowledge of the game, exploring more complex ones is beyond the scope of this work.
 
-The complexity of the depth-limited minimax algorithm is :math:`O(b^d)` (TODO ref) where :math:`b` is the average branching factor. A well known optimization of this algorithm called *alpha-beta pruning minimax* (TODO source) (:math:`\alpha\beta` minimax) returns the same result and has an average performance of :math:`O(\sqrt{b^d})`. 
+The complexity of the depth-limited minimax algorithm is :math:`O(b^d)` where :math:`b` is the average branching factor. A well known optimization of this algorithm called *alpha-beta pruning minimax* (:math:`\alpha\beta` minimax) returns the same result and has an best-case performance of :math:`O(\sqrt{b^d})` :cite:`russell2019artificial`. 
 The algorithm keeps track of two values, :math:`\alpha` and :math:`\beta`, which hold the minimum score that the maximizing player is assured of and the maximum score that the minimizing player is assured of.
 Initially, :math:`\alpha = -\infty` and :math:`\beta = +\infty`: both players begin with their worst possible score.
 If the maximum score that the minimizing player is assured of becomes less than the minimum score that the maximizing player is assured of (so :math:`\beta < \alpha`), the maximizing player does not need to consider further children of this node (it prunes the node) as they are certain that the minimizing player would never play this move.
@@ -1327,6 +1327,11 @@ Each node :math:`x` holds 3 counters : :math:`N_x` (the number of simulation tha
     sampling iteration (:math:`N_x`)
 
     TODO Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionally choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
+
+.. _sec:mcts-perf:
+
+Strength
+~~~~~~~~
 
 We show that this simple MCTS method is better than a random agent.
 The estimated value :math:`\hat{v}(x) = (W^S_x- W^N_x)/N_x` of node :math:`x` when :math:`N_x` is large converges to a weighted average of the true value of the leaves of the subtree :math:`\Gamma(x)`.
@@ -1672,39 +1677,26 @@ With this method, we can then define a strength relation '*is stronger than*', n
 Transitivity of the strength relation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We have a method to determine if an agent is stronger than another but we don't have a way to order all our agents regarding to their strength. It could be tempting to use a sorting algorithm to order the agents using the :math:`\succ` relation but for this to be correct, the relation has to be transitive.
+We have a method to determine if an agent is stronger than another but we don't have a way to order all our agents regarding to their strength. It could be tempting to use a sorting algorithm to order the agents using the strength (:math:`\succ`) relation but for this to be correct, the relation has to be transitive.
 
 In the following mind experiment, we prove that the relation of strength between two agents is not transitive and thus a total order between all possible agents does not exist.
 
-Let us define a theoretical algorithm A: if the algorithm plays South, its first move, :math:`s_0(x^0)`, is played uniformly at random. For the subsequent moves as well as all the moves if the algroithm plays North, the moves depend on :math:`s_0(x^0)` in the following manner:
- * if :math:`s_0(x^0) \in {1, 2}` play the optimal strategy (noted :math:`+` in the following table)
- * if :math:`s_0(x^0) \in {3, 4}` play the worst strategy (noted :math:`-`)
- * if :math:`s_0(x^0) \in {5, 6}` play uniformly at random (noted :math:`r`).
- 
-In a similar fashion, we define the theoretical algorithms B and C with a permutation of the strategies as shown in the table below.
+Let us define a theoretical game represented by the tree in :numref:`fig:mind-exp`. Then, let us define three different agents designed to play this game: A, B and C with their strategies defined in the table below.
 
-.. table:: Moves of the theoretical algorithms A, B and C depending on the first move of the game.
+.. table:: Strategies of the theoretical agents A, B and C
 
-  +------------------+-----------+-----------+-----------+
-  | :math:`s_0(x^0)` | A         | B         | C         |
-  +------------------+-----------+-----------+-----------+
-  | 1, 2             | :math:`+` | :math:`r` | :math:`-` |
-  +------------------+-----------+-----------+-----------+
-  | 3, 4             | :math:`r` | :math:`-` | :math:`+` |
-  +------------------+-----------+-----------+-----------+
-  | 5, 6             | :math:`-` | :math:`+` | :math:`r` |
-  +------------------+-----------+-----------+-----------+
+  +---+--------------+--------------+--------------+--------------+
+  |   | :math:`s(1)` | :math:`s(2)` | :math:`s(3)` | :math:`s(4)` |
+  +---+--------------+--------------+--------------+--------------+
+  | A | 2            | 5            | 8            | 9            |
+  +---+--------------+--------------+--------------+--------------+
+  | B | 3            | 5            | 7            | 10           |
+  +---+--------------+--------------+--------------+--------------+
+  | C | 4            | 6            | 7            | 9            |
+  +---+--------------+--------------+--------------+--------------+
 
-
-When playing matches between any two of these agents, :math:`s_0(x^0)` is uniformly distributed between the 6 possible moves. 
-If A and B play a match and :math:`s_0(x^0)` is
-
- - 1 or 2 : A plays :math:`+`, B plays :math:`r`. Thus A wins,
- - 3 or 4: A either wins the game is a draw,
- - 5 or 6: B wins.
-
-A thus wins more than :math:`\frac{1}{3}` of the matches (up to :math:`\frac{2}{3}`) whereas B wins exactly :math:`\frac{1}{3}` of the matches.
-A wins more matches than B so we can say :math:`A \succ B`. The same reasoning with B vs. C and C vs. A yields :math:`B \succ C` and :math:`C \succ A`. Thus the relation between these 3 theoretical algorithms is not transitive.
+We see that in a match of A against B, A wins 1 where in B against A, both win 0. So we can say :math:`A \succ B`.
+By enumerating all possible matches between ordered pairs of these agents, we see that :math:`A \succ B`, :math:`B \succ C` and :math:`C \succ A`. This cycle proves that he relation is not transitive at least in some cases.
 
 
 
@@ -1721,10 +1713,21 @@ A wins more matches than B so we can say :math:`A \succ B`. The same reasoning w
 
     
 
+    
+.. _fig:mind-exp:
+    
+
 
 .. figure:: index_files/index_79_0.svg
 
 
+
+
+
+
+  
+  The tree representation of the theoretical game.
+  States are represented as circles, game values are written under the final states.
 
 
 
@@ -2001,7 +2004,7 @@ The results of these matches is shown in :numref:`fig:eps-matrix` below in which
     
 
 
-.. figure:: index_files/index_97_0.svg
+.. figure:: index_files/index_98_0.svg
 
 
 
@@ -2020,7 +2023,7 @@ MCTS
 ~~~~
 
 The MCTS agent has a parameter :math:`t` that states how much time the agent may spend on simulation during its turn.
-As :cite:`kocsis2006bandit` have shown that given enough time MCTS (TODO UTC converges, not MCTS) converges to the minimax tree and thus is optimal, we know that the higher is :math:`t`, the better the agent is. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
+As we have shown in :numref:`sec:mcts-perf`, given enough time, with MCTS, the estimated value of a node converges to weighted average of the true value of the leaves of the subtree. So we know that the higher is :math:`t`, the better the agent is. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
 
 Given our objective of producing an agent capable of playing against a human, choosing a value of :math:`t` higher than 1 minute is unrealistic as the human will not want to wait more than that at each turn of the game. While 1 minute is an upper bound, having a much smaller waiting time at each turn would be valuable. We think that  :math:`t = 5s` is a reasonable value.
 
@@ -2070,7 +2073,7 @@ While the results shown in in :numref:`fig:mcts-time_5s` are also noisy, we inde
     
 
 
-.. figure:: index_files/index_102_0.svg
+.. figure:: index_files/index_103_0.svg
 
 
 
@@ -2088,9 +2091,9 @@ While the results shown in in :numref:`fig:mcts-time_5s` are also noisy, we inde
 UCT
 ~~~
 
-The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`c` the balance between exploration and exploitation. We fix :math:`t=5s` so that we can fairly compare MCTS and UTC later.
+The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`c` the balance between exploration and exploitation. Like MCTS, the strength of UCT increases with :math:`t` so we fix :math:`t=5s` to be able to fairly compare MCTS and UTC later.
 
-:cite:`kocsis2006bandit` has shown that :math:`c=\frac{\sqrt{2}}{2}` is a good starting value. We thus play matches of UCT(:math:`c=\frac{\sqrt{2}}{2}`) against a range of 11 values equally spaced between 0.2 and 2.2
+:cite:`kocsis2006bandit` has shown that :math:`c=\sqrt{2} / 2` is a good starting value. We thus play matches of UCT(:math:`c=\sqrt{2} / 2`) against a range of 11 values equally spaced between 0.2 and 2.2
 
 
 
@@ -2117,13 +2120,13 @@ The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`
   
 What we see in :numref:`utc-tuning-c` is a bell curve with some noise and a plateau around :math:`c = \sqrt(2) / 2`. The noise is louder on the right than on on the left of its maximum. An explanation for this could be that on the left, as :math:`c` is lower, there is not much exploration so the algorithm is more deterministic while it's the opposite on the right and each simulation could be either really good or really bad depending on luck.
 
-As the maximum of the bell curve is around :math:`c = \sqrt(2) / 2` it seems to confirm that it is the optimum value for UCT.
+As the maximum of the bell curve is around :math:`c = \sqrt{2} / 2` it seems to confirm that it is the optimum value for UCT.
 
 .. _utc-tuning-c:
 
 .. figure:: notebooks/uct-value.png
 
-  Strength of UCT(:math:`c=\frac{\sqrt{2}}{2}`) against other values of :math:`c`. TODO: regenerate figure in svg
+  Strength of UCT(:math:`c=\sqrt{2} / 2`) against other values of :math:`c`. TODO: regenerate figure in svg
 
 
 
@@ -2175,7 +2178,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
     
 
 
-.. figure:: index_files/index_110_0.svg
+.. figure:: index_files/index_111_0.svg
 
 
 
@@ -2243,7 +2246,7 @@ The results, displayed in a matrix in :numref:`fig:matrix`, show that UCT and Gr
     
 
 
-.. figure:: index_files/index_115_0.svg
+.. figure:: index_files/index_116_0.svg
 
 
 

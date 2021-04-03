@@ -133,10 +133,12 @@ html_static_path = ["_static", "_static/custom.css"]
 html_sidebars = {}
 
 html_js_files = [
-    "https://unpkg.com/stimulus/dist/stimulus.umd.js",
-    "https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML",
     ("js/custom.js", {"type": "module"}),
+    (
+        "https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js",
+        {"id": "pseudocode-script"},
+    ),
+    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML",
 ]
 
 html_css_files = [
@@ -145,6 +147,7 @@ html_css_files = [
 
 html_favicon = "_static/favicon.ico"
 
+mathjax_path = " "
 
 # -- Options for HTMLHelp output ---------------------------------------------
 

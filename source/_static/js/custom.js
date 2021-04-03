@@ -28,4 +28,22 @@ class Pseudocode extends Controller {
 }
 
 application.register("notebook-toggle", NotebookToggle)
-application.register("pseudocode", Pseudocode)
+
+var load = function() {
+  console.log("onLoad detected pseudocode");
+  application.register("pseudocode", Pseudocode)
+}
+
+var script = document.querySelector('#pseudocode-script');
+script.addEventListener('load', load);
+
+var time = function() {
+  if(pseudocode !== undefined)
+  {
+    console.log("Polling loop detected pseudocode")
+    application.register("pseudocode", Pseudocode)
+  }
+  else setTimeout(time, 500)
+}
+
+time();

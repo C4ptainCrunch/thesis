@@ -391,6 +391,73 @@ Sections containing code are prefixed by :code:`In[]:` and the output of the cod
 
 
   
+.. raw:: html
+
+      <pre class="pseudocode"  data-controller="pseudocode">
+          
+          \begin{algorithmic}
+          \PROCEDURE{Quicksort}{$A, p, r$}
+              \IF{$p < r$}
+                  \STATE $q = $ \CALL{Partition}{$A, p, r$}
+                  \STATE \CALL{Quicksort}{$A, p, q - 1$}
+                  \STATE \CALL{Quicksort}{$A, q + 1, r$}
+              \ENDIF
+          \ENDPROCEDURE
+          \PROCEDURE{Partition}{$A, p, r$}
+              \STATE $x = A[r]$
+              \STATE $i = p - 1$
+              \FOR{$j = p$ \TO $r - 1$}
+                  \IF{$A[j] < x$}
+                      \STATE $i = i + 1$
+                      \STATE exchange
+                      $A[i]$ with $A[j]$
+                  \ENDIF
+                  \STATE exchange $A[i]$ with $A[r]$
+              \ENDFOR
+          \ENDPROCEDURE
+          \end{algorithmic}
+      </pre>
+
+
+
+
+
+  
+.. raw:: html
+
+      <pre class="pseudocode"  data-controller="pseudocode">
+          % This quicksort algorithm is extracted from Chapter 7, Introduction to Algorithms (3rd edition)
+          \begin{algorithm}
+          \caption{Quicksort}
+          \begin{algorithmic}
+          \PROCEDURE{Quicksort}{$A, p, r$}
+              \IF{$p < r$}
+                  \STATE $q = $ \CALL{Partition}{$A, p, r$}
+                  \STATE \CALL{Quicksort}{$A, p, q - 1$}
+                  \STATE \CALL{Quicksort}{$A, q + 1, r$}
+              \ENDIF
+          \ENDPROCEDURE
+          \PROCEDURE{Partition}{$A, p, r$}
+              \STATE $x = A[r]$
+              \STATE $i = p - 1$
+              \FOR{$j = p$ \TO $r - 1$}
+                  \IF{$A[j] < x$}
+                      \STATE $i = i + 1$
+                      \STATE exchange
+                      $A[i]$ with $A[j]$
+                  \ENDIF
+                  \STATE exchange $A[i]$ with $A[r]$
+              \ENDFOR
+          \ENDPROCEDURE
+          \end{algorithmic}
+          \end{algorithm}
+      </pre>
+
+
+
+
+
+  
 
 
   .. code:: ipython3
@@ -701,7 +768,7 @@ To show a minimal example of the implementation, we can now play a move and have
     
 
 
-.. figure:: index_files/index_38_0.svg
+.. figure:: index_files/index_40_0.svg
 
 
 
@@ -870,7 +937,7 @@ the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresp
     
 
 
-.. figure:: index_files/index_42_0.svg
+.. figure:: index_files/index_44_0.svg
 
 
 
@@ -900,7 +967,7 @@ the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresp
     
 
 
-.. figure:: index_files/index_44_0.svg
+.. figure:: index_files/index_46_0.svg
 
 
 
@@ -1730,7 +1797,7 @@ By enumerating all possible matches between ordered pairs of these agents, we se
     
 
 
-.. figure:: index_files/index_79_0.svg
+.. figure:: index_files/index_81_0.svg
 
 
 
@@ -2016,7 +2083,7 @@ The results of these matches is shown in :numref:`fig:eps-matrix` below in which
     
 
 
-.. figure:: index_files/index_98_0.svg
+.. figure:: index_files/index_100_0.svg
 
 
 
@@ -2085,7 +2152,7 @@ While the results shown in in :numref:`fig:mcts-time_5s` are also noisy, we inde
     
 
 
-.. figure:: index_files/index_103_0.svg
+.. figure:: index_files/index_105_0.svg
 
 
 
@@ -2190,7 +2257,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
     
 
 
-.. figure:: index_files/index_111_0.svg
+.. figure:: index_files/index_113_0.svg
 
 
 
@@ -2258,7 +2325,7 @@ The results, displayed in a matrix in :numref:`fig:matrix`, show that UCT and Gr
     
 
 
-.. figure:: index_files/index_116_0.svg
+.. figure:: index_files/index_118_0.svg
 
 
 

@@ -22,7 +22,6 @@ class NotebookToggle extends Controller {
 
 class Pseudocode extends Controller {
   connect() {
-    console.log("rendering", this.element)
     pseudocode.renderElement(this.element);
 
   }

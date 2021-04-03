@@ -143,6 +143,8 @@ html_css_files = [
     "https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css"
 ]
 
+html_favicon = "_static/favicon.ico"
+
 
 # -- Options for HTMLHelp output ---------------------------------------------
 

@@ -38,7 +38,7 @@ var script = document.querySelector('#pseudocode-script');
 script.addEventListener('load', load);
 
 var time = function() {
-  if(pseudocode !== undefined)
+  if("pseudocode" in window)
   {
     console.log("Polling loop detected pseudocode")
     application.register("pseudocode", Pseudocode)

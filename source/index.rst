@@ -391,73 +391,6 @@ Sections containing code are prefixed by :code:`In[]:` and the output of the cod
 
 
   
-.. raw:: html
-
-      <pre class="pseudocode"  data-controller="pseudocode">
-          
-          \begin{algorithmic}
-          \PROCEDURE{Quicksort}{$A, p, r$}
-              \IF{$p < r$}
-                  \STATE $q = $ \CALL{Partition}{$A, p, r$}
-                  \STATE \CALL{Quicksort}{$A, p, q - 1$}
-                  \STATE \CALL{Quicksort}{$A, q + 1, r$}
-              \ENDIF
-          \ENDPROCEDURE
-          \PROCEDURE{Partition}{$A, p, r$}
-              \STATE $x = A[r]$
-              \STATE $i = p - 1$
-              \FOR{$j = p$ \TO $r - 1$}
-                  \IF{$A[j] < x$}
-                      \STATE $i = i + 1$
-                      \STATE exchange
-                      $A[i]$ with $A[j]$
-                  \ENDIF
-                  \STATE exchange $A[i]$ with $A[r]$
-              \ENDFOR
-          \ENDPROCEDURE
-          \end{algorithmic}
-      </pre>
-
-
-
-
-
-  
-.. raw:: html
-
-      <pre class="pseudocode"  data-controller="pseudocode">
-          % This quicksort algorithm is extracted from Chapter 7, Introduction to Algorithms (3rd edition)
-          \begin{algorithm}
-          \caption{Quicksort}
-          \begin{algorithmic}
-          \PROCEDURE{Quicksort}{$A, p, r$}
-              \IF{$p < r$}
-                  \STATE $q = $ \CALL{Partition}{$A, p, r$}
-                  \STATE \CALL{Quicksort}{$A, p, q - 1$}
-                  \STATE \CALL{Quicksort}{$A, q + 1, r$}
-              \ENDIF
-          \ENDPROCEDURE
-          \PROCEDURE{Partition}{$A, p, r$}
-              \STATE $x = A[r]$
-              \STATE $i = p - 1$
-              \FOR{$j = p$ \TO $r - 1$}
-                  \IF{$A[j] < x$}
-                      \STATE $i = i + 1$
-                      \STATE exchange
-                      $A[i]$ with $A[j]$
-                  \ENDIF
-                  \STATE exchange $A[i]$ with $A[r]$
-              \ENDFOR
-          \ENDPROCEDURE
-          \end{algorithmic}
-          \end{algorithm}
-      </pre>
-
-
-
-
-
-  
 
 
   .. code:: ipython3
@@ -768,7 +701,7 @@ To show a minimal example of the implementation, we can now play a move and have
     
 
 
-.. figure:: index_files/index_40_0.svg
+.. figure:: index_files/index_38_0.svg
 
 
 
@@ -937,7 +870,7 @@ the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresp
     
 
 
-.. figure:: index_files/index_44_0.svg
+.. figure:: index_files/index_42_0.svg
 
 
 
@@ -967,7 +900,7 @@ the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresp
     
 
 
-.. figure:: index_files/index_46_0.svg
+.. figure:: index_files/index_44_0.svg
 
 
 
@@ -1164,6 +1097,31 @@ The first, the *random agent*, is the most simple we can think of and does not u
 
 
   
+.. raw:: html
+
+      <pre class="pseudocode"  data-controller="pseudocode">
+        \begin{algorithm}
+        \caption{Random agent}
+        \begin{algorithmic}
+        \PROCEDURE{GetAction}{node $x$}
+           \RETURN \CALL{ChooseAtRandom}{$A(x)$}
+        \ENDPROCEDURE
+        \end{algorithmic}
+        \end{algorithm}
+      </pre>
+
+
+
+
+
+
+  
+Implemented in Python as
+
+
+
+
+  
 
 
   .. code:: ipython3
@@ -1184,6 +1142,46 @@ The first, the *random agent*, is the most simple we can think of and does not u
   
 The second is :math:`\varepsilon`-*Greedy*: an agent that tries to maximize an *immediate reward* at each turn: the number of seeds captured during that turn.
 The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn, the agent draws a number :math:`e` in the uniform distribution :math:`\mathcal{U}(0, 1)`, if :math:`e > \varepsilon`, the agent chooses an action uniformly at random, else it maximizes the immediate reward.
+
+
+
+
+  
+.. raw:: html
+
+      <pre class="pseudocode"  data-controller="pseudocode">
+        \begin{algorithm}
+        \caption{$\varepsilon$-Greedy agent}
+        \begin{algorithmic}
+        \PROCEDURE{ImmediateReward}{node $x$}
+            \IF{$x$ is a final node}
+                \IF{agent wins}
+                    \RETURN $\infty$
+                \ELSE
+                    \RETURN $-\infty$
+                \ENDIF
+            \ELSE
+                \RETURN amount of stones captured by playing $x$
+            \ENDIF
+        \ENDPROCEDURE
+        \PROCEDURE{GetAction}{node $x$}
+          \IF{$\mathcal{U}(0, 1) < \varepsilon$}
+            \RETURN \CALL{ChooseAtRandom}{$A(x)$} 
+          \ELSE 
+            \RETURN $\operatorname{argmax}_{y \in A(x)}$ \CALL{ImmediateReward}{$y$}
+          \ENDIF
+        \ENDPROCEDURE
+        \end{algorithmic}
+        \end{algorithm}
+      </pre>
+
+
+
+
+
+
+  
+Implemented in Python as
 
 
 
@@ -1246,6 +1244,59 @@ Initially, :math:`\alpha = -\infty` and :math:`\beta = +\infty`: both players be
 If the maximum score that the minimizing player is assured of becomes less than the minimum score that the maximizing player is assured of (so :math:`\beta < \alpha`), the maximizing player does not need to consider further children of this node (it prunes the node) as they are certain that the minimizing player would never play this move.
 This pruning of entire sub-trees is where the complexity gain arises from. 
 As :math:`\alpha\beta` minimax has no disadvantage over minimax and has a lower computational complexity, this is the one we implement.
+
+
+
+
+  
+.. raw:: html
+
+      <pre class="pseudocode"  data-controller="pseudocode">
+        \begin{algorithm}
+        \caption{$\alpha\beta$ minimax}
+        \begin{algorithmic}
+        \PROCEDURE{GetAction}{node $x$}
+          \RETURN $\operatorname{argmax}_{y \in A(x)}$ \CALL{Minimax}{$y$, CutoffDepth, $-\infty$, $\infty$, False}
+        \ENDPROCEDURE
+        \PROCEDURE{Minimax}{node $x$, depth, alpha, beta, isMaximizing}
+          \IF{depth = 0 \OR $x$ is final}
+            \RETURN \CALL{Evaluate}{$x$}
+          \ENDIF
+          
+          \IF{isMaximizing}
+            \STATE  value $\gets -\infty$
+            \FORALL{$y$ in $A(x)$}
+                \STATE  value $\gets$ max(value, \CALL{Minimax}{y, depth - 1, alpha, beta, False})
+                \STATE  alpha $\gets$ max(alpha, value)
+                \IF{alpha >= beta}
+                    \BREAK
+                \ENDIF
+            \ENDFOR
+            \RETURN value
+          \ELSE
+              \STATE  value $\gets \infty$
+              \FORALL{$y$ in $A(x)$}
+                \STATE  value $\gets$ min(value, \CALL{Minimax}{y, depth - 1, alpha, beta, True})
+                \STATE  alpha $\gets$ min(beta, value)
+                \IF{alpha >= beta}
+                    \BREAK
+                \ENDIF
+            \ENDFOR
+            \RETURN value
+          \ENDIF
+        
+        \ENDPROCEDURE
+        \end{algorithmic}
+        \end{algorithm}
+      </pre>
+
+
+
+
+
+
+  
+Implemented in Python as
 
 
 
@@ -1387,7 +1438,7 @@ The estimation of the true game tree is constructed with the following algorithm
   of :math:`T`.
 
 
-Each node :math:`x` holds 3 counters : :math:`N_x` (the number of simulation that went through :math:`x`),:math:`W^S_x` and :math:`W^N_x` (the number of simulations going through :math:`x` and leading to a win respectively for South and North). From these counters, a probability of North winning can be estimated by :math:`\frac{W^N_x}{N_x}` if both players play randomly from :math:`x`.
+Each node :math:`x` holds 3 counters : :math:`N_x` (the number of simulation that went through :math:`x`), :math:`W^S_x` and :math:`W^N_x` (the number of simulations going through :math:`x` and leading to a win respectively for South and North). From these counters, a probability of North winning can be estimated by :math:`\frac{W^N_x}{N_x}` if both players play randomly from :math:`x`.
 
 
 .. todo:: This section is still a work in progress
@@ -1797,7 +1848,7 @@ By enumerating all possible matches between ordered pairs of these agents, we se
     
 
 
-.. figure:: index_files/index_81_0.svg
+.. figure:: index_files/index_85_0.svg
 
 
 
@@ -2083,7 +2134,7 @@ The results of these matches is shown in :numref:`fig:eps-matrix` below in which
     
 
 
-.. figure:: index_files/index_100_0.svg
+.. figure:: index_files/index_104_0.svg
 
 
 
@@ -2152,7 +2203,7 @@ While the results shown in in :numref:`fig:mcts-time_5s` are also noisy, we inde
     
 
 
-.. figure:: index_files/index_105_0.svg
+.. figure:: index_files/index_109_0.svg
 
 
 
@@ -2257,7 +2308,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
     
 
 
-.. figure:: index_files/index_113_0.svg
+.. figure:: index_files/index_117_0.svg
 
 
 
@@ -2325,7 +2376,7 @@ The results, displayed in a matrix in :numref:`fig:matrix`, show that UCT and Gr
     
 
 
-.. figure:: index_files/index_118_0.svg
+.. figure:: index_files/index_122_0.svg
 
 
 

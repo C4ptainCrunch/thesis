@@ -22,7 +22,7 @@ class NotebookToggle extends Controller {
 
 class Pseudocode extends Controller {
   connect() {
-    pseudocode.renderElement(this.element);
+    pseudocode.renderElement(this.element, {noEnd: true,});
 
   }
 }

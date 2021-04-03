@@ -29,6 +29,9 @@ jobs:
       - name: Trick || Treat
         run: touch docs/.nojekyll
 
+      - name: Domain
+        run: echo "awale.ml" > docs/CNAME
+
       - name: Push to gh-pages branch
         run: |
           git config --global user.name 'GitHub bot'

@@ -53,6 +53,15 @@ extensions = [
     # "numsec",
 ]
 
+mathjax_config = {
+    "tex2jax": {
+        "inlineMath": [["$", "$"], ["\\(", "\\)"]],
+        "displayMath": [["$$", "$$"], ["\\[", "\\]"]],
+        "processEscapes": True,
+        "processEnvironments": True,
+    }
+}
+
 todo_include_todos = True
 nbsphinx_allow_errors = True
 nbsphinx_execute = "never"
@@ -125,7 +134,13 @@ html_sidebars = {}
 
 html_js_files = [
     "https://unpkg.com/stimulus/dist/stimulus.umd.js",
-    "js/custom.js",
+    "https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML",
+    ("js/custom.js", {"type": "module"}),
+]
+
+html_css_files = [
+    "https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css"
 ]
 
 

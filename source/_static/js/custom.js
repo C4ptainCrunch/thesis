@@ -1,23 +1,32 @@
-(() => {
-      const application = Stimulus.Application.start();
+import {Controller, Application} from 'https://cdn.skypack.dev/stimulus';
 
-      class NotebookToggle extends Stimulus.Controller {
-        static targets = [ "cell"]
-        static values = { show: Boolean }
+const application = Application.start();
 
-        toggle() {
-          this.showValue = !this.showValue;
+class NotebookToggle extends Controller {
+  static targets = [ "cell"]
+  static values = { show: Boolean }
 
-          this.cellTargets.forEach((el, i) => {
-              el.classList.toggle("filter--filtered", !this.showValue)
-          })
-        }
+  toggle() {
+    this.showValue = !this.showValue;
 
-        connect() {
-          document.querySelectorAll(".highlight-ipython3").forEach((e) => e.setAttribute("data-notebook-toggle-target", "cell"))
-          document.querySelectorAll(".highlight-none").forEach((e) => e.setAttribute("data-notebook-toggle-target", "cell"))
-        }
-      }
+    this.cellTargets.forEach((el, i) => {
+        el.classList.toggle("filter--filtered", !this.showValue)
+    })
+  }
 
-      application.register("notebook-toggle", NotebookToggle)
-})()
+  connect() {
+    document.querySelectorAll(".highlight-ipython3").forEach((e) => e.setAttribute("data-notebook-toggle-target", "cell"))
+    document.querySelectorAll(".highlight-none").forEach((e) => e.setAttribute("data-notebook-toggle-target", "cell"))
+  }
+}
+
+class Pseudocode extends Controller {
+  connect() {
+    console.log("rendering", this.element)
+    pseudocode.renderElement(this.element);
+
+  }
+}
+
+application.register("notebook-toggle", NotebookToggle)
+application.register("pseudocode", Pseudocode)

@@ -373,7 +373,19 @@ Implementation of the rules
 
 You might be reading this document in the form of a web page or a pdf file but its original form is a Jupyter Notebook :cite:`jupyter`. Jupyter Notebooks are documents mixing computer code (in this case Python code), the result of the execution of the code and text. These can be used to document experiments in the same place they are run.
 
-Sections containing code are prefixed by :code:`In[]:` and the output of the code is showed immediately under it, prefixed by :code:`Out[]:`. An example is shown below.
+This document can be read both with and without looking at the Python code. If you are not fluent in Python or do not want to be distracted by the details of the implementation, you choose to hide the notebooks cells with the following toggle.
+
+.. raw:: html
+
+  <label class="switcher">
+    <div class="switch">
+      <input type="checkbox" checked data-action="input->notebook-toggle#toggle">
+      <span class="slider"></span>
+    </div>
+    Show notebook code and execution results
+  </label>
+
+Sections containing code are prefixed by :code:`In[]:` and the output of the code is showed immediately under it, prefixed by :code:`Out[]:`. An example is shown below if you chose to display the notebook cells.
 
 
 

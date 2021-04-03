@@ -41,7 +41,7 @@ release = ""
 
 import sys, os
 
-sys.path.append(os.path.abspath('./extensions/'))
+sys.path.append(os.path.abspath("./extensions/"))
 
 extensions = [
     "sphinx.ext.mathjax",
@@ -63,7 +63,7 @@ numfig_format = {
     "table": "Table %s",
     "code-block": "Listing %s",
     "section": "Section %s",
-    "proof": "Theorem %s", 
+    "proof": "Theorem %s",
 }
 numfig_secnum_depth = 0
 
@@ -123,6 +123,11 @@ html_static_path = ["_static", "_static/custom.css"]
 #
 html_sidebars = {}
 
+html_js_files = [
+    "https://unpkg.com/stimulus/dist/stimulus.umd.js",
+    "js/custom.js",
+]
+
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
@@ -167,20 +172,20 @@ nitpicky = True
 
 
 proof_theorem_types = {
-   "algorithm": "Algorithm",
-   "conjecture": "Conjecture",
-   "corollary": "Corollary",
-   "definition": "Definition",
-   "example": "Example",
-   "lemma": "Lemma",
-   "observation": "Observation",
-   "proof": "Proof",
-   "property": "Property",
-   "theorem": "Theorem",
-   "application": "Application",
+    "algorithm": "Algorithm",
+    "conjecture": "Conjecture",
+    "corollary": "Corollary",
+    "definition": "Definition",
+    "example": "Example",
+    "lemma": "Lemma",
+    "observation": "Observation",
+    "proof": "Proof",
+    "property": "Property",
+    "theorem": "Theorem",
+    "application": "Application",
 }
 
-proof_html_nonumbers = ['application']
+proof_html_nonumbers = ["application"]
 
 from pybtex.plugin import register_plugin  # noqa
 from pybtex.style.formatting.unsrt import Style as UnsrtStyle  # noqa

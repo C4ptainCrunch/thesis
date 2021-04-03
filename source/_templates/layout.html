@@ -1,0 +1,9 @@
+{% extends "!layout.html" %}
+{%- block htmltitle %}
+<title>Master Thesis</title>
+{% endblock %}
+{% block document %}
+  <div data-controller="notebook-toggle" data-notebook-toggle-show-value="true">
+    {{ super() }}
+  </div>
+{% endblock %}

@@ -418,7 +418,7 @@ In this subsection, we use the use the power of Jupyter Notebooks to define in m
 
 We set the following encoding conventions:
  - :code:`0` is South, :code:`1` is North,
- - player's actions are numbered from :code:`0` to :code:`5`, :code:`0` being the leftmost pit in front of him, :code:`5` being the rightmost.
+ - player's actions are numbered from :code:`0` being the leftmost pit in front of him to :code:`5` being the rightmost.
 
 First, we define a dataclass with the minimal attributes needed to store a state of the game.
 
@@ -1253,7 +1253,7 @@ As :math:`\alpha\beta` minimax has no disadvantage over minimax and has a lower 
 
       <pre class="pseudocode"  data-controller="pseudocode">
         \begin{algorithm}
-        \caption{$\alpha\beta$ minimax}
+        \caption{$\alpha\beta$-minimax}
         \begin{algorithmic}
         \PROCEDURE{GetAction}{node $x$}
           \RETURN $\operatorname{argmax}_{y \in A(x)}$ \CALL{Minimax}{$y$, CutoffDepth, $-\infty$, $\infty$, False}
@@ -1524,6 +1524,64 @@ Both policies in this implementation are random walks.
 
 
   
+.. raw:: html
+
+      <pre class="pseudocode"  data-controller="pseudocode">
+        \begin{algorithm}
+        \caption{MCTS}
+        \begin{algorithmic}
+            \PROCEDURE{GetAction}{node $x$, duration}
+              \STATE startTime $\gets$ \CALL{GetCurrentTime}{}
+              \STATE endTime $\gets$ startTime + duration
+              \WHILE{\CALL{GetCurrentTime}{} < endTime}
+                \STATE y $\gets$ \CALL{TreePolicy}{x}
+                \WHILE{$x$ is not final}
+                  \STATE y $\gets$ \CALL{DefaultPolicy}{y}
+                  \STATE mark $y$ as visited
+                \ENDWHILE
+                \STATE \CALL{BacktrackStats}{y}
+              \ENDWHILE
+              \RETURN $\operatorname{argmax}_{y \in A(x)}$ \CALL{Score}{$y$}
+            \ENDPROCEDURE
+
+            \PROCEDURE{TreePolicy}{node $x$}
+              \COMMENT{While at least a child of the node has been visited}
+              \WHILE{$ \exists y \in A(x)$ visited}
+                \IF{$\exists y \in A(x)$ not visited}
+                  \STATE unvisited $\gets$ $y \in A(x) | y$ is not visited
+                  \STATE x $\gets$ \CALL{ChooseAtRandom}{unvisited}
+                \ELSE
+                  \STATE x $\gets$ \CALL{ChooseAtRandom}{$A(x)$}
+                \ENDIF
+              \ENDWHILE
+              \RETURN x
+            \ENDPROCEDURE
+
+            \PROCEDURE{DefaultPolicy}{node $x$}
+              \RETURN \CALL{ChooseAtRandom}{$A(x)$}
+            \ENDPROCEDURE
+            
+            \PROCEDURE{Score}{node $x$}
+              \RETURN (backtracked wins of x - backtracked losses of x) / visits of x
+            \ENDPROCEDURE
+
+        \end{algorithmic}
+        \end{algorithm}
+
+      </pre>
+
+
+
+
+
+
+  
+Implemented in Python as
+
+
+
+
+  
 
 
   .. code:: ipython3
@@ -1692,8 +1750,11 @@ Informed UCT
 
 
   
+Other approaches
+----------------
+
 All moves as first
-------------------
+~~~~~~~~~~~~~~~~~~
 
 'All Moves As First' (AMAF) and its successor 'Rapid Action Value Estimation' (RAVE) are enhancements that have often been proved very successful when applying MCTS to the game of Go :cite:`gelly20111rave`.
 The basic idea is to update statistics for all actions selected during a simulation as if they were the first action applied. This method is particularly well suited for incremental games such as Go, where the value of a move is often dependent on the state of the board in its close proximity and unaffected by moves played elsewhere on the board. 
@@ -1704,7 +1765,7 @@ Due to the popularity of AMAF, these methods are mentioned here for completeness
 
   
 Alpha Zero
-----------
+~~~~~~~~~~
 
 To replace the random play in the simulation step, :cite:`AlphaGo,AlphaGoZero,AlphaZero` proposes
 to use a neural network to estimate the value of a
@@ -1848,7 +1909,7 @@ By enumerating all possible matches between ordered pairs of these agents, we se
     
 
 
-.. figure:: index_files/index_85_0.svg
+.. figure:: index_files/index_87_0.svg
 
 
 
@@ -2137,7 +2198,7 @@ The results of these matches is shown in :numref:`fig:eps-matrix` below in which
     
 
 
-.. figure:: index_files/index_104_0.svg
+.. figure:: index_files/index_106_0.svg
 
 
 
@@ -2206,7 +2267,7 @@ While the results shown in in :numref:`fig:mcts-time_5s` are also noisy, we inde
     
 
 
-.. figure:: index_files/index_109_0.svg
+.. figure:: index_files/index_111_0.svg
 
 
 
@@ -2311,7 +2372,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
     
 
 
-.. figure:: index_files/index_117_0.svg
+.. figure:: index_files/index_119_0.svg
 
 
 
@@ -2379,7 +2440,7 @@ The results, displayed in a matrix in :numref:`fig:matrix`, show that UCT and Gr
     
 
 
-.. figure:: index_files/index_122_0.svg
+.. figure:: index_files/index_124_0.svg
 
 
 

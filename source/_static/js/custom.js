@@ -1,4 +1,4 @@
-import {Controller, Application} from 'https://cdn.skypack.dev/stimulus';
+import {Controller, Application} from 'https://cdn.skypack.dev/pin/stimulus@v2.0.0-rUjblCyZFBBTf2SNn4wP/mode=imports/optimized/stimulus.js';
 
 const application = Application.start();
 

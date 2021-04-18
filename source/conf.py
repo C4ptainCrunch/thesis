@@ -147,7 +147,7 @@ html_css_files = [
 
 html_favicon = "_static/favicon.ico"
 
-mathjax_path = " "
+mathjax_path = "proof.js"
 
 # -- Options for HTMLHelp output ---------------------------------------------
 

@@ -2,6 +2,23 @@
 {%- block htmltitle %}
 <title>Playing Awale with MCTS</title>
 {% endblock %}
+
+{%- block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "displayMath": [["$$", "$$"], ["\\[", "\\]"]], "processEscapes": true, "processEnvironments": true}})</script>
+
+    <script id="pseudocode-script" src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js"></script>
+    
+    <script src="_static/jquery.js"></script>
+    <script src="_static/proof.js"></script>
+
+    <script type="module" src="_static/js/custom.js"></script>
+{%- endblock %}
+
+{%- block sidebarsearch %}
+{%- endblock %}
+
+
 {% block document %}
   <div data-controller="notebook-toggle" data-notebook-toggle-show-value="true">
     {{ super() }}

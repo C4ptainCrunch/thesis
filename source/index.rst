@@ -1973,7 +1973,7 @@ Those can be can then be recorded in a dictionary like below for further analysi
 
 .. parsed-literal::
 
-    {'duration': 0.0041, 'depth': 21, 'score': [28, 2], 'winner': 0}
+    {'duration': 0.0023, 'depth': 67, 'score': [27, 10], 'winner': 0}
 
 
 
@@ -2056,6 +2056,9 @@ Results of the jobs submitted to AWS Batch can then be found in AWS CloudWatch. 
   .. code:: ipython3
 
     from lib.results import results
+
+
+
 
 
 

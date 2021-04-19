@@ -1690,6 +1690,42 @@ The tree policy from MCTS is then replaced by a policy always choosing the node 
 
 
   
+.. raw:: html
+
+      <pre class="pseudocode"  data-controller="pseudocode">
+        \begin{algorithm}
+        \caption{UCT}
+        \begin{algorithmic}
+        \PROCEDURE{Score}{node $x$}
+            \RETURN $\frac{W_1}{N} + c \times \sqrt{\frac{ln N'}{N}}$
+        \ENDPROCEDURE
+        \PROCEDURE{TreePolicy}{node $x$}
+            \WHILE{$ \exists y \in A(x) | N_y > 0$}
+            \COMMENT{While at least a child of the node has been visited}
+                \STATE $unvisited$ $\gets$ $\{y \in A(x) | N_y = 0\}$
+                \IF{$unvisited \neq \emptyset$}
+                    \STATE $x \gets$ \CALL{ChooseAtRandom}{$unvisited$}
+                \ELSE
+                    \RETURN $\operatorname{argmax}_{y \in A(x)}$ \CALL{Score}{$y$}
+                \ENDIF
+            \ENDWHILE
+            \RETURN x
+        \ENDPROCEDURE
+        \end{algorithmic}
+        \end{algorithm}
+      </pre>
+
+
+
+
+
+  
+Implemented in Python as
+
+
+
+
+  
 
 
   .. code:: ipython3
@@ -1728,6 +1764,31 @@ Informed UCT
 
 :code:`GreedyUCTPlayer` subclasses :code:`UCTPlayer` and changes the :code:`default_policy` to weigh more the actions that will give more immediate rewards.
 
+
+
+
+
+  
+.. raw:: html
+
+      <pre class="pseudocode"  data-controller="pseudocode">
+        \begin{algorithm}
+        \caption{Informed UCT}
+        \begin{algorithmic}
+
+                 \PROCEDURE{DefaultPolicy}{node $x$}
+                      \RETURN $\operatorname{argmax}_{y \in A(x)}$ stones captured by playing $y$ while being in state $x$
+                 \ENDPROCEDURE
+        \end{algorithmic}
+        \end{algorithm}
+      </pre>
+
+
+
+
+
+  
+Implemented in Python as
 
 
 
@@ -1909,7 +1970,7 @@ By enumerating all possible matches between ordered pairs of these agents, we se
     
 
 
-.. figure:: index_files/index_87_0.svg
+.. figure:: index_files/index_91_0.svg
 
 
 
@@ -2198,7 +2259,7 @@ The results of these matches is shown in :numref:`fig:eps-matrix` below in which
     
 
 
-.. figure:: index_files/index_106_0.svg
+.. figure:: index_files/index_110_0.svg
 
 
 
@@ -2267,7 +2328,7 @@ While the results shown in in :numref:`fig:mcts-time_5s` are also noisy, we inde
     
 
 
-.. figure:: index_files/index_111_0.svg
+.. figure:: index_files/index_115_0.svg
 
 
 
@@ -2372,7 +2433,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
     
 
 
-.. figure:: index_files/index_119_0.svg
+.. figure:: index_files/index_123_0.svg
 
 
 
@@ -2440,7 +2501,7 @@ The results, displayed in a matrix in :numref:`fig:matrix`, show that UCT and Gr
     
 
 
-.. figure:: index_files/index_124_0.svg
+.. figure:: index_files/index_128_0.svg
 
 
 

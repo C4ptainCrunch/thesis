@@ -1534,24 +1534,24 @@ Both policies in this implementation are random walks.
               \STATE startTime $\gets$ \CALL{GetCurrentTime}{}
               \STATE endTime $\gets$ startTime + duration
               \WHILE{\CALL{GetCurrentTime}{} < endTime}
-                \STATE y $\gets$ \CALL{TreePolicy}{x}
+                \STATE $y \gets$ \CALL{TreePolicy}{$x$}
                 \WHILE{$x$ is not final}
-                  \STATE y $\gets$ \CALL{DefaultPolicy}{y}
-                  \STATE mark $y$ as visited
+                  \STATE $y \gets$ \CALL{DefaultPolicy}{$y$}
                 \ENDWHILE
-                \STATE \CALL{BacktrackStats}{y}
+                \STATE \CALL{BacktrackStats}{$y$}
               \ENDWHILE
               \RETURN $\operatorname{argmax}_{y \in A(x)}$ \CALL{Score}{$y$}
             \ENDPROCEDURE
 
             \PROCEDURE{TreePolicy}{node $x$}
+              \WHILE{$ \exists y \in A(x) | N_y > 0$}
               \COMMENT{While at least a child of the node has been visited}
-              \WHILE{$ \exists y \in A(x)$ visited}
-                \IF{$\exists y \in A(x)$ not visited}
-                  \STATE unvisited $\gets$ $y \in A(x) | y$ is not visited
-                  \STATE x $\gets$ \CALL{ChooseAtRandom}{unvisited}
+                \STATE $unvisited$ $\gets$ $\{y \in A(x) | N_y = 0\}$
+                \IF{$unvisited \neq \emptyset$}
+                
+                  \STATE $x \gets$ \CALL{ChooseAtRandom}{$unvisited$}
                 \ELSE
-                  \STATE x $\gets$ \CALL{ChooseAtRandom}{$A(x)$}
+                  \STATE $x \gets$ \CALL{ChooseAtRandom}{$A(x)$}
                 \ENDIF
               \ENDWHILE
               \RETURN x
@@ -1562,7 +1562,7 @@ Both policies in this implementation are random walks.
             \ENDPROCEDURE
             
             \PROCEDURE{Score}{node $x$}
-              \RETURN (backtracked wins of x - backtracked losses of x) / visits of x
+              \RETURN $\frac{W_x - L_x}{N_x}$
             \ENDPROCEDURE
 
         \end{algorithmic}

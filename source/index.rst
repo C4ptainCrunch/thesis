@@ -1677,7 +1677,7 @@ UCT adapts UCB to a game tree and gives us the following formula for the upper c
 
 .. math::
 
-    \frac{W_1}{N} + c \times \sqrt{\frac{ln N'}{N}},
+    \frac{W}{N} + c \times \sqrt{\frac{ln N'}{N}},
 
 where :math:`N'` is the number of times the
 parent node has been visited and :math:`c` is a parameter that can be tuned to balance exploitation of known wins and exploration of
@@ -1697,7 +1697,7 @@ The tree policy from MCTS is then replaced by a policy always choosing the node 
         \caption{UCT}
         \begin{algorithmic}
         \PROCEDURE{Score}{node $x$}
-            \RETURN $\frac{W_1}{N} + c \times \sqrt{\frac{ln N'}{N}}$
+            \RETURN $\frac{W_x}{N_x} + c \times \sqrt{\frac{ln N'_x}{N_x}}$
         \ENDPROCEDURE
         \PROCEDURE{TreePolicy}{node $x$}
             \WHILE{$ \exists y \in A(x) | N_y > 0$}

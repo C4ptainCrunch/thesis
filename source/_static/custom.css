@@ -16,6 +16,11 @@ body {
   font-size: 19px;
 }
 
+a.image-reference:hover {
+    border-bottom: none !important;
+    border: none !important;
+}
+
 div.body h1, div.body h2, div.body h3, div.body h4, div.body h5, div.body h6 {
   font-family: "Computer Modern Serif", serif !important;
 }

@@ -885,32 +885,12 @@ the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresp
 
 
   
-
-
-
-
-
-
-
-
-
-    
-
-    
 .. _fig:tree:
-    
 
-
-.. figure:: index_files/index_44_0.svg
-
-
-
-
-
-
-  
-  The subgame tree corresponding to the position depicted in :numref:`fig:game`.
-
+.. figure:: _static/subgame.svg
+   :width: 30%
+   
+   The subgame tree corresponding to the position depicted in :numref:`fig:game`.
 
 
 The minimax tree of a game with game tree :math:`(V,E,x^{0})` is the 4-tuple :math:`(V,E,x^{0},m)` where :math:`m:V\to \mathbb{R}` associates to each node its minimax value.
@@ -1097,7 +1077,7 @@ The first, the *random agent*, is the most simple we can think of and does not u
 
 
 
- .. raw:: html
+.. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
         	        
@@ -1115,9 +1095,9 @@ The first, the *random agent*, is the most simple we can think of and does not u
 
 
 
-<div class="code-intro">
+  
 Implemented in Python as
-</div>
+
 
 
 
@@ -1146,7 +1126,7 @@ The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn
 
 
 
- .. raw:: html
+.. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
         	        
@@ -1247,7 +1227,7 @@ As :math:`\alpha\beta` minimax has no disadvantage over minimax and has a lower 
 
 
 
- .. raw:: html
+.. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
         	        
@@ -1521,7 +1501,7 @@ Both policies in this implementation are random walks.
 
 
 
- .. raw:: html
+.. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
         	        
@@ -1685,7 +1665,7 @@ The tree policy from MCTS is then replaced by a policy always choosing the node 
 
 
 
- .. raw:: html
+.. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
         	        
@@ -1764,7 +1744,7 @@ Informed UCT
 
 
 
- .. raw:: html
+.. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
         	        
@@ -1949,32 +1929,14 @@ By enumerating all possible matches between ordered pairs of these agents, we se
 
 
   
-
-
-
-
-
-
-
-
-
-    
-
-    
 .. _fig:mind-exp:
-    
+
+.. figure:: _static/mind-exp.svg
+   
+   The tree representation of the theoretical game.
+   States are represented as circles, game values are written under the final states.
 
 
-.. figure:: index_files/index_91_0.svg
-
-
-
-
-
-
-  
-  The tree representation of the theoretical game.
-  States are represented as circles, game values are written under the final states.
 
 
 
@@ -2090,7 +2052,7 @@ Those can be can then be recorded in a dictionary like below for further analysi
 
 .. parsed-literal::
 
-    {'duration': 0.0023, 'depth': 67, 'score': [27, 10], 'winner': 0}
+    {'duration': 0.0033, 'depth': 85, 'score': [25, 12], 'winner': 0}
 
 
 
@@ -2254,7 +2216,7 @@ The results of these matches is shown in :numref:`fig:eps-matrix` below in which
     
 
 
-.. figure:: index_files/index_110_0.svg
+.. figure:: index_files/index_108_0.svg
 
 
 
@@ -2323,7 +2285,7 @@ While the results shown in in :numref:`fig:mcts-time_5s` are also noisy, we inde
     
 
 
-.. figure:: index_files/index_115_0.svg
+.. figure:: index_files/index_113_0.svg
 
 
 
@@ -2428,7 +2390,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
     
 
 
-.. figure:: index_files/index_123_0.svg
+.. figure:: index_files/index_121_0.svg
 
 
 
@@ -2496,7 +2458,7 @@ The results, displayed in a matrix in :numref:`fig:matrix`, show that UCT and Gr
     
 
 
-.. figure:: index_files/index_128_0.svg
+.. figure:: index_files/index_126_0.svg
 
 
 

@@ -23,4 +23,7 @@ livenotebooks:
 	make -C source/ watch_notebooks
 
 livehtml:
-	sphinx-autobuild -b html --ignore "*.ipynb" --ignore "*.svg" --ignore "*.png" $(SPHINXOPTS) $(SOURCEDIR) $(BUILDDIR)/html
+	sphinx-autobuild --port 6002 -b html --ignore "*.ipynb" --ignore "*.svg" --ignore "*.png" $(SPHINXOPTS) $(SOURCEDIR) $(BUILDDIR)/html
+
+jupyter:
+	jupyter notebook --port 6001

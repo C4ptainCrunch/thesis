@@ -39,7 +39,8 @@ At each turn, the players move some seeds and can potentially capture some of th
    A typical Awale board in the initial state with both players on their side of the board.
    
 
-.. todo:: Explain here what i'm going to do in my thesis, why it is interesting and why it is new. (Will be done at the very end, at the same time as the abstract)
+This work explores the different machine learning approches to board games. In particular, we focus on MCTS, its evolution and variants as they proved to be good at beating humans in many games while not requiring domain specific knowlegde beyond the undertanding of the rules.
+We apply those techniques to Awale because the game is not as often studied as Go or Chess, while being complex enough to be interesting. It is challenging enough to be played in real life championships but still simple enough that a single computer still has a chance to at least beat a moderate level human player.
 
 In :numref:`sec:awale`, we present Awale in detail. We then introduce Game Theory frameworks in :numref:`sec:game-theory`.
 :numref:`sec:ai-awale` reviews various approaches to solve Awale: retrograde analysis, :math:`\alpha\beta`-pruning Minimax, and basic Monte Carlo Tree Search.
@@ -414,11 +415,11 @@ Sections containing code are prefixed by :code:`In[]:` and the output of the cod
 
 
   
-In this subsection, we use the use the power of Jupyter Notebooks to define in multiple steps a Python :code:`Game()` class holding the state of the game. We then successively inherit from it to add an implementation of the rules and some convenience methods.
+In this subsection, we use the use Jupyter Notebooks cells to define in multiple steps a Python class holding the state of the game. We then successively inherit from it to add an implementation of the rules and some convenience methods.
 
-We set the following encoding conventions:
- - :code:`0` is South, :code:`1` is North,
- - player's actions are numbered from :code:`0` being the leftmost pit in front of him to :code:`5` being the rightmost.
+We set the following encoding conventions in our Python implementation:
+ - :math:`0` is South, :math:`1` is North,
+ - player's actions are numbered from :math:`0` being the leftmost pit in front of him to :math:`5` being the rightmost.
 
 First, we define a dataclass with the minimal attributes needed to store a state of the game.
 
@@ -497,7 +498,7 @@ We then add some convenience methods that will be useful later.
 
 
   
-Now that the base is set, we start implementing the rules,
+After defining a class holding the state of the game, we implement the rules,
 some of them being deliberately excluded from this implementation:
 
 -  loops in the game state are not checked (this considerably speeds up the computations and we did not encounter a loop in our preliminary work);
@@ -1096,7 +1097,7 @@ The first, the *random agent*, is the most simple we can think of and does not u
 
 
 
-.. raw:: html
+ .. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
         	        
@@ -1114,9 +1115,9 @@ The first, the *random agent*, is the most simple we can think of and does not u
 
 
 
-  
+<div class="code-intro">
 Implemented in Python as
-
+</div>
 
 
 
@@ -1145,7 +1146,7 @@ The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn
 
 
 
-.. raw:: html
+ .. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
         	        
@@ -1246,7 +1247,7 @@ As :math:`\alpha\beta` minimax has no disadvantage over minimax and has a lower 
 
 
 
-.. raw:: html
+ .. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
         	        
@@ -1520,7 +1521,7 @@ Both policies in this implementation are random walks.
 
 
 
-.. raw:: html
+ .. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
         	        
@@ -1684,7 +1685,7 @@ The tree policy from MCTS is then replaced by a policy always choosing the node 
 
 
 
-.. raw:: html
+ .. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
         	        
@@ -1763,7 +1764,7 @@ Informed UCT
 
 
 
-.. raw:: html
+ .. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
         	        

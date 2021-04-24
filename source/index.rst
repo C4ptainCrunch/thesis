@@ -1096,21 +1096,20 @@ The first, the *random agent*, is the most simple we can think of and does not u
 
 
 
-  
 .. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
-        \begin{algorithm}
-        \caption{Random agent}
-        \begin{algorithmic}
-        \PROCEDURE{GetAction}{node $x$}
-           \RETURN \CALL{ChooseAtRandom}{$A(x)$}
-        \ENDPROCEDURE
-        \end{algorithmic}
-        \end{algorithm}
+        	        
+	        \begin{algorithm}
+	        \caption{Random agent}
+	        \begin{algorithmic}
+	        \PROCEDURE{GetAction}{node $x$}
+	           \RETURN \CALL{ChooseAtRandom}{$A(x)$}
+	        \ENDPROCEDURE
+	        \end{algorithmic}
+	        \end{algorithm}
+
       </pre>
-
-
 
 
 
@@ -1146,36 +1145,35 @@ The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn
 
 
 
-  
 .. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
-        \begin{algorithm}
-        \caption{$\varepsilon$-Greedy agent}
-        \begin{algorithmic}
-        \PROCEDURE{ImmediateReward}{node $x$}
-            \IF{$x$ is a final node}
-                \IF{agent wins}
-                    \RETURN $\infty$
-                \ELSE
-                    \RETURN $-\infty$
-                \ENDIF
-            \ELSE
-                \RETURN amount of stones captured by playing $x$
-            \ENDIF
-        \ENDPROCEDURE
-        \PROCEDURE{GetAction}{node $x$}
-          \IF{$\mathcal{U}(0, 1) < \varepsilon$}
-            \RETURN \CALL{ChooseAtRandom}{$A(x)$} 
-          \ELSE 
-            \RETURN $\operatorname{argmax}_{y \in A(x)}$ \CALL{ImmediateReward}{$y$}
-          \ENDIF
-        \ENDPROCEDURE
-        \end{algorithmic}
-        \end{algorithm}
+        	        
+	        \begin{algorithm}
+	        \caption{$\varepsilon$-Greedy agent}
+	        \begin{algorithmic}
+	        \PROCEDURE{ImmediateReward}{node $x$}
+	            \IF{$x$ is a final node}
+	                \IF{agent wins}
+	                    \RETURN $\infty$
+	                \ELSE
+	                    \RETURN $-\infty$
+	                \ENDIF
+	            \ELSE
+	                \RETURN amount of stones captured by playing $x$
+	            \ENDIF
+	        \ENDPROCEDURE
+	        \PROCEDURE{GetAction}{node $x$}
+	          \IF{$\mathcal{U}(0, 1) < \varepsilon$}
+	            \RETURN \CALL{ChooseAtRandom}{$A(x)$} 
+	          \ELSE 
+	            \RETURN $\operatorname{argmax}_{y \in A(x)}$ \CALL{ImmediateReward}{$y$}
+	          \ENDIF
+	        \ENDPROCEDURE
+	        \end{algorithmic}
+	        \end{algorithm}
+
       </pre>
-
-
 
 
 
@@ -1248,49 +1246,48 @@ As :math:`\alpha\beta` minimax has no disadvantage over minimax and has a lower 
 
 
 
-  
 .. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
-        \begin{algorithm}
-        \caption{$\alpha\beta$-minimax}
-        \begin{algorithmic}
-        \PROCEDURE{GetAction}{node $x$}
-          \RETURN $\operatorname{argmax}_{y \in A(x)}$ \CALL{Minimax}{$y$, CutoffDepth, $-\infty$, $\infty$, False}
-        \ENDPROCEDURE
-        \PROCEDURE{Minimax}{node $x$, depth, alpha, beta, isMaximizing}
-          \IF{depth = 0 \OR $x$ is final}
-            \RETURN \CALL{Evaluate}{$x$}
-          \ENDIF
-          
-          \IF{isMaximizing}
-            \STATE  value $\gets -\infty$
-            \FORALL{$y$ in $A(x)$}
-                \STATE  value $\gets$ max(value, \CALL{Minimax}{y, depth - 1, alpha, beta, False})
-                \STATE  alpha $\gets$ max(alpha, value)
-                \IF{alpha >= beta}
-                    \BREAK
-                \ENDIF
-            \ENDFOR
-            \RETURN value
-          \ELSE
-              \STATE  value $\gets \infty$
-              \FORALL{$y$ in $A(x)$}
-                \STATE  value $\gets$ min(value, \CALL{Minimax}{y, depth - 1, alpha, beta, True})
-                \STATE  alpha $\gets$ min(beta, value)
-                \IF{alpha >= beta}
-                    \BREAK
-                \ENDIF
-            \ENDFOR
-            \RETURN value
-          \ENDIF
-        
-        \ENDPROCEDURE
-        \end{algorithmic}
-        \end{algorithm}
+        	        
+	        \begin{algorithm}
+	        \caption{$\alpha\beta$-minimax}
+	        \begin{algorithmic}
+	        \PROCEDURE{GetAction}{node $x$}
+	          \RETURN $\operatorname{argmax}_{y \in A(x)}$ \CALL{Minimax}{$y$, CutoffDepth, $-\infty$, $\infty$, False}
+	        \ENDPROCEDURE
+	        \PROCEDURE{Minimax}{node $x$, depth, alpha, beta, isMaximizing}
+	          \IF{depth = 0 \OR $x$ is final}
+	            \RETURN \CALL{Evaluate}{$x$}
+	          \ENDIF
+	          
+	          \IF{isMaximizing}
+	            \STATE  value $\gets -\infty$
+	            \FORALL{$y$ in $A(x)$}
+	                \STATE  value $\gets$ max(value, \CALL{Minimax}{y, depth - 1, alpha, beta, False})
+	                \STATE  alpha $\gets$ max(alpha, value)
+	                \IF{alpha >= beta}
+	                    \BREAK
+	                \ENDIF
+	            \ENDFOR
+	            \RETURN value
+	          \ELSE
+	              \STATE  value $\gets \infty$
+	              \FORALL{$y$ in $A(x)$}
+	                \STATE  value $\gets$ min(value, \CALL{Minimax}{y, depth - 1, alpha, beta, True})
+	                \STATE  alpha $\gets$ min(beta, value)
+	                \IF{alpha >= beta}
+	                    \BREAK
+	                \ENDIF
+	            \ENDFOR
+	            \RETURN value
+	          \ENDIF
+	        
+	        \ENDPROCEDURE
+	        \end{algorithmic}
+	        \end{algorithm}
+
       </pre>
-
-
 
 
 
@@ -1523,54 +1520,52 @@ Both policies in this implementation are random walks.
 
 
 
-  
 .. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
-        \begin{algorithm}
-        \caption{MCTS}
-        \begin{algorithmic}
-            \PROCEDURE{GetAction}{node $x$, duration}
-              \STATE startTime $\gets$ \CALL{GetCurrentTime}{}
-              \STATE endTime $\gets$ startTime + duration
-              \WHILE{\CALL{GetCurrentTime}{} < endTime}
-                \STATE $y \gets$ \CALL{TreePolicy}{$x$}
-                \WHILE{$x$ is not final}
-                  \STATE $y \gets$ \CALL{DefaultPolicy}{$y$}
-                \ENDWHILE
-                \STATE \CALL{BacktrackStats}{$y$}
-              \ENDWHILE
-              \RETURN $\operatorname{argmax}_{y \in A(x)}$ \CALL{Score}{$y$}
-            \ENDPROCEDURE
-
-            \PROCEDURE{TreePolicy}{node $x$}
-              \WHILE{$ \exists y \in A(x) | N_y > 0$}
-              \COMMENT{While at least a child of the node has been visited}
-                \STATE $unvisited$ $\gets$ $\{y \in A(x) | N_y = 0\}$
-                \IF{$unvisited \neq \emptyset$}
-                
-                  \STATE $x \gets$ \CALL{ChooseAtRandom}{$unvisited$}
-                \ELSE
-                  \STATE $x \gets$ \CALL{ChooseAtRandom}{$A(x)$}
-                \ENDIF
-              \ENDWHILE
-              \RETURN x
-            \ENDPROCEDURE
-
-            \PROCEDURE{DefaultPolicy}{node $x$}
-              \RETURN \CALL{ChooseAtRandom}{$A(x)$}
-            \ENDPROCEDURE
-            
-            \PROCEDURE{Score}{node $x$}
-              \RETURN $\frac{W_x - L_x}{N_x}$
-            \ENDPROCEDURE
-
-        \end{algorithmic}
-        \end{algorithm}
+        	        
+	        \begin{algorithm}
+	        \caption{MCTS}
+	        \begin{algorithmic}
+	            \PROCEDURE{GetAction}{node $x$, duration}
+	              \STATE startTime $\gets$ \CALL{GetCurrentTime}{}
+	              \STATE endTime $\gets$ startTime + duration
+	              \WHILE{\CALL{GetCurrentTime}{} < endTime}
+	                \STATE $y \gets$ \CALL{TreePolicy}{$x$}
+	                \WHILE{$x$ is not final}
+	                  \STATE $y \gets$ \CALL{DefaultPolicy}{$y$}
+	                \ENDWHILE
+	                \STATE \CALL{BacktrackStats}{$y$}
+	              \ENDWHILE
+	              \RETURN $\operatorname{argmax}_{y \in A(x)}$ \CALL{Score}{$y$}
+	            \ENDPROCEDURE
+	        
+	            \PROCEDURE{TreePolicy}{node $x$}
+	              \WHILE{$ \exists y \in A(x) | N_y > 0$}
+	              \COMMENT{While at least a child of the node has been visited}
+	                \STATE $unvisited$ $\gets$ $\{y \in A(x) | N_y = 0\}$
+	                \IF{$unvisited \neq \emptyset$}
+	                
+	                  \STATE $x \gets$ \CALL{ChooseAtRandom}{$unvisited$}
+	                \ELSE
+	                  \STATE $x \gets$ \CALL{ChooseAtRandom}{$A(x)$}
+	                \ENDIF
+	              \ENDWHILE
+	              \RETURN x
+	            \ENDPROCEDURE
+	        
+	            \PROCEDURE{DefaultPolicy}{node $x$}
+	              \RETURN \CALL{ChooseAtRandom}{$A(x)$}
+	            \ENDPROCEDURE
+	            
+	            \PROCEDURE{Score}{node $x$}
+	              \RETURN $\frac{W_x - L_x}{N_x}$
+	            \ENDPROCEDURE
+	        
+	        \end{algorithmic}
+	        \end{algorithm}
 
       </pre>
-
-
 
 
 
@@ -1689,32 +1684,32 @@ The tree policy from MCTS is then replaced by a policy always choosing the node 
 
 
 
-  
 .. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
-        \begin{algorithm}
-        \caption{UCT}
-        \begin{algorithmic}
-        \PROCEDURE{Score}{node $x$}
-            \RETURN $\frac{W_x}{N_x} + c \times \sqrt{\frac{ln N'_x}{N_x}}$
-        \ENDPROCEDURE
-        \PROCEDURE{TreePolicy}{node $x$}
-            \WHILE{$ \exists y \in A(x) | N_y > 0$}
-            \COMMENT{While at least a child of the node has been visited}
-                \STATE $unvisited$ $\gets$ $\{y \in A(x) | N_y = 0\}$
-                \IF{$unvisited \neq \emptyset$}
-                    \STATE $x \gets$ \CALL{ChooseAtRandom}{$unvisited$}
-                \ELSE
-                    \RETURN $\operatorname{argmax}_{y \in A(x)}$ \CALL{Score}{$y$}
-                \ENDIF
-            \ENDWHILE
-            \RETURN x
-        \ENDPROCEDURE
-        \end{algorithmic}
-        \end{algorithm}
-      </pre>
+        	        
+	        \begin{algorithm}
+	        \caption{UCT}
+	        \begin{algorithmic}
+	        \PROCEDURE{Score}{node $x$}
+	            \RETURN $\frac{W_x}{N_x} + c \times \sqrt{\frac{ln N'_x}{N_x}}$
+	        \ENDPROCEDURE
+	        \PROCEDURE{TreePolicy}{node $x$}
+	            \WHILE{$ \exists y \in A(x) | N_y > 0$}
+	            \COMMENT{While at least a child of the node has been visited}
+	                \STATE $unvisited$ $\gets$ $\{y \in A(x) | N_y = 0\}$
+	                \IF{$unvisited \neq \emptyset$}
+	                    \STATE $x \gets$ \CALL{ChooseAtRandom}{$unvisited$}
+	                \ELSE
+	                    \RETURN $\operatorname{argmax}_{y \in A(x)}$ \CALL{Score}{$y$}
+	                \ENDIF
+	            \ENDWHILE
+	            \RETURN x
+	        \ENDPROCEDURE
+	        \end{algorithmic}
+	        \end{algorithm}
 
+      </pre>
 
 
 
@@ -1768,21 +1763,20 @@ Informed UCT
 
 
 
-  
 .. raw:: html
 
       <pre class="pseudocode"  data-controller="pseudocode">
-        \begin{algorithm}
-        \caption{Informed UCT}
-        \begin{algorithmic}
+        	        
+	        \begin{algorithm}
+	        \caption{Informed UCT}
+	        \begin{algorithmic}
+	          \PROCEDURE{DefaultPolicy}{node $x$}
+	            \RETURN $\operatorname{argmax}_{y \in A(x)}$ stones captured by playing $y$ while being in state $x$
+	          \ENDPROCEDURE
+	        \end{algorithmic}
+	        \end{algorithm}
 
-                 \PROCEDURE{DefaultPolicy}{node $x$}
-                      \RETURN $\operatorname{argmax}_{y \in A(x)}$ stones captured by playing $y$ while being in state $x$
-                 \ENDPROCEDURE
-        \end{algorithmic}
-        \end{algorithm}
       </pre>
-
 
 
 

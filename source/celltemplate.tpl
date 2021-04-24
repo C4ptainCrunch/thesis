@@ -2,6 +2,15 @@
 
 {% block any_cell %}
 {% if 'ha' in cell['metadata'].get('tags', []) %}
+{% elif 'chide' in cell['metadata'].get('tags', []) %}
+  {{ super() }}
+{% elif 'pseudocode' in cell['metadata'].get('tags', []) %}
+.. raw:: html
+
+      <pre class="pseudocode"  data-controller="pseudocode">
+        {{ super()|indent(8, True) }}
+      </pre>
+
 {% else %}
   {{ super() }}
 {% endif %}

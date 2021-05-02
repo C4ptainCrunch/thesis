@@ -1,3 +1,7 @@
 __pycache__/
 papers/
 ve/
+ve*/
+.ipynb_checkpoints/
+source/index_files/*
+source/_static/*

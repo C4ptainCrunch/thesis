@@ -1074,6 +1074,8 @@ While not having any interest per se due to their simplicity and low strength, t
 
 The first, the *random agent*, is the most simple we can think of and does not use any intelligence at all: it lists all the legal actions it can play and chooses one uniformly at random.
 
+A pseudocode implementation of this agent can be found below, where the :math:`\textrm{GetAction()}` procedure is called every time the agent has to pick a move at its turn and :math:`x` is the node of the game tree representing the current state of the game.
+
 
 
 

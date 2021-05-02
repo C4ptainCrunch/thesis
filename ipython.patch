@@ -1,0 +1,4 @@
+3493c3493
+<         raise NotImplementedError('Implement enable_gui in a subclass')
+---
+>         pass

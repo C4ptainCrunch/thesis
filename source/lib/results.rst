@@ -10,7 +10,7 @@ Download data from AWS
 
   .. code:: ipython3
 
-    %pylab inline
+    %matplotlib inline
     
     import boto3
     import time

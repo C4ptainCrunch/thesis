@@ -96,7 +96,7 @@ The rules vary slightly across countries and are detailed in :numref:`sec:rules`
     
 
 
-.. figure:: index_files/index_6_0.svg
+.. figure:: index_files/index_7_0.svg
 
 
 
@@ -185,7 +185,7 @@ In this work, the pits of a player are numbered left to right from his point of 
     
 
 
-.. figure:: index_files/index_10_0.svg
+.. figure:: index_files/index_11_0.svg
 
 
 
@@ -222,7 +222,7 @@ As an example, in the initial state (:numref:`fig:initial_board`), the first pla
     
 
 
-.. figure:: index_files/index_13_0.svg
+.. figure:: index_files/index_14_0.svg
 
 
 
@@ -268,7 +268,7 @@ For example, if South plays :math:`4` in the configuration shown in :numref:`fig
     
 
 
-.. figure:: index_files/index_16_0.svg
+.. figure:: index_files/index_17_0.svg
 
 
 
@@ -298,7 +298,7 @@ For example, if South plays :math:`4` in the configuration shown in :numref:`fig
     
 
 
-.. figure:: index_files/index_18_0.svg
+.. figure:: index_files/index_19_0.svg
 
 
 
@@ -341,7 +341,7 @@ In :numref:`fig:feed`, South has to play pit 5 because playing pit 1 would leave
     
 
 
-.. figure:: index_files/index_21_0.svg
+.. figure:: index_files/index_22_0.svg
 
 
 
@@ -702,7 +702,7 @@ To show a minimal example of the implementation, we can now play a move and have
     
 
 
-.. figure:: index_files/index_38_0.svg
+.. figure:: index_files/index_39_0.svg
 
 
 
@@ -871,7 +871,7 @@ the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresp
     
 
 
-.. figure:: index_files/index_42_0.svg
+.. figure:: index_files/index_43_0.svg
 
 
 
@@ -919,7 +919,6 @@ We just saw that Awale can be represented as a tree where each node represents a
 
   .. code:: ipython3
 
-    from __future__ import annotations
     from typing import Optional, List
     from weakref import ref, ReferenceType
     
@@ -2054,7 +2053,7 @@ Those can be can then be recorded in a dictionary like below for further analysi
 
 .. parsed-literal::
 
-    {'duration': 0.0033, 'depth': 85, 'score': [25, 12], 'winner': 0}
+    {'duration': 0.0019, 'depth': 42, 'score': [2, 26], 'winner': 1}
 
 
 
@@ -2083,7 +2082,7 @@ AWS Batch tasks can be launched with the :code:`submit_match()` function, using 
 
     from lib.utils import submit_aws_job
     
-    def submit_match(a, b, pool, side, timeout=600):
+    def submit_match(a, b, pool, side, timeout=600 , local=False):
         return submit_aws_job(
             jobDefinition='run-match',
             jobName=pool,
@@ -2098,6 +2097,7 @@ AWS Batch tasks can be launched with the :code:`submit_match()` function, using 
                 ]
             },
             timeout={'attemptDurationSeconds': timeout},
+            local=local,
         )
 
 
@@ -2116,9 +2116,9 @@ Because we can not be sure an agent has the same strength if it is allowed to be
 
   .. code:: ipython3
 
-    def sumbit_symmetric_match(a, b, pool, timeout=600):
-        submit_match(a, b, pool, side=0, timeout=timeout)
-        submit_match(b, a, pool, side=1, timeout=timeout)
+    def sumbit_symmetric_match(a, b, pool, timeout=600, local=False):
+        submit_match(a, b, pool, side=0, timeout=timeout, local=local)
+        submit_match(b, a, pool, side=1, timeout=timeout, local=local)
 
 
 
@@ -2137,9 +2137,6 @@ Results of the jobs submitted to AWS Batch can then be found in AWS CloudWatch. 
   .. code:: ipython3
 
     from lib.results import results
-
-
-
 
 
 
@@ -2179,6 +2176,18 @@ We thus pick evenly spaced values of :math:`\varepsilon` in the interval :math:`
 
   .. code:: ipython3
 
+    sumbit_symmetric_match("GreedyPlayer(%s)", "GreedyPlayer(%s)", "tests-1")
+
+
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
     search_space = np.linspace(0, 1, 21)
     
     for i in range(25):
@@ -2186,7 +2195,7 @@ We thus pick evenly spaced values of :math:`\varepsilon` in the interval :math:`
             for eps2 in search_space:
                 player = f"GreedyPlayer(%s, {eps1})"
                 opponent = f"GreedyPlayer(%s, {eps2})"
-                sumbit_symmetric_match(player, opponent, "local-eps-matrix")
+                sumbit_symmetric_match(player, opponent, "local-eps-matrix", local=True)
 
 
 
@@ -2218,7 +2227,7 @@ The results of these matches is shown in :numref:`fig:eps-matrix` below in which
     
 
 
-.. figure:: index_files/index_108_0.svg
+.. figure:: index_files/index_110_0.svg
 
 
 
@@ -2287,7 +2296,7 @@ While the results shown in in :numref:`fig:mcts-time_5s` are also noisy, we inde
     
 
 
-.. figure:: index_files/index_113_0.svg
+.. figure:: index_files/index_115_0.svg
 
 
 
@@ -2392,7 +2401,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
     
 
 
-.. figure:: index_files/index_121_0.svg
+.. figure:: index_files/index_123_0.svg
 
 
 
@@ -2460,7 +2469,7 @@ The results, displayed in a matrix in :numref:`fig:matrix`, show that UCT and Gr
     
 
 
-.. figure:: index_files/index_126_0.svg
+.. figure:: index_files/index_128_0.svg
 
 
 

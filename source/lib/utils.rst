@@ -20,8 +20,8 @@ Utilitiy functions
         print("AWS is not configured")
     
     
-    def submit_aws_job(*args, **kwargs):
-        if ENABLE_JOB_SUBMISSION:
+    def submit_aws_job(*args, local=False, **kwargs):
+        if ENABLE_JOB_SUBMISSION and not local:
             return client.submit_job(*args, **kwargs)
 
 

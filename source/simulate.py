@@ -6,7 +6,6 @@ import time
 from datetime import timedelta
 from datetime import timedelta as td
 
-import import_ipynb
 from index import Game
 from index import GreedyPlayer, GreedyUCTPlayer, MCTSPlayer, RandomPlayer, UCTPlayer
 

@@ -12,12 +12,13 @@ Utilitiy functions
 
     ENABLE_JOB_SUBMISSION = False
     
-    try:
-        import boto3
-        client = boto3.client('batch')
-    except:
-        ENABLE_JOB_SUBMISSION = False
-        print("AWS is not configured")
+    if ENABLE_JOB_SUBMISSION:
+        try:
+            import boto3
+            client = boto3.client('batch')
+        except:
+            ENABLE_JOB_SUBMISSION = False
+            print("AWS is not configured")
     
     
     def submit_aws_job(*args, local=False, **kwargs):

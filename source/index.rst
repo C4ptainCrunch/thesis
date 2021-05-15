@@ -1837,6 +1837,8 @@ We first describe the statistical framework used to compare two agents and show 
 Then we suggest to play a tournament to compare and rank multiple agents and we show how to limit the size of the tournament under some plausible assumptions.
 
 
+.. _sec:compare_ab:
+
 How to compare A and B
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1897,6 +1899,7 @@ Now that we know the number of matches we need to play to be able to ascertain t
 
   
 With this method, we can then define a strength relation '*is stronger than*', noted :math:`\succ` over the set of agents where :math:`A \succ B` if when playing 50 matches between A and B, :math:`n_A + \frac{1}{2}\ n_d \geq 32`.
+We can also define the relation '*is weakly stronger than*', noted :math:`\succeq` where :math:`A \succ B \implies n_A + \frac{1}{2}\ n_d \geq 18`.
 
 
 
@@ -1946,11 +1949,11 @@ By enumerating all possible matches between ordered pairs of these agents, we se
 How to compare more than two agents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As described above, transitivity can not be proved in all cases so we can not use a sorting algorithm to order our agents. We thus have to resort to a full tournament where the relation :math:`\succ` is evaluated between every pair of agent. 
+As described above, transitivity can not be proved in all cases so we can not use a sorting algorithm to order our agents. We thus have to resort to a round-robin tournament where the relation :math:`\succ` is evaluated between every pair of agent. 
 
 We have 6 algorithms, each with some continuous or discrete parameters. Even if we restrict every parameter to a small finite set of values (let's say 100), we would still have 600 agents to compare. This would in turn make a tournament of size :math:`600^2` where each evaluation of the relation requires 50 matches. This method would thus require :math:`600^2 * 50 = 18\,000\,000` matches. Playing such a big number of matches is hardly feasible so we resort to a more frugal approach.
 
-The approach that we take is to first select, for each algorithm, the parameters that result in the best agent (a champion). This in turn reduces the number of agents playing in the tournament to 6 and the number of matches to play to :math:`6^2 * 50 = 180`, a much more reasonable number. While this approach reduces drastically the amount of computations needed, it might not be perfect.
+The approach that we take is to first select, for each algorithm, the parameters that result in the best agent (a champion). This in turn reduces the number of agents playing in the round-robin tournament to 6 and the number of matches to play to :math:`6^2 * 50 = 180`, a much more reasonable number. While this approach reduces drastically the amount of computations needed, it might not be perfect.
 We have no guarantee that the champion within a family (all agents derived from a single algorithm) is also the best family member against agents from other families. This is a known limitation and verifying this assumption is outside of the scope of this work.  
 
 
@@ -1965,7 +1968,7 @@ So, for :math:`x_1` close to :math:`x_1` and :math:`y_1` close to :math:`y_2`, t
 This assumption and the fact that we evaluate :math:`f_n` over a dense sample of the parameter space allows us to compare agents from a single family by playing much less matches than the 50 matches derived from our statistical power analysis.
 
 
-During the champion selection, contrary to the full tournament, we also assume that the strength relation :math:`\succ` over agents of a family a weaker property than transitivity: :math:`\forall y \in X, \exists x \neq y, y \in X` such that :math:`f_{n \to \infty} (A_{x}, A_{y}) \frac{1}{n} > f_{n \to \infty} (A_{y}, A_{x}) \frac{1}{n}`: there exists an agent that wins more than half the time against every other agent of its family.
+During the champion selection, contrary to the round-robin tournament, we also assume that the strength relation :math:`\succ` over agents of a family a weaker property than transitivity: :math:`\forall y \in X, \exists x \neq y, y \in X` such that :math:`f_{n \to \infty} (A_{x}, A_{y}) \frac{1}{n} > f_{n \to \infty} (A_{y}, A_{x}) \frac{1}{n}`: there exists an agent that wins more than half the time against every other agent of its family.
 
 
 
@@ -1974,8 +1977,12 @@ During the champion selection, contrary to the full tournament, we also assume t
 Tournament solution
 ~~~~~~~~~~~~~~~~~~~
 
-.. todo::
-  We will use the framework of tournament solutions :cite:`laslier` to analyze the results and eventually find a total order or an overall best agent. This will be done once we have our final results.
+Now that we have selected a champion for each algorithm, we can play a given number of matches between each pair of champions and compare each pair with the :math:`\succeq` relation. By reusing the statistical framework from :numref:`%s <sec:compare_ab>`, we know we have to play 50 matches bewteen each pair and if a :math:`A` wins more than 18 matches over 50, :math:`A \succeq B`. By construction, such binary tournament is complete and is thus a *weak tounrament* :cite:`brandt2016`.
+
+We can then use the framework of monotonic matrices to see if the relation over our set of champions is transtive. If it is, it is a complete pre-order and we can order them from best to worst (with ex-aequo).
+
+
+
 
 
 
@@ -2053,7 +2060,7 @@ Those can be can then be recorded in a dictionary like below for further analysi
 
 .. parsed-literal::
 
-    {'duration': 0.0019, 'depth': 42, 'score': [2, 26], 'winner': 1}
+    {'duration': 0.0035, 'depth': 95, 'score': [26, 18], 'winner': 0}
 
 
 
@@ -2086,7 +2093,7 @@ AWS Batch tasks can be launched with the :code:`submit_match()` function, using 
         return submit_aws_job(
             jobDefinition='run-match',
             jobName=pool,
-            jobQueue='match-queue',
+            jobQueue='matches',
             containerOverrides={
                 'command': ["python", "simulate.py"],
                 'environment': [
@@ -2147,6 +2154,9 @@ Results of the jobs submitted to AWS Batch can then be found in AWS CloudWatch. 
 
 
 
+
+
+
   
 .. _sec:experiments:
 
@@ -2174,10 +2184,7 @@ We thus pick evenly spaced values of :math:`\varepsilon` in the interval :math:`
   
 
 
-  .. code:: ipython3
-
-    sumbit_symmetric_match("GreedyPlayer(%s)", "GreedyPlayer(%s)", "tests-1")
-
+  
 
 
 
@@ -2341,15 +2348,37 @@ The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`
 
 
   
-What we see in :numref:`utc-tuning-c` is a bell curve with some noise and a plateau around :math:`c = \sqrt(2) / 2`. The noise is louder on the right than on on the left of its maximum. An explanation for this could be that on the left, as :math:`c` is lower, there is not much exploration so the algorithm is more deterministic while it's the opposite on the right and each simulation could be either really good or really bad depending on luck.
+What we see in :numref:`fig:utc-tuning-c` is a bell curve with some noise and a plateau around :math:`c = \sqrt(2) / 2`. The noise is louder on the right than on on the left of its maximum. An explanation for this could be that on the left, as :math:`c` is lower, there is not much exploration so the algorithm is more deterministic while it's the opposite on the right and each simulation could be either really good or really bad depending on luck.
 
 As the maximum of the bell curve is around :math:`c = \sqrt{2} / 2` it seems to confirm that it is the optimum value for UCT.
 
-.. _utc-tuning-c:
 
-.. figure:: notebooks/uct-value.png
 
-  Strength of UCT(:math:`c=\sqrt{2} / 2`) against other values of :math:`c`. TODO: regenerate figure in svg
+
+  
+
+
+
+
+
+
+
+
+    
+
+    
+.. _fig:utc-tuning-c:
+    
+
+
+.. figure:: index_files/index_120_0.svg
+
+
+
+
+
+  
+  Strength of UCT(:math:`c=\sqrt{2} / 2`) against other values of :math:`c`.
 
 
 
@@ -2401,7 +2430,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
     
 
 
-.. figure:: index_files/index_123_0.svg
+.. figure:: index_files/index_125_0.svg
 
 
 
@@ -2409,6 +2438,54 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
 
   
   Strength of UCT(:math:`c=1.5`) against other values of :math:`c`.
+
+
+
+
+  
+Informed UCT
+------------
+
+The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :math:`c`. As for UCT, we fix :math:`t=5s` to be able to fairly compare MCTS, UTC and Informed UCT later.
+
+:cite:`kocsis2006bandit` has shown that :math:`c=\sqrt{2} / 2` is a good starting value. We thus play matches of UCT(:math:`c=\sqrt{2} / 2`) against a range of 11 values equally spaced between 0.2 and 2.2
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    search_space = np.linspace(0, 2, 11) + 0.2
+    
+    for i in range(25):
+        for c in search_space:
+                player = "GreedyUCTPlayer(%s, td(seconds=5), c=math.sqrt(2)/2)"
+                opponent = f"GreedyUCTPlayer(%s, td(seconds=5), c={c:.2f})"
+    
+                sumbit_symmetric_match(player, opponent, "greedy-uct-tuning-c")
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+    
+
+
+.. figure:: index_files/index_129_0.svg
+
 
 
 
@@ -2448,7 +2525,7 @@ We select the best agent for every algorithm and make each of them play 50 match
 
 
   
-The results, displayed in a matrix in :numref:`fig:matrix`, show that UCT and GreedyUCT beat every other agent. There is no clear winner between those 2 champions though.
+The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorted by alphabetic order show the ratio of win of the row player against the column player. We then transform this result in a binary weak tournament by computing the :math:`\succeq` relation. The results are show on the right of :numref:`fig:matrix`.
 
 
 
@@ -2457,6 +2534,24 @@ The results, displayed in a matrix in :numref:`fig:matrix`, show that UCT and Gr
 
 
 
+
+
+
+
+.. parsed-literal::
+
+    <ipython-input-174-6f2547be80c7>:25: UserWarning: FixedFormatter should only be used together with FixedLocator
+      ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45)
+    <ipython-input-174-6f2547be80c7>:49: UserWarning: FixedFormatter should only be used together with FixedLocator
+      ax2.set_xticklabels(ax1.get_xticklabels(), rotation=45)
+
+
+
+
+
+.. parsed-literal::
+
+    <Figure size 700x400 with 0 Axes>
 
 
 
@@ -2469,16 +2564,20 @@ The results, displayed in a matrix in :numref:`fig:matrix`, show that UCT and Gr
     
 
 
-.. figure:: index_files/index_128_0.svg
+.. figure:: index_files/index_133_2.svg
 
 
 
 
 
   
-  Matrix representation of the valued tournament between every algorithm
+  Matrix representation of thevalued and binary tournaments between every algorithm
+
+
+
+
   
-.. todo:: We still have to transform the values tournament in a binary one and then analyze it with the framework of tournament solutions.
+
 
 
 

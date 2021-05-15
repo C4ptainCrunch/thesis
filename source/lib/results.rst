@@ -44,14 +44,14 @@ Download data from AWS
   .. code:: ipython3
 
     def download_results():
-        start = 0
+        start = int(datetime(2021, 5, 1).timestamp())
         results = []
     
         while True:
             print('Querying')
     
             # Query for the first time beginning in 1970
-            query = client.start_query(
+            query = session.start_query(
                 logGroupName='/aws/batch/job',
                 startTime=start,
                 endTime=int(time.time()),
@@ -67,7 +67,7 @@ Download data from AWS
             # Loop untill the query response is ready
             query_result = {'status': 'Scheduled'}
             while query_result['status'] in ('Scheduled', 'Running'):
-                query_result = client.get_query_results(queryId=query['queryId'])
+                query_result = session.get_query_results(queryId=query['queryId'])
                 time.sleep(1)
     
             tmp = query_result
@@ -119,10 +119,34 @@ Download data from AWS
   .. code:: ipython3
 
     def write_results(results):
-        with CLOUDWATCH_DATA_PATH as fd:
+        with open(CLOUDWATCH_DATA_PATH, "w") as fd:
             for row in results:
                 json.dump(row, fd)
                 fd.write("\n")
+
+
+
+
+
+
+  
+
+
+  .. code:: ipython3
+
+    write_results(download_results())
+
+
+
+
+
+
+.. parsed-literal::
+
+    Querying
+    Querying
+    Done, with 2987 results
+
 
 
 

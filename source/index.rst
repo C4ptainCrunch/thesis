@@ -1899,7 +1899,7 @@ Now that we know the number of matches we need to play to be able to ascertain t
 
   
 With this method, we can then define a strength relation '*is stronger than*', noted :math:`\succ` over the set of agents where :math:`A \succ B` if when playing 50 matches between A and B, :math:`n_A + \frac{1}{2}\ n_d \geq 32`.
-We can also define the relation '*is weakly stronger than*', noted :math:`\succeq` where :math:`A \succ B \implies n_A + \frac{1}{2}\ n_d \geq 18`.
+We can also define the relation '*is weakly stronger than*', noted :math:`\succeq` where :math:`A \succ B \iff n_A + \frac{1}{2}\ n_d \geq 18`. Notice that :math:`\succ` is the asymmetric part of :math:`\succeq`.
 
 
 
@@ -1908,9 +1908,9 @@ We can also define the relation '*is weakly stronger than*', noted :math:`\succe
 Transitivity of the strength relation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We have a method to determine if an agent is stronger than another but we don't have a way to order all our agents regarding to their strength. It could be tempting to use a sorting algorithm to order the agents using the strength (:math:`\succ`) relation but for this to be correct, the relation has to be transitive.
+We have a method to determine if an agent is stronger than another but we don't have a way to order all our agents regarding to their strength. It could be tempting to use a sorting algorithm to order the agents using the weak strength (:math:`\succeq`) relation but for this to be correct, the relation has to be transitive and thus :math:`\succ` has to be acyclic.
 
-In the following mind experiment, we prove that the relation of strength between two agents is not transitive and thus a total order between all possible agents does not exist.
+In the following mind experiment, we prove that the relation of weak strength between two agents is not transitive and thus a total order between all possible agents does not exist.
 
 Let us define a theoretical game represented by the tree in :numref:`fig:mind-exp`. Then, let us define three different agents designed to play this game: A, B and C with their strategies defined in the table below.
 
@@ -1927,7 +1927,7 @@ Let us define a theoretical game represented by the tree in :numref:`fig:mind-ex
   +---+--------------+--------------+--------------+--------------+
 
 We see that in a match of A against B, A wins 1 where in B against A, both win 0. So we can say :math:`A \succ B`.
-By enumerating all possible matches between ordered pairs of these agents, we see that :math:`A \succ B`, :math:`B \succ C` and :math:`C \succ A`. This cycle proves that he relation is not transitive at least in some cases.
+By enumerating all possible matches between ordered pairs of these agents, we see that :math:`A \succ B`, :math:`B \succ C` and :math:`C \succ A`. This cycle in :math:`\succ` proves that the relation :math:`\succeq` is not transitive at least in some cases.
 
 
 
@@ -1949,7 +1949,7 @@ By enumerating all possible matches between ordered pairs of these agents, we se
 How to compare more than two agents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As described above, transitivity can not be proved in all cases so we can not use a sorting algorithm to order our agents. We thus have to resort to a round-robin tournament where the relation :math:`\succ` is evaluated between every pair of agent. 
+As described above, transitivity can not be proved in all cases so we can not use a sorting algorithm to order our agents. We thus have to resort to a round-robin tournament where the relation :math:`\succeq` is evaluated between every pair of agent. 
 
 We have 6 algorithms, each with some continuous or discrete parameters. Even if we restrict every parameter to a small finite set of values (let's say 100), we would still have 600 agents to compare. This would in turn make a tournament of size :math:`600^2` where each evaluation of the relation requires 50 matches. This method would thus require :math:`600^2 * 50 = 18\,000\,000` matches. Playing such a big number of matches is hardly feasible so we resort to a more frugal approach.
 
@@ -1977,12 +1977,11 @@ During the champion selection, contrary to the round-robin tournament, we also a
 Tournament solution
 ~~~~~~~~~~~~~~~~~~~
 
-Now that we have selected a champion for each algorithm, we can play a given number of matches between each pair of champions and compare each pair with the :math:`\succeq` relation. By reusing the statistical framework from :numref:`%s <sec:compare_ab>`, we know we have to play 50 matches bewteen each pair and if a :math:`A` wins more than 18 matches over 50, :math:`A \succeq B`. By construction, such binary tournament is complete and is thus a *weak tounrament* :cite:`brandt2016`.
+Now that we have selected a champion for each algorithm, we can play a given number of matches between each pair of champions and compare each pair by means of the :math:`\succeq` relation. By reusing the statistical framework from :numref:`%s <sec:compare_ab>`, we know we have to play 50 matches bewteen each pair and if a :math:`A` wins more than 18 matches against B, then :math:`A \succeq B`. By construction, this binary relation is complete and is thus a *weak tournament* :cite:`brandt2016`.
 
-We can then use the framework of monotonic matrices to see if the relation over our set of champions is transtive. If it is, it is a complete pre-order and we can order them from best to worst (with ex-aequo).
+We can represent our weak tournament as a binary matrix :math:`M` indexed in both dimensions by the champions and where each entry :math:`M_{ij} = 1 \iff i \succeq j`. A binary matrix :math:`M` is a step-type matrix when each row is non-decreasing from left to right and each column is non-decreasing from top to bottom :cite:`PirlotVincke97`.
 
-
-
+The :math:`\succeq` is transitive if and only if it has a step-type matrix representation in wich the order of the columns and of the lines is the same. If this is the case for our weak tournament, it will be not only complete but also transitive. It will therefore be a weak order i.e. an ordering of the champions from best to worst possibly with ties :cite:`RoubensVincke85`.
 
 
 
@@ -2528,6 +2527,9 @@ We select the best agent for every algorithm and make each of them play 50 match
 The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorted by alphabetic order show the ratio of win of the row player against the column player. We then transform this result in a binary weak tournament by computing the :math:`\succeq` relation. The results are show on the right of :numref:`fig:matrix`.
 
 
+TODO XXX : 0 et 1 à droite
+
+
 
 
   
@@ -2540,9 +2542,9 @@ The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorte
 
 .. parsed-literal::
 
-    <ipython-input-174-6f2547be80c7>:25: UserWarning: FixedFormatter should only be used together with FixedLocator
+    <ipython-input-189-988d20bd3111>:25: UserWarning: FixedFormatter should only be used together with FixedLocator
       ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45)
-    <ipython-input-174-6f2547be80c7>:49: UserWarning: FixedFormatter should only be used together with FixedLocator
+    <ipython-input-189-988d20bd3111>:49: UserWarning: FixedFormatter should only be used together with FixedLocator
       ax2.set_xticklabels(ax1.get_xticklabels(), rotation=45)
 
 
@@ -2577,7 +2579,12 @@ The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorte
 
 
   
-
+Elle n'est pas step type
+On classe par somme des lignes comme dans :cite:`RoubensVincke85`.
+La voici
+Elle est steptype
+Elle est trnasitive
+Voila l'ordre
 
 
 

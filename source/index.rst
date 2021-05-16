@@ -48,6 +48,9 @@ In :numref:`sec:variants`, we describe more advanced versions of MCTS and in par
 :numref:`sec:method` presents the mothod used in :numref:`sec:experiments` where we show some empirical results (simulations) allowing to compare several MCTS algorithms and :numref:`sec:conclusion` concludes.
 
 
+This document, its souce, the code used to run the experiments and their results are available to download under an open-source license in a Git repository `hosted on GitHub <https://github.com/C4ptainCrunch/thesis>`_. This document is also hosted as a web page on `https://awale.ml <https://awale.ml>`_.
+
+
 
 
   
@@ -374,7 +377,7 @@ Implementation of the rules
 
 You might be reading this document in the form of a web page or a pdf file but its original form is a Jupyter Notebook :cite:`jupyter`. Jupyter Notebooks are documents mixing computer code (in this case Python code), the result of the execution of the code and text. These can be used to document experiments in the same place they are run.
 
-This document can be read both with and without looking at the Python code. If you are not fluent in Python or do not want to be distracted by the details of the implementation, you choose to hide the notebooks cells with the following toggle.
+Most of this document can be read both with and without looking at the Python code as the implementation is available in Python as well as in pseudocode. If you are not fluent in Python or do not want to be distracted by the details of the implementation, you can choose to hide the notebooks cells that are with the following toggle.
 
 .. raw:: html
 
@@ -386,6 +389,7 @@ This document can be read both with and without looking at the Python code. If y
     Show notebook code and execution results
   </label>
 
+However, even when activating this toggle, some sections of Python code will still be shown as the sections containing them would have little meaning without them.
 Sections containing code are prefixed by :code:`In[]:` and the output of the code is showed immediately under it, prefixed by :code:`Out[]:`. An example is shown below if you chose to display the notebook cells.
 
 
@@ -2573,7 +2577,7 @@ TODO XXX : 0 et 1 à droite
 
 
   
-  Matrix representation of thevalued and binary tournaments between every algorithm
+  Matrix representation of the valued and binary tournaments between every algorithm
 
 
 
@@ -2600,12 +2604,9 @@ Conclusion
 
 
   
-========
-Appendix
-========
-
+============
 Bibliography
-------------
+============
 
 .. bibliography:: refs.bib
    :style: custom
@@ -2620,16 +2621,6 @@ Footnotes
 .. [#source_bao] Picture by Yintan under Creative Commons SA license https://commons.wikimedia.org/wiki/File:Bao_europe.jpg
  
  .. [#aws_c5] C5 instances contain a 2nd generation Intel Xeon Scalable Processor (Cascade Lake) with a sustained all core Turbo frequency of 3.6GHz.
-
-
-
-
-
-  
-Appendix
---------
-
-.. todo:: This section is still a work in progress. It will mostly contain links to some relevant code
 
 
 

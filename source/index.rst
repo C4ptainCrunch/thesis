@@ -1801,10 +1801,6 @@ All moves as first
 The basic idea is to update statistics for all actions selected during a simulation as if they were the first action applied. This method is particularly well suited for incremental games such as Go, where the value of a move is often dependent on the state of the board in its close proximity and unaffected by moves played elsewhere on the board. 
 Due to the popularity of AMAF, these methods are mentioned here for completeness but will not be pursued further due to the lack of applicability to Awale where the value of moves are dependent on the whole board and on the advancement of the game.
 
-
-
-
-  
 Alpha Zero
 ~~~~~~~~~~
 
@@ -2080,8 +2076,6 @@ To this effect, we placed the code to run a match in a standalone Python script 
 This Docker container is then used as a template to launch AWS Batch tasks in parallel, their standard output being sent to AWS Cloudwatch to be analyzed later.
 Each match was in a separate AWS Batch task was allowed 1 vCPU with 500MB of RAM. Those tasks were running on C5 compute optimized EC2 instances [#aws_c5]_. 
 
-AWS Batch tasks can be launched with the :code:`submit_match()` function, using itself the :code:`submit_aws_job()` utility function defined in Annex XXX.
-
 
 
 
@@ -2136,7 +2130,7 @@ Because we can not be sure an agent has the same strength if it is allowed to be
 
 
   
-Results of the jobs submitted to AWS Batch can then be found in AWS CloudWatch. They are downloaded with a script available in the Annex XXX and then stored in :code:`source/data/*.jsonl`. These results are then processed and normalized and made available in Pandas DataFrame :cite:`pandas` importable with the following code.
+Results of the jobs submitted to AWS Batch can then be found in AWS CloudWatch. They are downloaded with a script and stored in :code:`source/data/*.jsonl`. These results are then processed and normalized and made available in Pandas DataFrame :cite:`pandas` importable with the following code.
 
 
 
@@ -2237,7 +2231,7 @@ The results of these matches is shown in :numref:`fig:eps-matrix` below in which
     
 
 
-.. figure:: index_files/index_110_0.svg
+.. figure:: index_files/index_109_0.svg
 
 
 
@@ -2306,7 +2300,7 @@ While the results shown in in :numref:`fig:mcts-time_5s` are also noisy, we inde
     
 
 
-.. figure:: index_files/index_115_0.svg
+.. figure:: index_files/index_114_0.svg
 
 
 
@@ -2374,7 +2368,7 @@ As the maximum of the bell curve is around :math:`c = \sqrt{2} / 2` it seems to 
     
 
 
-.. figure:: index_files/index_120_0.svg
+.. figure:: index_files/index_119_0.svg
 
 
 
@@ -2433,7 +2427,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
     
 
 
-.. figure:: index_files/index_125_0.svg
+.. figure:: index_files/index_124_0.svg
 
 
 
@@ -2487,7 +2481,7 @@ The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :mat
     
 
 
-.. figure:: index_files/index_129_0.svg
+.. figure:: index_files/index_128_0.svg
 
 
 
@@ -2531,9 +2525,6 @@ We select the best agent for every algorithm and make each of them play 50 match
 The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorted by alphabetic order show the ratio of win of the row player against the column player. We then transform this result in a binary weak tournament by computing the :math:`\succeq` relation. The results are show on the right of :numref:`fig:matrix`.
 
 
-TODO XXX : 0 et 1 à droite
-
-
 
 
   
@@ -2570,7 +2561,7 @@ TODO XXX : 0 et 1 à droite
     
 
 
-.. figure:: index_files/index_133_2.svg
+.. figure:: index_files/index_132_2.svg
 
 
 
@@ -2604,9 +2595,14 @@ Conclusion
 
 
   
-============
-Bibliography
-============
+.. raw:: html
+
+    <h1>References</h1>
+
+
+
+
+  
 
 .. bibliography:: refs.bib
    :style: custom
@@ -2615,8 +2611,14 @@ Bibliography
 
 
   
-Footnotes
----------
+.. raw:: html
+
+    <h1>Notes</h1>
+
+
+
+
+  
 
 .. [#source_bao] Picture by Yintan under Creative Commons SA license https://commons.wikimedia.org/wiki/File:Bao_europe.jpg
  

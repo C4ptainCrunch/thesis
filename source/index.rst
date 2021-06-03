@@ -1691,18 +1691,17 @@ Upper Confidence Bounds for Trees
 ---------------------------------
 
 Because basic MCTS samples uniformly the game tree, it spends compute time estimating the value of uninteresting nodes that will never be played in a real game. A more efficient method would instead explore more often the interesting parts of the tree: an asymmetric method.
-:cite:`kocsis2006bandit` defined Upper Confidence Bounds for Trees (UCT): during the selection process, this method combines basic MCTS and Upper Confidence Bounds (UCB), as used in the multi-armed bandit problem.
 
-Basic MCTS, during the tree policy, chooses a child at random even if the children is likely of having a poor mean value. UCT instead treats the choice of child as a multi-armed bandit problem: picking a child for which we have an estimation of the true value to make a simulation is analogous to picking a slot machine for which we have an estimation of the true reward probability. 
+This is where we can see a similarity between MCTS and a well known theoretical problem in reinforcement learning: the multi-armed bandit where an agent must allocate a limited set of resources between multiple choices while maximising its expected gain, when each choice's properties are only partially known at the time of allocation, and becomes better known by allocating resources to the choice.
 
-.. todo:: This section is still a work in progress
+Basic MCTS, during the tree policy, chooses a child at random even if the children is likely of having a estimated value. We can instead treat the choice of child as a multi-armed bandit problem: picking a child is analogous to picking a slot machine. 
 
+When considering the selection phase as a multi-armed bandit, attention has to be given to the fact that the bandits are not stationary: as the estimated value of a node depends not only on the estimated value of its children but also on amount of times these childrens have been sampled themselves, the mean value of a bandit will change over time as its children are not sampled uniformely over time.
 
-..
-    TODO When a node has not been visited much, the ratio of wins to visits is an estimation of the mean value of the children. But after a time, UCT prioritizes more the good moves so the value drifts and converges to the game theoretic value (:cite:`kocsis2006bandit`). This means that the bandit is non stationary but this is ok as it does not drift too much.
+One popular solution to the multi-armed bandit problem is 'Upper Confidence Bounds' (UCB). This method was adapted to MCTS by  :cite:`kocsis2006bandit` and named 'Upper Confidence Bounds for Trees' (UCT) algorithm.
+The breakthough of this method was to prove that UCB handles non-stationary bandits without problem and that the estimated value of the nodes converges to the game theoretic value given a sufficient number of samples.
 
-
-UCT adapts UCB to a game tree and gives us the following formula for the upper confidence bound:
+UCT adapts UCB gives us the following formula for the upper confidence bound for each node:
 
 .. math::
 
@@ -1800,11 +1799,12 @@ Implemented in Python as
 
 
   
-Informed UCT
-------------
+Heavy playouts
+--------------
 
-:code:`GreedyUCTPlayer` subclasses :code:`UCTPlayer` and changes the :code:`default_policy` to weigh more the actions that will give more immediate rewards.
+While the results of applying UCT to Awale are already impressive, we feel like there is still room for improvement in another part of the MCTS method: the simulation where for now, moves are being played at random. This makes us think that it is not ideal as in a real game, no player would play like that and there might be no point in simulating moves that are certain to put the player in a bad situation.
 
+To counter this problem, an approach called 'heavy playouts' can be used where moves selection can be biased using domain-specific heuristics. Here we try this approach by modyfing the UCT algorithm from the previous section and replacing the uniformely random selection from the simulation phase by weighted random selection where the probability of chosing the node is weighted by amount of stones that would be captured by playing the move.
 
 
 
@@ -1831,7 +1831,7 @@ Informed UCT
 
       <div class="code-intro">
 
-Implemented in Python as
+:code:`GreedyUCTPlayer` subclasses :code:`UCTPlayer` and changes the :code:`default_policy` to weigh more the actions that will give more immediate rewards.
 
 .. raw:: html
 
@@ -1863,8 +1863,14 @@ Implemented in Python as
 
 
   
-Other approaches
-----------------
+While intuitively, we thought this could only improve the performance of the UCT algorithm, our results do not show a significant improvement. But this seems to be expected as in some cases, stronger rollouts can decrease the agent strength :cite:`Gelly2007`. Heavy playouts is still a open subject with reasearch like :cite:`Swiechowski2014`, :cite:`James2016` and :cite:`Soemers2019`.
+
+
+
+
+  
+Related work and approaches
+---------------------------
 
 All moves as first
 ~~~~~~~~~~~~~~~~~~
@@ -1881,6 +1887,8 @@ to use a neural network to estimate the value of a
 game state without having to play it. This can greatly enhance the performance
 of the algorithm because much less playouts are required.
 
+Other
+~~~~~
 
 .. todo:: This section is still a work in progress
 
@@ -2340,7 +2348,7 @@ The results of these matches is shown in :numref:`fig:eps-matrix` below in which
     
 
 
-.. figure:: index_files/index_110_0.svg
+.. figure:: index_files/index_111_0.svg
 
 
 
@@ -2413,7 +2421,7 @@ While the results shown in in :numref:`fig:mcts-time_5s` are also noisy, we inde
     
 
 
-.. figure:: index_files/index_115_0.svg
+.. figure:: index_files/index_116_0.svg
 
 
 
@@ -2485,7 +2493,7 @@ As the maximum of the bell curve is around :math:`c = \sqrt{2} / 2` it seems to 
     
 
 
-.. figure:: index_files/index_120_0.svg
+.. figure:: index_files/index_121_0.svg
 
 
 
@@ -2548,7 +2556,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
     
 
 
-.. figure:: index_files/index_125_0.svg
+.. figure:: index_files/index_126_0.svg
 
 
 
@@ -2561,8 +2569,8 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
 
 
   
-Informed UCT
-------------
+Heavy playouts
+--------------
 
 The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :math:`c`. As for UCT, we fix :math:`t=5s` to be able to fairly compare MCTS, UTC and Informed UCT later.
 
@@ -2606,7 +2614,7 @@ The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :mat
     
 
 
-.. figure:: index_files/index_129_0.svg
+.. figure:: index_files/index_130_0.svg
 
 
 
@@ -2690,7 +2698,7 @@ The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorte
     
 
 
-.. figure:: index_files/index_133_2.svg
+.. figure:: index_files/index_134_2.svg
 
 
 

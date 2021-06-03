@@ -1032,20 +1032,29 @@ We quickly present and implement the above-mentioned algorithms and then focus o
 
 
 
-  
+.. raw:: html
+
+      <div class="code-intro">
+
 Before presenting those, we describe a :code:`Player` class that every implementation then reuses.
 The :code:`Player` class keeps track of the game state internally.
 At each turn of the game, the :code:`Player` is called with the method :code:`play()` to inform it of the action played by their opponent
 (and thus update their internal state) and then chooses an action with :code:`get_action()`,
 updates once more their internal state and then outputs their action for the opposing :code:`Player` to use.
 
+.. raw:: html
+
+      </div>
 
 
 
-  
 
 
-  .. code:: ipython3
+.. raw:: html
+
+      <div class="code-hide">
+
+.. code:: ipython3
 
     class Player:
         def play(self, their_action):
@@ -1061,6 +1070,9 @@ updates once more their internal state and then outputs their action for the opp
             
             return action
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -1104,7 +1116,7 @@ A pseudocode implementation of this agent can be found below, where the :math:`\
 
       <div class="code-intro">
 
-Implemented in Python as
+This is then implemented in Python with the following code.
 
 .. raw:: html
 
@@ -1692,7 +1704,7 @@ Upper Confidence Bounds for Trees
 
 Because basic MCTS samples uniformly the game tree, it spends compute time estimating the value of uninteresting nodes that will never be played in a real game. A more efficient method would instead explore more often the interesting parts of the tree: an asymmetric method.
 
-This is where we can see a similarity between MCTS and a well known theoretical problem in reinforcement learning: the multi-armed bandit where an agent must allocate a limited set of resources between multiple choices while maximising its expected gain, when each choice's properties are only partially known at the time of allocation, and becomes better known by allocating resources to the choice.
+This is where we can see a similarity between MCTS and a well known theoretical problem in reinforcement learning: the 'multi-armed bandit' where an agent must allocate a limited set of resources between multiple choices while maximising its expected gain, when each choice's properties are only partially known at the time of allocation, and becomes better known by allocating resources to the choice.
 
 Basic MCTS, during the tree policy, chooses a child at random even if the children is likely of having a estimated value. We can instead treat the choice of child as a multi-armed bandit problem: picking a child is analogous to picking a slot machine. 
 
@@ -1712,7 +1724,6 @@ parent node has been visited and :math:`c` is a parameter that can be tuned to b
 less visited nodes.
 
 The tree policy from MCTS is then replaced by a policy always choosing the node with the highest upper confidence bound, resolving ties by a coin toss.
-:code:`UCTPlayer` thus reuses the MCTS agent but subclasses the :code:`tree_policy`.
 
 
 
@@ -1751,7 +1762,7 @@ The tree policy from MCTS is then replaced by a policy always choosing the node 
 
       <div class="code-intro">
 
-Implemented in Python as
+:code:`UCTPlayer` thus reuses the MCTS agent but subclasses the :code:`tree_policy`.
 
 .. raw:: html
 
@@ -1817,7 +1828,8 @@ To counter this problem, an approach called 'heavy playouts' can be used where m
 	        \caption{Informed UCT}
 	        \begin{algorithmic}
 	          \PROCEDURE{DefaultPolicy}{node $x$}
-	            \RETURN $\operatorname{argmax}_{y \in A(x)}$ stones captured by playing $y$ while being in state $x$
+	            \STATE weights $\gets$ 1 +  stones captured by playing $y$ while being in state $x$, $\forall y \in A(x)$
+	            \RETURN \CALL{ChooseAtRandomWithWeights}{$y \in A(x)$, weights}
 	          \ENDPROCEDURE
 	        \end{algorithmic}
 	        \end{algorithm}

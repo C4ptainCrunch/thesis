@@ -2,8 +2,30 @@
 
 {% block any_cell %}
 {% if 'ha' in cell['metadata'].get('tags', []) %}
-{% elif 'chide' in cell['metadata'].get('tags', []) %}
-  {{ super() }}
+{% elif 'c-intro' in cell['metadata'].get('tags', []) %}
+.. raw:: html
+
+      <div class="code-intro">
+
+{{ super()|trim }}
+
+.. raw:: html
+
+      </div>
+
+
+{% elif 'c-hide' in cell['metadata'].get('tags', []) %}
+.. raw:: html
+
+      <div class="code-hide">
+
+{{ super()|trim }}
+
+.. raw:: html
+
+      </div>
+
+
 {% elif 'pseudocode' in cell['metadata'].get('tags', []) %}
 .. raw:: html
 

@@ -15,8 +15,9 @@ class NotebookToggle extends Controller {
   }
 
   connect() {
-    document.querySelectorAll(".highlight-ipython3").forEach((e) => e.setAttribute("data-notebook-toggle-target", "cell"))
-    document.querySelectorAll(".highlight-none").forEach((e) => e.setAttribute("data-notebook-toggle-target", "cell"))
+    document.querySelectorAll("div.code-hide .highlight-ipython3").forEach((e) => e.setAttribute("data-notebook-toggle-target", "cell"))
+    document.querySelectorAll("div.code-hide .highlight-none").forEach((e) => e.setAttribute("data-notebook-toggle-target", "cell"))
+    document.querySelectorAll("div.code-intro").forEach((e) => e.setAttribute("data-notebook-toggle-target", "cell"))
   }
 }
 

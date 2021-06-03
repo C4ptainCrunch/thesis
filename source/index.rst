@@ -377,7 +377,7 @@ Implementation of the rules
 
 You might be reading this document in the form of a web page or a pdf file but its original form is a Jupyter Notebook :cite:`jupyter`. Jupyter Notebooks are documents mixing computer code (in this case Python code), the result of the execution of the code and text. These can be used to document experiments in the same place they are run.
 
-Most of this document can be read both with and without looking at the Python code as the implementation is available in Python as well as in pseudocode. If you are not fluent in Python or do not want to be distracted by the details of the implementation, you can choose to hide the notebooks cells that are with the following toggle.
+Most of this document can be read both with and without looking at the Python code as the implementation is available in Python as well as in pseudocode. If you are not fluent in Python or do not want to be distracted by the details of the implementation, you can choose to hide the notebooks cells that are also available as pseudocode with the following toggle.
 
 .. raw:: html
 
@@ -390,7 +390,7 @@ Most of this document can be read both with and without looking at the Python co
   </label>
 
 However, even when activating this toggle, some sections of Python code will still be shown as the sections containing them would have little meaning without them.
-Sections containing code are prefixed by :code:`In[]:` and the output of the code is showed immediately under it, prefixed by :code:`Out[]:`. An example is shown below if you chose to display the notebook cells.
+Sections containing code are prefixed by :code:`In[]:` and the output of the code is showed immediately under it, prefixed by :code:`Out[]:`. An example is shown below.
 
 
 
@@ -1100,16 +1100,25 @@ A pseudocode implementation of this agent can be found below, where the :math:`\
 
 
 
-  
+.. raw:: html
+
+      <div class="code-intro">
+
 Implemented in Python as
 
+.. raw:: html
+
+      </div>
 
 
 
-  
 
 
-  .. code:: ipython3
+.. raw:: html
+
+      <div class="code-hide">
+
+.. code:: ipython3
 
     class RandomPlayer(Player):
         def __init__(self, player_id):
@@ -1119,6 +1128,9 @@ Implemented in Python as
         def get_action(self):
             return random.choice(self.root.legal_actions)
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -1164,16 +1176,25 @@ The :math:`\varepsilon \in [0, 1]` parameter introduces randomness: at each turn
 
 
 
-  
+.. raw:: html
+
+      <div class="code-intro">
+
 Implemented in Python as
 
+.. raw:: html
+
+      </div>
 
 
 
-  
 
 
-  .. code:: ipython3
+.. raw:: html
+
+      <div class="code-hide">
+
+.. code:: ipython3
 
     class GreedyPlayer(Player):
         def __init__(self, player_id, eps=0):
@@ -1204,6 +1225,9 @@ Implemented in Python as
                 
             return action
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -1278,16 +1302,25 @@ As :math:`\alpha\beta` minimax has no disadvantage over minimax and has a lower 
 
 
 
-  
+.. raw:: html
+
+      <div class="code-intro">
+
 Implemented in Python as
 
+.. raw:: html
+
+      </div>
 
 
 
-  
 
 
-  .. code:: ipython3
+.. raw:: html
+
+      <div class="code-hide">
+
+.. code:: ipython3
 
     class AlphaBetaMinimaxPlayer(Player):
         def __init__(self, player_id, cutoff_depth):
@@ -1333,6 +1366,9 @@ Implemented in Python as
         def evaluate(self, node):
             return node.captures[self.player_id] - node.captures[1 - self.player_id]
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -1556,16 +1592,25 @@ Both policies in this implementation are random walks.
 
 
 
-  
+.. raw:: html
+
+      <div class="code-intro">
+
 Implemented in Python as
 
+.. raw:: html
+
+      </div>
 
 
 
-  
 
 
-  .. code:: ipython3
+.. raw:: html
+
+      <div class="code-hide">
+
+.. code:: ipython3
 
     class MCTSPlayer(Player):
         def __init__(self, player_id, budget: timedelta):
@@ -1618,6 +1663,9 @@ Implemented in Python as
             
             return self.final_selection()
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -1700,16 +1748,25 @@ The tree policy from MCTS is then replaced by a policy always choosing the node 
 
 
 
-  
+.. raw:: html
+
+      <div class="code-intro">
+
 Implemented in Python as
 
+.. raw:: html
+
+      </div>
 
 
 
-  
 
 
-  .. code:: ipython3
+.. raw:: html
+
+      <div class="code-hide">
+
+.. code:: ipython3
 
     from lib.utils import max_rand
     
@@ -1734,6 +1791,9 @@ Implemented in Python as
                     node, _, _ = node.step(action)
             return node
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -1767,16 +1827,25 @@ Informed UCT
 
 
 
-  
+.. raw:: html
+
+      <div class="code-intro">
+
 Implemented in Python as
 
+.. raw:: html
+
+      </div>
 
 
 
-  
 
 
-  .. code:: ipython3
+.. raw:: html
+
+      <div class="code-hide">
+
+.. code:: ipython3
 
     class GreedyUCTPlayer(UCTPlayer):    
         def default_policy(self, node):
@@ -1785,6 +1854,9 @@ Implemented in Python as
             captures = [node.step(action)[1] + 1 for action in node.legal_actions]
             return random.choices(node.legal_actions, weights=captures)[0]
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -1871,10 +1943,11 @@ Now that we know the number of matches we need to play to be able to ascertain t
 
 
 
-  
+.. raw:: html
 
+      <div class="code-hide">
 
-  .. code:: ipython3
+.. code:: ipython3
 
     for value in range(50):
         pvalue = scipy.stats.binom_test(value, 50, p=0.5, alternative="greater")
@@ -1891,7 +1964,9 @@ Now that we know the number of matches we need to play to be able to ascertain t
 
     If nₐ is at least 32 we can reject H₀' with a p-value of 0.0325
 
+.. raw:: html
 
+      </div>
 
 
 
@@ -2002,10 +2077,11 @@ Because most games we played in our preliminary workd finished in less than 200 
 
 
 
-  
+.. raw:: html
 
+      <div class="code-hide">
 
-  .. code:: ipython3
+.. code:: ipython3
 
     game = Game()
     opponent_action = -1
@@ -2023,6 +2099,9 @@ Because most games we played in our preliminary workd finished in less than 200 
     
     duration = round(time.perf_counter() - start, 4)
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -2035,15 +2114,28 @@ Relevant data from the match is then available in the following variables:
  * :code:`score` is a tuple of score of South followed by the score of North,
  * :code:`winner` is :code:`0` if South won, :code:`1` if North won and :code:`None` is the game was a draw.
 
+
+
+
+.. raw:: html
+
+      <div class="code-intro">
+
 Those can be can then be recorded in a dictionary like below for further analysis.
 
+.. raw:: html
+
+      </div>
 
 
 
-  
 
 
-  .. code:: ipython3
+.. raw:: html
+
+      <div class="code-hide">
+
+.. code:: ipython3
 
     {
         "duration": duration,
@@ -2061,6 +2153,9 @@ Those can be can then be recorded in a dictionary like below for further analysi
 
     {'duration': 0.0035, 'depth': 95, 'score': [26, 18], 'winner': 0}
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -2079,10 +2174,11 @@ Each match was in a separate AWS Batch task was allowed 1 vCPU with 500MB of RAM
 
 
 
-  
+.. raw:: html
 
+      <div class="code-hide">
 
-  .. code:: ipython3
+.. code:: ipython3
 
     from lib.utils import submit_aws_job
     
@@ -2104,6 +2200,9 @@ Each match was in a separate AWS Batch task was allowed 1 vCPU with 500MB of RAM
             local=local,
         )
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -2115,40 +2214,55 @@ Because we can not be sure an agent has the same strength if it is allowed to be
 
 
 
-  
+.. raw:: html
 
+      <div class="code-hide">
 
-  .. code:: ipython3
+.. code:: ipython3
 
     def sumbit_symmetric_match(a, b, pool, timeout=600, local=False):
         submit_match(a, b, pool, side=0, timeout=timeout, local=local)
         submit_match(b, a, pool, side=1, timeout=timeout, local=local)
 
+.. raw:: html
+
+      </div>
 
 
 
 
 
   
-Results of the jobs submitted to AWS Batch can then be found in AWS CloudWatch. They are downloaded with a script and stored in :code:`source/data/*.jsonl`. These results are then processed and normalized and made available in Pandas DataFrame :cite:`pandas` importable with the following code.
+Results of the jobs submitted to AWS Batch can then be found in AWS CloudWatch. They are downloaded with a script and stored in :code:`source/data/*.jsonl`. These results are then processed and normalized and made available in Pandas DataFrame :cite:`pandas`.
 
 
 
 
-  
+.. raw:: html
+
+      <div class="code-intro">
+
+They are then importable with the following code
+
+.. raw:: html
+
+      </div>
 
 
-  .. code:: ipython3
+
+
+
+.. raw:: html
+
+      <div class="code-hide">
+
+.. code:: ipython3
 
     from lib.results import results
 
+.. raw:: html
 
-
-
-
-
-
-
+      </div>
 
 
 
@@ -2178,19 +2292,11 @@ We thus pick evenly spaced values of :math:`\varepsilon` in the interval :math:`
 
 
 
-  
+.. raw:: html
 
+      <div class="code-hide">
 
-  
-
-
-
-
-
-  
-
-
-  .. code:: ipython3
+.. code:: ipython3
 
     search_space = np.linspace(0, 1, 21)
     
@@ -2201,6 +2307,9 @@ We thus pick evenly spaced values of :math:`\varepsilon` in the interval :math:`
                 opponent = f"GreedyPlayer(%s, {eps2})"
                 sumbit_symmetric_match(player, opponent, "local-eps-matrix", local=True)
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -2231,7 +2340,7 @@ The results of these matches is shown in :numref:`fig:eps-matrix` below in which
     
 
 
-.. figure:: index_files/index_109_0.svg
+.. figure:: index_files/index_110_0.svg
 
 
 
@@ -2259,10 +2368,11 @@ As stated earlier, we know that the strength of the agent is an increasing funct
 
 
 
-  
+.. raw:: html
 
+      <div class="code-hide">
 
-  .. code:: ipython3
+.. code:: ipython3
 
     search_space = [0.5, 1, 1.5, 2, 3, 5, 7, 10, 15, 20, 30, 40]
     
@@ -2273,6 +2383,9 @@ As stated earlier, we know that the strength of the agent is an increasing funct
     
                 sumbit_symmetric_match(player, opponent, "mcts-5s-time-compare", timeout=60*100)
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -2300,7 +2413,7 @@ While the results shown in in :numref:`fig:mcts-time_5s` are also noisy, we inde
     
 
 
-.. figure:: index_files/index_114_0.svg
+.. figure:: index_files/index_115_0.svg
 
 
 
@@ -2325,10 +2438,11 @@ The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`
 
 
 
-  
+.. raw:: html
 
+      <div class="code-hide">
 
-  .. code:: ipython3
+.. code:: ipython3
 
     search_space = np.linspace(0, 2, 11) + 0.2
     
@@ -2339,6 +2453,9 @@ The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`
     
                 sumbit_symmetric_match(player, opponent, "uct-tuning-c")
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -2368,7 +2485,7 @@ As the maximum of the bell curve is around :math:`c = \sqrt{2} / 2` it seems to 
     
 
 
-.. figure:: index_files/index_119_0.svg
+.. figure:: index_files/index_120_0.svg
 
 
 
@@ -2386,10 +2503,11 @@ Under the assumption that the curve is smooth, we know that :math:`c = \sqrt(2) 
 
 
 
-  
+.. raw:: html
 
+      <div class="code-hide">
 
-  .. code:: ipython3
+.. code:: ipython3
 
     search_space = np.linspace(0, 2, 11) + 0.2
     
@@ -2400,6 +2518,9 @@ Under the assumption that the curve is smooth, we know that :math:`c = \sqrt(2) 
     
                 sumbit_symmetric_match(player, opponent, "uct-tuning-c-15")
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -2427,7 +2548,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
     
 
 
-.. figure:: index_files/index_124_0.svg
+.. figure:: index_files/index_125_0.svg
 
 
 
@@ -2450,10 +2571,11 @@ The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :mat
 
 
 
-  
+.. raw:: html
 
+      <div class="code-hide">
 
-  .. code:: ipython3
+.. code:: ipython3
 
     search_space = np.linspace(0, 2, 11) + 0.2
     
@@ -2464,6 +2586,9 @@ The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :mat
     
                 sumbit_symmetric_match(player, opponent, "greedy-uct-tuning-c")
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -2481,7 +2606,7 @@ The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :mat
     
 
 
-.. figure:: index_files/index_128_0.svg
+.. figure:: index_files/index_129_0.svg
 
 
 
@@ -2498,10 +2623,11 @@ We select the best agent for every algorithm and make each of them play 50 match
 
 
 
-  
+.. raw:: html
 
+      <div class="code-hide">
 
-  .. code:: ipython3
+.. code:: ipython3
 
     algos = [
         "RandomPlayer(%i)",
@@ -2516,6 +2642,9 @@ We select the best agent for every algorithm and make each of them play 50 match
             for b in algos:
                 sumbit_symmetric_match(a, b, "tournament")
 
+.. raw:: html
+
+      </div>
 
 
 
@@ -2561,7 +2690,7 @@ The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorte
     
 
 
-.. figure:: index_files/index_132_2.svg
+.. figure:: index_files/index_133_2.svg
 
 
 

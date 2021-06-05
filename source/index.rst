@@ -2075,7 +2075,7 @@ Tournament solution
 
 Now that we have selected a champion for each algorithm, we can play a given number of matches between each pair of champions and compare each pair by means of the :math:`\succeq` relation. By reusing the statistical framework from :numref:`%s <sec:compare_ab>`, we know we have to play 50 matches bewteen each pair and if a :math:`A` wins more than 18 matches against B, then :math:`A \succeq B`. By construction, this binary relation is complete and is thus a *weak tournament* :cite:`brandt2016`.
 
-We can represent our weak tournament as a binary matrix :math:`M` indexed in both dimensions by the champions and where each entry :math:`M_{ij} = 1 \iff i \succeq j`. A binary matrix :math:`M` is a step-type matrix when each row is non-decreasing from left to right and each column is non-decreasing from top to bottom :cite:`PirlotVincke97`.
+We can represent our weak tournament as a binary matrix :math:`M` indexed in both dimensions by the champions and where each entry :math:`M_{ij} = 1 \iff i \succeq j`. A binary matrix :math:`M` is a *step-type matrix* when each row is non-decreasing from left to right and each column is non-decreasing from top to bottom :cite:`PirlotVincke97`.
 
 The :math:`\succeq` is transitive if and only if it has a step-type matrix representation in wich the order of the columns and of the lines is the same. If this is the case for our weak tournament, it will be not only complete but also transitive. It will therefore be a weak order i.e. an ordering of the champions from best to worst possibly with ties :cite:`RoubensVincke85`.
 
@@ -2590,7 +2590,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
 
   
 Heavy playouts
---------------
+~~~~~~~~~~~~~~
 
 The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :math:`c`. As for UCT, we fix :math:`t=5s` to be able to fairly compare MCTS, UTC and Informed UCT later. To tune :math:`c`, we use the same starting point as in :numref:`sec:uct-tuning` and find similar results. We thus also choose :math:`c = \sqrt(2) / 2` as the best value.
 
@@ -2719,13 +2719,48 @@ The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorte
 
 
   
-We can see that this matrix is not *step type* (when the value of the elements is non decreasing when going from left to right and from top top bottom). We can then re-order the lines 
-Elle n'est pas step type
-On classe par somme des lignes comme dans :cite:`RoubensVincke85`.
-La voici
-Elle est steptype
-Elle est trnasitive
-Voila l'ordre
+We can see that this binary matrix representation of our tournament is not step-type. We can however use a method from :cite:`RoubensVincke85` to reorder the lines so that the sum of the values of the lines are increasing from top to bottom while keeping the same order for both lines and columns. This yields the matrix shown in :numref:`fig:step-type`.
+
+
+
+
+  
+
+
+
+
+
+
+
+
+    
+
+    
+.. _fig:step-type:
+    
+
+
+.. figure:: index_files/index_137_0.svg
+
+
+
+
+
+  
+  The step-type matrix representation of the weak tournament
+
+
+
+
+  
+We can see that this binary matrix is a representation of our weak tournament and is step-type. This means that our weak tournament is not only complete but also transitive and it yields the following weak order shown in :numref:`fig:order`.
+
+.. _fig:order:
+
+.. figure:: _static/order.svg
+   :width: 70%
+   
+   Graph representation of the weak order between our champions
 
 
 

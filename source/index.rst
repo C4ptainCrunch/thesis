@@ -2172,7 +2172,7 @@ Those can be can then be recorded in a dictionary like below for further analysi
 
 .. parsed-literal::
 
-    {'duration': 0.0043, 'depth': 102, 'score': [5, 25], 'winner': 1}
+    {'duration': 0.0022, 'depth': 52, 'score': [15, 27], 'winner': 1}
 
 .. raw:: html
 
@@ -2697,12 +2697,6 @@ The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorte
 
 
 
-.. parsed-literal::
-
-    <Figure size 432x288 with 0 Axes>
-
-
-
 
 
     
@@ -2712,7 +2706,7 @@ The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorte
     
 
 
-.. figure:: index_files/index_134_1.svg
+.. figure:: index_files/index_134_0.svg
 
 
 

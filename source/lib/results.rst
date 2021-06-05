@@ -88,7 +88,7 @@ Download data from AWS
             ]
             results += data
     
-        print(f"Done, with {len(results)} results")
+        print("Done")
         
         return results
 
@@ -134,7 +134,7 @@ Download data from AWS
 
   .. code:: ipython3
 
-    write_results(download_results())
+    #write_results(download_results())
 
 
 
@@ -145,7 +145,7 @@ Download data from AWS
 
     Querying
     Querying
-    Done, with 2987 results
+    Done
 
 
 
@@ -205,13 +205,15 @@ Download data from AWS
         class UCTPlayer(Player):
             pass
     
-    
         class GreedyUCTPlayer(Player):
             pass
     
-    
         class RandomPlayer(Player):
             pass
+        
+        class AlphaBetaMinimaxPlayer(Player):
+            pass
+        
         return locals()
 
 

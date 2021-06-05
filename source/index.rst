@@ -8,6 +8,11 @@
         </h2>
 
         2020-2021
+        
+        <p>
+            Nikita Marchant<br>
+            Promotor: Prof. Bernard Manderick
+        </p>
     </section>
 
 
@@ -48,7 +53,7 @@ In :numref:`sec:variants`, we describe more advanced versions of MCTS and in par
 :numref:`sec:method` presents the mothod used in :numref:`sec:experiments` where we show some empirical results (simulations) allowing to compare several MCTS algorithms and :numref:`sec:conclusion` concludes.
 
 
-This document, its souce, the code used to run the experiments and their results are available to download under an open-source license in a Git repository `hosted on GitHub <https://github.com/C4ptainCrunch/thesis>`_. This document is also hosted as a web page on `https://awale.ml <https://awale.ml>`_.
+This document, its souce, the code used to run the experiments and their results are available to download under an open-source license in a Git repository `hosted on GitHub <https://github.com/C4ptainCrunch/thesis>`_. This document is also hosted in its original form as a web page on `https://awale.ml <https://awale.ml>`_.
 
 
 
@@ -505,11 +510,9 @@ We then add some convenience methods that will be useful later.
 After defining a class holding the state of the game, we implement the rules,
 some of them being deliberately excluded from this implementation:
 
--  loops in the game state are not checked (this considerably speeds up the computations and we did not encounter a loop in our preliminary work);
+-  loops in the game state are not checked (this considerably speeds up the computations and we did not encounter a loop in our preliminary work) [#loop]_;
 -  the 'feed your opponent' rule is removed; This makes the
    rules simpler and we expect it does not tremendously change the complexity of the game.
-
-.. todo We did later encounter loops after running way more simulations. But this only happened yet using basic algorithms (greedy vs greedy for example). For now, we simulate 500 turns, if we hit this threshold, we declare a tie. This should be detailed in the experimental setup
 
 
 
@@ -1252,7 +1255,7 @@ Depth-limited Minimax
 ---------------------
 
 The *minimax algorithm* performs a complete depth-first search used to compute the minimax tree.
-It is a recursive algorithm that computes the value of a node based on the value of its children. In the case of a terminal node, the value is trivial to compute and depends solely on the winner. Otherwise, for 'inner' (non-terminal) nodes, the value is computed as the max (resp. min) of the value of the children if the node is at an even (resp. odd) depth.
+It is a recursive algorithm that computes the value of a node based on the value of its children. In the case of a terminal node, the value is trivial to compute and depends solely on the winner. Otherwise, for *inner* (non-terminal) nodes, the value is computed as the max (resp. min) of the value of the children if the node is at an even (resp. odd) depth.
 
 In Awale and other complex games, as shown before, generating the whole tree is computationally very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to depth :math:`d`. Nodes at depth :math:`d` are then considered as leaves and their value are estimated using an heuristic instead of being computed by recursively computing the values of their children. 
 
@@ -1433,19 +1436,19 @@ Monte Carlo Tree Search (MCTS) has been introduced by :cite:`coulom2006mcts` as 
 
 
 ..
-    TODO --cc-- The focus of MCTS is on the analysis of the most promising moves, expanding the search tree based on random sampling of the game space. The application of Monte Carlo tree search in games is based on many playouts, also called roll-outs. In each playout, the game is played out to the very end by selecting moves at random. The final game result of each playout is then used to weight the nodes in the game tree so that better nodes are more likely to be chosen in future playouts.
+     --cc-- The focus of MCTS is on the analysis of the most promising moves, expanding the search tree based on random sampling of the game space. The application of Monte Carlo tree search in games is based on many playouts, also called roll-outs. In each playout, the game is played out to the very end by selecting moves at random. The final game result of each playout is then used to weight the nodes in the game tree so that better nodes are more likely to be chosen in future playouts.
 
-    TODO --cc-- The most basic way to use playouts is to apply the same number of playouts after each legal move of the current player, then choose the move which led to the most victories.[10] The efficiency of this method—called Pure Monte Carlo Game Search—often increases with time as more playouts are assigned to the moves that have frequently resulted in the current player's victory according to previous playouts. Each round of Monte Carlo tree search consists of four steps:[35]
+     --cc-- The most basic way to use playouts is to apply the same number of playouts after each legal move of the current player, then choose the move which led to the most victories.[10] The efficiency of this method—called Pure Monte Carlo Game Search—often increases with time as more playouts are assigned to the moves that have frequently resulted in the current player's victory according to previous playouts. Each round of Monte Carlo tree search consists of four steps:[35]
 
-    TODO --cc-- A tree is built in an incremental and asymmetric manner.
+     --cc-- A tree is built in an incremental and asymmetric manner.
     For each iteration of the algorithm, a tree policy is used to find the most urgent node of the current tree.
     The tree policy attempts to balance considerations of exploration (look in areas that have not been well sampled yet) and exploitation (look in areas which appear to be promising).
 
-    TODO --cc-- A simulation is then run from the selected node and the search tree updated according to the result.
+     --cc-- A simulation is then run from the selected node and the search tree updated according to the result.
     This involves the addition of a child node corresponding to the action taken from the selected node, and an update of the statistics of its ancestors.
     Moves are made during this simulation according to some default policy, which in the simplest case is to make uniform random moves.
 
-    TODO The MCTS algorithm constructs an estimation of the game tree by sampling. 
+     The MCTS algorithm constructs an estimation of the game tree by sampling. 
 
 A great benefit of MCTS is that unlike depth-limited minimax, MCTS is aheuristic: there is no need to estimate the values of non-terminal nodes with an domain specific heuristic. This in turn, greatly reduces (or even removes) the need to acquire and incorporate domain knowledge. This explains our interest on the subject and the title of this work.
 
@@ -1476,18 +1479,18 @@ Each node :math:`x` holds 3 counters : :math:`N_x` (the number of simulation tha
 
 
 ..
-    TODO This sampling can be ran as many times as allowed (most of the
+     This sampling can be ran as many times as allowed (most of the
     time, the agent is time constrained). One can also stop the sampling earlier if
 
-    TODO each time refining the probability of
+     each time refining the probability of
     winning when choosing a child of the root node. When we are done sampling, the
     agent chooses the child with the highest probability of winning and plays the
     corresponding action in the game.
 
-    TODO the total number of times a node has been played during a
+     the total number of times a node has been played during a
     sampling iteration (:math:`N_x`)
 
-    TODO Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionally choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
+     Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionally choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
 
 .. _sec:mcts-perf:
 
@@ -1704,13 +1707,13 @@ Upper Confidence Bounds for Trees
 
 Because basic MCTS samples uniformly the game tree, it spends compute time estimating the value of uninteresting nodes that will never be played in a real game. A more efficient method would instead explore more often the interesting parts of the tree: an asymmetric method.
 
-This is where we can see a similarity between MCTS and a well known theoretical problem in reinforcement learning: the 'multi-armed bandit' where an agent must allocate a limited set of resources between multiple choices while maximising its expected gain, when each choice's properties are only partially known at the time of allocation, and becomes better known by allocating resources to the choice.
+This is where we can see a similarity between MCTS and a well known theoretical problem in reinforcement learning: the *multi-armed bandit* where an agent must allocate a limited set of resources between multiple choices while maximising its expected gain, when each choice's properties are only partially known at the time of allocation, and becomes better known by allocating resources to the choice.
 
 Basic MCTS, during the tree policy, chooses a child at random even if the children is likely of having a estimated value. We can instead treat the choice of child as a multi-armed bandit problem: picking a child is analogous to picking a slot machine. 
 
 When considering the selection phase as a multi-armed bandit, attention has to be given to the fact that the bandits are not stationary: as the estimated value of a node depends not only on the estimated value of its children but also on amount of times these childrens have been sampled themselves, the mean value of a bandit will change over time as its children are not sampled uniformely over time.
 
-One popular solution to the multi-armed bandit problem is 'Upper Confidence Bounds' (UCB). This method was adapted to MCTS by  :cite:`kocsis2006bandit` and named 'Upper Confidence Bounds for Trees' (UCT) algorithm.
+One popular solution to the multi-armed bandit problem is *Upper Confidence Bounds* (UCB). This method was adapted to MCTS by  :cite:`kocsis2006bandit` and named *Upper Confidence Bounds for Trees* (UCT) algorithm.
 The breakthough of this method was to prove that UCB handles non-stationary bandits without problem and that the estimated value of the nodes converges to the game theoretic value given a sufficient number of samples.
 
 UCT adapts UCB gives us the following formula for the upper confidence bound for each node:
@@ -1815,7 +1818,7 @@ Heavy playouts
 
 While the results of applying UCT to Awale are already impressive, we feel like there is still room for improvement in another part of the MCTS method: the simulation where for now, moves are being played at random. This makes us think that it is not ideal as in a real game, no player would play like that and there might be no point in simulating moves that are certain to put the player in a bad situation.
 
-To counter this problem, an approach called 'heavy playouts' can be used where moves selection can be biased using domain-specific heuristics. Here we try this approach by modyfing the UCT algorithm from the previous section and replacing the uniformely random selection from the simulation phase by weighted random selection where the probability of chosing the node is weighted by amount of stones that would be captured by playing the move.
+To counter this problem, an approach called *heavy playouts* can be used where moves selection can be biased using domain-specific heuristics. Here we try this approach by modyfing the UCT algorithm from the previous section and replacing the uniformely random selection from the simulation phase by weighted random selection where the probability of chosing the node is weighted by amount of stones that would be captured by playing the move.
 
 
 
@@ -1875,34 +1878,32 @@ To counter this problem, an approach called 'heavy playouts' can be used where m
 
 
   
-While intuitively, we thought this could only improve the performance of the UCT algorithm, our results do not show a significant improvement. But this seems to be expected as in some cases, stronger rollouts can decrease the agent strength :cite:`Gelly2007`. Heavy playouts is still a open subject with reasearch like :cite:`Swiechowski2014`, :cite:`James2016` and :cite:`Soemers2019`.
+While intuitively, we thought this could only improve the performance of the UCT algorithm, our results do not show a significant improvement. But this seems to be expected as in some cases, stronger rollouts can decrease the agent strength :cite:`Gelly2007`. Heavy playouts is still a open subject with reasearch like :cite:`Swiechowski2014` and :cite:`Soemers2019`.
 
 
 
 
   
-Related work and approaches
----------------------------
+Other approaches and related work
+---------------------------------
 
 All moves as first
 ~~~~~~~~~~~~~~~~~~
 
-'All Moves As First' (AMAF) and its successor 'Rapid Action Value Estimation' (RAVE) are enhancements that have often been proved very successful when applying MCTS to the game of Go :cite:`gelly20111rave`.
+*All Moves As First* (AMAF) and its successor *Rapid Action Value Estimation* (RAVE) are enhancements that have often been proved very successful when applying MCTS to the game of Go :cite:`gelly20111rave`.
 The basic idea is to update statistics for all actions selected during a simulation as if they were the first action applied. This method is particularly well suited for incremental games such as Go, where the value of a move is often dependent on the state of the board in its close proximity and unaffected by moves played elsewhere on the board. 
 Due to the popularity of AMAF, these methods are mentioned here for completeness but will not be pursued further due to the lack of applicability to Awale where the value of moves are dependent on the whole board and on the advancement of the game.
 
 Alpha Zero
 ~~~~~~~~~~
 
-To replace the random play in the simulation step, :cite:`AlphaGo,AlphaGoZero,AlphaZero` proposes
-to use a neural network to estimate the value of a
-game state without having to play it. This can greatly enhance the performance
-of the algorithm because much less playouts are required.
+To replace the random play by heavy playouts in the simulation step of MCTS, :cite:`AlphaGo,AlphaGoZero,AlphaZero` proposes to use deep convolutional neural networks trained on TPUs (Tensor Processing Units) to estimate the value of a game state without having to play it. This can greatly enhance the performance
+of the algorithm because much less playouts are required. While these methods seem to be extermely promising, due to size of the networks, the time and price of the hardware required to train them, we chose not to implement these techniques. 
 
-Other
-~~~~~
+Related work
+~~~~~~~~~~~~
 
-.. todo:: This section is still a work in progress
+The amount of work being done on MCTS applied to games, and in particular to the game of Go, is to big to be be cited here and mentioning them here would be out of the scope of this work. But we do think that some of these works still might interest the reader as they apply to Mancala games. :cite:`Davis2002` uses a genetic algorithm to optimize weights of a handcrafted evaluation function while :cite:`Pekar2020` surveys the reasearch on Mancala games and suggests a novel heuristic. Some other students also have written on the subject such as :cite:`Berkman2016,Rovaris2016,Birell2019`.
 
 
 
@@ -2171,7 +2172,7 @@ Those can be can then be recorded in a dictionary like below for further analysi
 
 .. parsed-literal::
 
-    {'duration': 0.0035, 'depth': 95, 'score': [26, 18], 'winner': 0}
+    {'duration': 0.0043, 'depth': 102, 'score': [5, 25], 'winner': 1}
 
 .. raw:: html
 
@@ -2465,13 +2466,20 @@ The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`
 .. code:: ipython3
 
     search_space = np.linspace(0, 2, 11) + 0.2
-    
     for i in range(25):
         for c in search_space:
                 player = "UCTPlayer(%s, td(seconds=5), c=math.sqrt(2)/2)"
                 opponent = f"UCTPlayer(%s, td(seconds=5), c={c:.2f})"
     
                 sumbit_symmetric_match(player, opponent, "uct-tuning-c")
+    
+    fine_search_space = [0.5, 0.7, 0.9]
+    for i in range(25):
+        for c in fine_search_space:
+                player = "UCTPlayer(%s, td(seconds=5), c=math.sqrt(2)/2)"
+                opponent = f"UCTPlayer(%s, td(seconds=5), c={c:.2f})"
+    
+                sumbit_symmetric_match(player, opponent, "uct-tuning-c-fine")
 
 .. raw:: html
 
@@ -2518,7 +2526,7 @@ As the maximum of the bell curve is around :math:`c = \sqrt{2} / 2` it seems to 
 
 
   
-Under the assumption that the curve is smooth, we know that :math:`c = \sqrt(2) / 2` wins against any value of :math:`c \in [0.2, 2.2]`. While this result might be convenient, we don't know if the relation of one agent winning against another is transitive, so while :math:`c = \sqrt(2) / 2` beats every value, we might have another value of :math:`c = \sqrt(2) / 2` that beats every :math:`c \neq \sqrt(2) / 2` by a bigger margin. To have a better intuition it is the case or not, we can also run the same experiment as above but with :math:`c = 1.5` to see if we were not lucky by using :math:`c = \sqrt(2) / 2` the first time. 
+Under the assumption that the true curve is smooth, we can assume that :math:`c = \sqrt(2) / 2` wins against any value of :math:`c \in [0.2, 2.2]`. While this result might be convenient, we don't know if the relation of one agent winning against another is transitive, so while :math:`c = \sqrt(2) / 2` beats every value, we might have another value of :math:`c = \sqrt(2) / 2` that beats every :math:`c \neq \sqrt(2) / 2` by a bigger margin. To have a better intuition it is the case or not, we can also run the same experiment as above but with :math:`c = 1.5` to see if we were not lucky by using :math:`c = \sqrt(2) / 2` the first time. 
 
 
 
@@ -2584,9 +2592,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
 Heavy playouts
 --------------
 
-The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :math:`c`. As for UCT, we fix :math:`t=5s` to be able to fairly compare MCTS, UTC and Informed UCT later.
-
-:cite:`kocsis2006bandit` has shown that :math:`c=\sqrt{2} / 2` is a good starting value. We thus play matches of UCT(:math:`c=\sqrt{2} / 2`) against a range of 11 values equally spaced between 0.2 and 2.2
+The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :math:`c`. As for UCT, we fix :math:`t=5s` to be able to fairly compare MCTS, UTC and Informed UCT later. To tune :math:`c`, we use the same starting point as in :numref:`sec:uct-tuning` and find similar results. We thus also choose :math:`c = \sqrt(2) / 2` as the best value.
 
 
 
@@ -2598,6 +2604,7 @@ The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :mat
 .. code:: ipython3
 
     search_space = np.linspace(0, 2, 11) + 0.2
+    fine_search_space = [0.5, 0.7, 0.9, 0.95]
     
     for i in range(25):
         for c in search_space:
@@ -2605,6 +2612,13 @@ The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :mat
                 opponent = f"GreedyUCTPlayer(%s, td(seconds=5), c={c:.2f})"
     
                 sumbit_symmetric_match(player, opponent, "greedy-uct-tuning-c")
+    
+    for i in range(25):
+        for c in fine_search_space:
+                player = "GreedyUCTPlayer(%s, td(seconds=5), c=math.sqrt(2)/2)"
+                opponent = f"GreedyUCTPlayer(%s, td(seconds=5), c={c:.2f})"
+    
+                sumbit_symmetric_match(player, opponent, "greedy-uct-tuning-c-fine")
 
 .. raw:: html
 
@@ -2683,21 +2697,9 @@ The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorte
 
 
 
-
 .. parsed-literal::
 
-    <ipython-input-189-988d20bd3111>:25: UserWarning: FixedFormatter should only be used together with FixedLocator
-      ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45)
-    <ipython-input-189-988d20bd3111>:49: UserWarning: FixedFormatter should only be used together with FixedLocator
-      ax2.set_xticklabels(ax1.get_xticklabels(), rotation=45)
-
-
-
-
-
-.. parsed-literal::
-
-    <Figure size 700x400 with 0 Axes>
+    <Figure size 432x288 with 0 Axes>
 
 
 
@@ -2710,7 +2712,7 @@ The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorte
     
 
 
-.. figure:: index_files/index_134_2.svg
+.. figure:: index_files/index_134_1.svg
 
 
 
@@ -2723,6 +2725,7 @@ The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorte
 
 
   
+We can see that this matrix is not *step type* (when the value of the elements is non decreasing when going from left to right and from top top bottom). We can then re-order the lines 
 Elle n'est pas step type
 On classe par somme des lignes comme dans :cite:`RoubensVincke85`.
 La voici
@@ -2770,6 +2773,8 @@ Conclusion
   
 
 .. [#source_bao] Picture by Yintan under Creative Commons SA license https://commons.wikimedia.org/wiki/File:Bao_europe.jpg
+
+ .. [#loop] We did later encounter loops after running way more simulations. But this only happened using basic algorithms (greedy vs greedy for example). In the experiments, we thus simulate 500 turns, if we hit this threshold, we declare a tie.
  
  .. [#aws_c5] C5 instances contain a 2nd generation Intel Xeon Scalable Processor (Cascade Lake) with a sustained all core Turbo frequency of 3.6GHz.
 

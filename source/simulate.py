@@ -7,7 +7,14 @@ from datetime import timedelta
 from datetime import timedelta as td
 
 from index import Game
-from index import GreedyPlayer, GreedyUCTPlayer, MCTSPlayer, RandomPlayer, UCTPlayer
+from index import (
+    GreedyPlayer,
+    GreedyUCTPlayer,
+    MCTSPlayer,
+    RandomPlayer,
+    UCTPlayer,
+    AlphaBetaMinimaxPlayer,
+)
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)8s | %(message)s", level=logging.DEBUG
@@ -45,7 +52,7 @@ pace = duration / depth
 logging.info("Game finished in %.2fs and %s turns (%.2fs/turn)", duration, depth, pace)
 
 logging.info("Final score %d - %d", game.captures[0], game.captures[1])
-if game.winner:
+if game.winner is not None:
     logging.info(
         "Winner is %s: %s",
         game.winner,

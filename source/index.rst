@@ -21,13 +21,14 @@
   
 .. raw:: html
 
-    <small>
+    <div id="abstract">
+    <h1>Abstract</h1>
 
-*Abstract* - Awale is a popular board game played since centuries in Africa and more recently around the world. It has simple rules but a gameplay interesting enough to be played in competitions. We introduce Game Theory frameworks such as perfect information zero-sum games, extensive form representation and minimax trees. We then review various artificial intelligence approaches to solve Awale and board games in general: retrograde analysis, :math:`\alpha\beta`-pruning Minimax and Monte Carlo Tree Search (MCTS); we look into variants of MCTS such as Upper Confidence for Trees (UCT) and heavy playouts. We then describe a statistical framework to compare different algorithms, show that the strenght relation between them is not necessarily transitive and set the rules for a tournament between selected agents. Finaly, we run the experiments to tune the performance of multiple agents, select a subset of champions and play a full tourament between them. We show that UCT and heavy playouts yield the best results.
+Awale is a popular board game played since centuries in Africa and more recently around the world. It has simple rules but a gameplay interesting enough to be played in competitions. We introduce Game Theory frameworks such as perfect information zero-sum games, extensive form representation and minimax trees. We then review various artificial intelligence approaches to solve Awale and board games in general: retrograde analysis, :math:`\alpha\beta`-pruning Minimax and Monte Carlo Tree Search (MCTS); we look into variants of MCTS such as Upper Confidence for Trees (UCT) and heavy playouts. We then describe a statistical framework to compare different algorithms, show that the strenght relation between them is not necessarily transitive and set the rules for a tournament between selected agents. Finaly, we run the experiments to tune the performance of multiple agents, select a subset of champions and play a full tourament between them. We show that UCT and heavy playouts yield the best results.
 
 .. raw:: html
 
-    </small>
+    </div>
 
 
 
@@ -2718,6 +2719,16 @@ Conclusion
 ==========
 
 In this work, we have shown that 
+
+
+
+
+  
+.. raw:: html
+
+    <h1>Acknowledgements</h1>
+    
+I would like to thank everybody that helped me and supported me during the writing of my thesis, with a particular mention to my father that spent countless hours by my side helping me, my mother that encouraged me to finish my studies, my girlfriend that was always supportive and my promotor that followed me during the many years of my master studies. Thank you from the bottom of my heart!
 
 
 

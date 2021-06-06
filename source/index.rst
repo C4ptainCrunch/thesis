@@ -24,7 +24,7 @@
     <div id="abstract">
     <h1>Abstract</h1>
 
-Awale is a popular board game played since centuries in Africa and more recently around the world. It has simple rules but a gameplay interesting enough to be played in competitions. We introduce Game Theory frameworks such as perfect information zero-sum games, extensive form representation and minimax trees. We then review various artificial intelligence approaches to solve Awale and board games in general: retrograde analysis, :math:`\alpha\beta`-pruning Minimax and Monte Carlo Tree Search (MCTS); we look into variants of MCTS such as Upper Confidence for Trees (UCT) and heavy playouts. We then describe a statistical framework to compare different algorithms, show that the strenght relation between them is not necessarily transitive and set the rules for a tournament between selected agents. Finaly, we run the experiments to tune the performance of multiple agents, select a subset of champions and play a full tourament between them. We show that UCT and heavy playouts yield the best results.
+Awale is a popular board game played since centuries in Africa and more recently around the world. It has simple rules but a gameplay interesting enough to be played in competitions. In this thesis, we introduce Game Theory frameworks such as perfect information zero-sum games, extensive form representation and minimax trees. We then review various artificial intelligence approaches to solve Awale and board games in general: retrograde analysis, :math:`\alpha\beta`-pruning Minimax and Monte Carlo Tree Search (MCTS); we look into variants of MCTS such as Upper Confidence for Trees (UCT) and heavy playouts. We then describe a statistical framework to compare different algorithms, show that the strength relation between them is not necessarily transitive and set the rules for a tournament between selected agents. Finally, we run the experiments to tune the performance of multiple agents, select a subset of champions and play a full tournament between them. We show that UCT and heavy playouts yield the best results.
 
 .. raw:: html
 
@@ -59,8 +59,8 @@ At each turn, the players move some seeds and can potentially capture some of th
    A typical Awale board in the initial state with both players on their side of the board.
    
 
-This work explores the different machine learning approches to board games. In particular, we focus on MCTS, its evolution and variants as they proved to be good at beating humans in many games while not requiring domain specific knowlegde beyond the undertanding of the rules.
-We apply those techniques to Awale because the game is not as often studied as Go or Chess, while being complex enough to be interesting. It is challenging enough to be played in real life championships but still simple enough that a single computer still has a chance to at least beat a moderate level human player.
+This work explores the different machine learning approaches to board games. In particular, we focus on MCTS, its evolution and variants as they proved to be good at beating humans in many games while not requiring domain-specific knowledge beyond the understanding of the rules.
+We apply those techniques to Awale because the game is not as often studied as Go or Chess, while being complex enough to be interesting. It is challenging enough to be played in real-life championships but still simple enough that a single computer still has a chance to at least beat a moderate level human player.
 
 In :numref:`sec:awale`, we present Awale in detail. We then introduce Game Theory frameworks in :numref:`sec:game-theory`.
 :numref:`sec:ai-awale` reviews various approaches to solve Awale: retrograde analysis, :math:`\alpha\beta`-pruning Minimax, and basic Monte Carlo Tree Search.
@@ -68,7 +68,7 @@ In :numref:`sec:variants`, we describe more advanced versions of MCTS and in par
 :numref:`sec:method` presents the method used in :numref:`sec:experiments` where we show some empirical results (simulations) allowing to compare several MCTS algorithms and :numref:`sec:conclusion` concludes.
 
 
-This document, its souce, the code used to run the experiments and their results are available to download under an open-source license in a Git repository `hosted on GitHub <https://github.com/C4ptainCrunch/thesis>`_. This document is also hosted in its original form as a web page on `https://awale.ml <https://awale.ml>`_.
+This document, its source, the code used to run the experiments and their results are available to download under an open-source license in a Git repository `hosted on GitHub <https://github.com/C4ptainCrunch/thesis>`_. This document is also hosted in its original form as a web page on `https://awale.ml <https://awale.ml>`_.
 
 
 
@@ -138,7 +138,7 @@ The rules vary slightly across countries and are detailed in :numref:`sec:rules`
 Mancala
 -------
 
-The Mancala games are an ancient family of game that are played on many continents :cite:`deVoogt2008`, Awale being one of them.
+The Mancala games are an ancient family of games that are played on many continents :cite:`deVoogt2008`, Awale being one of them.
 The word mancala comes from the Arabic word 'نقلة', transliterated as 'naqala' and literally meaning 'to move'.
 
 Like Awale, Mancala games can consist of rows of pits, some of them having more than two rows (see :numref:`bao`) and sometimes extra pits with a special role. Mancala games can sometimes be played by more than two players.
@@ -157,8 +157,8 @@ are played in tournaments around the world, both in offline and online competiti
 
 
 
-In particular, Kalah is a commercial, modern variant of Mancala, introduced in the 1950s by William Julius Champion Jr., that is widespread in the United States. :cite:`irving2000solving`. This variant has been studied in Artifical Intelligence as early as 1964 by :cite:`russel1964`.
-Nowadays, Kalah is often used as an example game in computer-science courses.
+In particular, Kalah is a commercial, modern variant of Mancala, introduced in the 1950s by William Julius Champion Jr., that is widespread in the United States. :cite:`irving2000solving`. This variant has been studied in Artificial Intelligence as early as 1964 by :cite:`russel1964`.
+Nowadays, Kalah is often used as an example game in computer science courses.
 Other Mancala games have been studied in Computer Science and Artificial Intelligence :cite:`deVoogt2008`. Tournaments opposing computers on both sides have been organized multiple times, notably in the Computer Olympiad organized by the International Computer Games Association :cite:`icga_olympiad`.
 
 
@@ -180,7 +180,7 @@ game has 48 seeds, capturing 25 is enough for a player to win and ends the game.
 
 Each player plays alternatively, without the right to pass his turn. A
 player's turn consists in choosing one of his non-empty pits, picking all seeds
-contained in the pit and sowing them one by one in every consecutive pits on the right
+contained in the pit and sowing them one by one in every consecutive pit on the right
 (rotating counter-clockwise). The player thus has at most 6 possible moves at
 each turn (one per non-empty pit owned by him).
 
@@ -779,7 +779,7 @@ The set :math:`V_{i}` contains all nodes at which player :math:`i` is to play. I
 
   For instance, the root :math:`x^{0}` of the game tree (the initial state) belongs to :math:`V_{0}`, meaning South is to play in the initial state (see :numref:`fig:initial_board`).  The root :math:`x^{0}` has six children corresponding to the six possible states resulting from  South's move. Each of these children belongs to :math:`V_{1}`, meaning North is to play in these six states. Each of these six states at depth 1  in turn has six children corresponding to the six possible states resulting from North's move. We thus have 36 states at depth 2 and they all belong to :math:`V_{0}`, and so on.
 
-A *perfect information* game is such that that every player who is to take an action knows the current state of the game, meaning that they know all the actions in the game that led to the current point in the play. This is not the case if, for instance, the players have cards and hide them as in poker.
+A *perfect information* game is such that every player who is to take an action knows the current state of the game, meaning that they know all the actions in the game that led to the current point in the play. This is not the case if, for instance, the players have cards and hide them as in poker.
 
 .. proof:application::
 
@@ -931,7 +931,7 @@ The minimax tree of a game with game tree :math:`(V,E,x^{0})` is the 4-tuple :ma
 Implementation of the tree representation
 -----------------------------------------
 
-We just saw that Awale can be represented as a tree where each node represents a state of the game and edges represent actions of the players. As many alorithms use this tree representation, we implement it in Python by inheriting from the :code:`Game()` class previously defined so that a state can hold references to its parent and children.
+We just saw that Awale can be represented as a tree where each node represents a state of the game and edges represent actions of the players. As many algorithms use this tree representation, we implement it in Python by inheriting from the :code:`Game()` class previously defined so that a state can hold references to its parent and children.
 
 
 
@@ -1272,7 +1272,7 @@ Depth-limited Minimax
 The *minimax algorithm* performs a complete depth-first search used to compute the minimax tree.
 It is a recursive algorithm that computes the value of a node based on the value of its children. In the case of a terminal node, the value is trivial to compute and depends solely on the winner. Otherwise, for *inner* (non-terminal) nodes, the value is computed as the max (resp. min) of the value of the children if the node is at an even (resp. odd) depth.
 
-In Awale and other complex games, as shown before, generating the whole tree is computationally very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to depth :math:`d`. Nodes at depth :math:`d` are then considered as leaves and their value are estimated using an heuristic instead of being computed by recursively computing the values of their children. 
+In Awale and other complex games, as shown before, generating the whole tree is computationally very hard and not practical. :cite:`Shannon1988` proposed an adaptation of the minimax where instead of generating the whole tree, it is generated up to depth :math:`d`. Nodes at depth :math:`d` are then considered as leaves and their value are estimated using a heuristic instead of being computed by recursively computing the values of their children. 
 
 The heuristic used should estimate the value of the node only by inspecting the state of the game and can be of varying complexity. A simple approach as taken here is to count the difference of the number of seeds each player has captured. Because heuristics are most often crafted by hand using human knowledge of the game, exploring more complex ones is beyond the scope of this work.
 
@@ -1468,7 +1468,7 @@ Implementation
 
 
   
-First, we subclass :code:`TreeGame` so in addition to holding the game state, each node also hold three counters needed for MCTS and its variants: the amount of simulations this node was used into and the amount of those simulations that resulted in a win for each player.
+First, we subclass :code:`TreeGame` so in addition to holding the game state, each node also hold three counters needed for MCTS and its variants: the number of simulations this node was used into and the amount of those simulations that resulted in a win for each player.
 
 
 
@@ -1655,9 +1655,9 @@ Because basic MCTS samples uniformly the game tree, it spends compute time estim
 
 This is where we can see a similarity between MCTS and a well known theoretical problem in reinforcement learning: the *multi-armed bandit* where an agent must allocate a limited set of resources between multiple choices while maximising its expected gain, when each choice's properties are only partially known at the time of allocation, and becomes better known by allocating resources to the choice.
 
-Basic MCTS, during the tree policy, chooses a child at random even if the children is likely of having a estimated value. We can instead treat the choice of child as a multi-armed bandit problem: picking a child is analogous to picking a slot machine. 
+Basic MCTS, during the tree policy, chooses a child at random even if the child is likely of having an estimated value. We can instead treat the choice of a child as a multi-armed bandit problem: picking a child is analogous to picking a slot machine. 
 
-When considering the selection phase as a multi-armed bandit, attention has to be given to the fact that the bandits are not stationary: as the estimated value of a node depends not only on the estimated value of its children but also on amount of times these childrens have been sampled themselves, the mean value of a bandit will change over time as its children are not sampled uniformely over time.
+When considering the selection phase as a multi-armed bandit, attention has to be given to the fact that the bandits are not stationary: as the estimated value of a node depends not only on the estimated value of its children but also on the amount of times these children have been sampled themselves, the mean value of a bandit will change over time as its children are not sampled uniformly over time.
 
 One popular solution to the multi-armed bandit problem is *Upper Confidence Bounds* (UCB). This method was adapted to MCTS by  :cite:`kocsis2006bandit` and named *Upper Confidence Bounds for Trees* (UCT) algorithm.
 The breakthough of this method was to prove that UCB handles non-stationary bandits without problem and that the estimated value of the nodes converges to the game theoretic value given a sufficient number of samples.
@@ -1764,7 +1764,7 @@ Heavy playouts
 
 While the results of applying UCT to Awale are already impressive, we feel like there is still room for improvement in another part of the MCTS method: the simulation where for now, moves are being played at random. This makes us think that it is not ideal as in a real game, no player would play like that and there might be no point in simulating moves that are certain to put the player in a bad situation.
 
-To counter this problem, an approach called *heavy playouts* can be used where moves selection can be biased using domain-specific heuristics. Here we try this approach by modyfing the UCT algorithm from the previous section and replacing the uniformely random selection from the simulation phase by weighted random selection where the probability of chosing the node is weighted by amount of stones that would be captured by playing the move.
+To counter this problem, an approach called *heavy playouts* can be used where moves selection can be biased using domain-specific heuristics. Here we try this approach by modifying the UCT algorithm from the previous section and replacing the uniformly random selection from the simulation phase by weighted random selection where the probability of choosing the node is weighted by the amount of stones that would be captured by playing the move.
 
 
 
@@ -1824,7 +1824,7 @@ To counter this problem, an approach called *heavy playouts* can be used where m
 
 
   
-While intuitively, we thought this could only improve the performance of the UCT algorithm, our results do not show a significant improvement. But this seems to be expected as in some cases, stronger rollouts can decrease the agent strength :cite:`Gelly2007`. Heavy playouts is still a open subject with reasearch like :cite:`Swiechowski2014` and :cite:`Soemers2019`.
+While intuitively, we thought this could only improve the performance of the UCT algorithm, our results do not show a significant improvement. But this seems to be expected as in some cases, stronger rollouts can decrease the agent strength :cite:`Gelly2007`. Heavy playouts is still an open subject with research like :cite:`Swiechowski2014` and :cite:`Soemers2019`.
 
 
 
@@ -1844,12 +1844,12 @@ Alpha Zero
 ~~~~~~~~~~
 
 To replace the random play by heavy playouts in the simulation step of MCTS, :cite:`AlphaGo,AlphaGoZero,AlphaZero` proposes to use deep convolutional neural networks trained on TPUs (Tensor Processing Units) to estimate the value of a game state without having to play it. This can greatly enhance the performance
-of the algorithm because much less playouts are required. While these methods seem to be extermely promising, due to size of the networks, the time and price of the hardware required to train them, we chose not to implement these techniques. 
+of the algorithm because much less playouts are required. While these methods seem to be extremely promising, due to size of the networks, the time and price of the hardware required to train them, we chose not to implement these techniques. 
 
 Related work
 ~~~~~~~~~~~~
 
-The amount of work being done on MCTS applied to games, and in particular to the game of Go, is to big to be be cited here and mentioning them here would be out of the scope of this work. But we do think that some of these works still might interest the reader as they apply to Mancala games. :cite:`Davis2002` uses a genetic algorithm to optimize weights of a handcrafted evaluation function while :cite:`Pekar2020` surveys the reasearch on Mancala games and suggests a novel heuristic. Some other students also have written on the subject such as :cite:`Berkman2016,Rovaris2016,Birell2019`.
+The amount of work being done on MCTS applied to games, and in particular to the game of Go, is to big to be be cited here and mentioning them here would be out of the scope of this work. But we do think that some of these works still might interest the reader as they apply to Mancala games. :cite:`Davis2002` uses a genetic algorithm to optimize weights of a handcrafted evaluation function while :cite:`Pekar2020` surveys the research on Mancala games and suggests a novel heuristic. Some other students also have written on the subject such as :cite:`Berkman2016,Rovaris2016,Birell2019`.
 
 
 
@@ -1881,7 +1881,7 @@ Then we suggest to play a tournament to compare and rank multiple agents and we 
 How to compare A and B
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Because the outcome of a match between two agents is not deterministic, we can not rely on a single match to ascertain than the winner of a match is better than the looser. So the first step is to define a statistical method to compare two arbitrarily chosen agents: A and B.
+Because the outcome of a match between two agents is not deterministic, we can not rely on a single match to ascertain than the winner of a match is better than the loser. So the first step is to define a statistical method to compare two arbitrarily chosen agents: A and B.
 
 The probability that A wins is denoted by :math:`p_A`, the probability that B wins is :math:`p_B` and the probability of a draw is :math:`p_d`. All are unknown. Because every game outcome is either A wins, B wins or a draw, :math:`p_A + p_B + p_d = 1`.
 Our null hypothesis (:math:`H_0`) is that both agents are equally strong (:math:`p_A=p_B`) and the alternative hypothesis is that they are of different strength (:math:`p_A \neq p_B`).
@@ -1991,11 +1991,11 @@ By enumerating all possible matches between ordered pairs of these agents, we se
 How to compare more than two agents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As described above, transitivity can not be proved in all cases so we can not use a sorting algorithm to order our agents. We thus have to resort to a round-robin tournament where the relation :math:`\succeq` is evaluated between every pair of agent. 
+As described above, transitivity can not be proved in all cases so we can not use a sorting algorithm to order our agents. We thus have to resort to a round-robin tournament where the relation :math:`\succeq` is evaluated between every pair of agents. 
 
 We have 6 algorithms, each with some continuous or discrete parameters. Even if we restrict every parameter to a small finite set of values (let's say 100), we would still have 600 agents to compare. This would in turn make a tournament of size :math:`600^2` where each evaluation of the relation requires 50 matches. This method would thus require :math:`600^2 * 50 = 18\,000\,000` matches. Playing such a big number of matches is hardly feasible so we resort to a more frugal approach.
 
-The approach that we take is to first select, for each algorithm, the parameters that result in the best agent (a champion). This in turn reduces the number of agents playing in the round-robin tournament to 6 and the number of matches to play to :math:`6^2 * 50 = 180`, a much more reasonable number. While this approach reduces drastically the amount of computations needed, it might not be perfect.
+The approach that we take is to first select, for each algorithm, the parameters that result in the best agent (a champion). This in turn reduces the number of agents playing in the round-robin tournament to 6 and the number of matches to play to :math:`6^2 * 50 = 180`, a much more reasonable number. While this approach reduces drastically the number of computations needed, it might not be perfect.
 We have no guarantee that the champion within a family (all agents derived from a single algorithm) is also the best family member against agents from other families. This is a known limitation and verifying this assumption is outside of the scope of this work.  
 
 
@@ -2019,11 +2019,11 @@ During the champion selection, contrary to the round-robin tournament, we also a
 Tournament solution
 ~~~~~~~~~~~~~~~~~~~
 
-Now that we have selected a champion for each algorithm, we can play a given number of matches between each pair of champions and compare each pair by means of the :math:`\succeq` relation. By reusing the statistical framework from :numref:`%s <sec:compare_ab>`, we know we have to play 50 matches bewteen each pair and if a :math:`A` wins more than 18 matches against B, then :math:`A \succeq B`. By construction, this binary relation is complete and is thus a *weak tournament* :cite:`brandt2016`.
+Now that we have selected a champion for each algorithm, we can play a given number of matches between each pair of champions and compare each pair by means of the :math:`\succeq` relation. By reusing the statistical framework from :numref:`%s <sec:compare_ab>`, we know we have to play 50 matches between each pair and if a :math:`A` wins more than 18 matches against B, then :math:`A \succeq B`. By construction, this binary relation is complete and is thus a *weak tournament* :cite:`brandt2016`.
 
 We can represent our weak tournament as a binary matrix :math:`M` indexed in both dimensions by the champions and where each entry :math:`M_{ij} = 1 \iff i \succeq j`. A binary matrix :math:`M` is a *step-type matrix* when each row is non-decreasing from left to right and each column is non-decreasing from top to bottom :cite:`PirlotVincke97`.
 
-The :math:`\succeq` is transitive if and only if it has a step-type matrix representation in wich the order of the columns and of the lines is the same. If this is the case for our weak tournament, it will be not only complete but also transitive. It will therefore be a weak order i.e. an ordering of the champions from best to worst possibly with ties :cite:`RoubensVincke85`.
+The :math:`\succeq` is transitive if and only if it has a step-type matrix representation in which the order of the columns and of the lines is the same. If this is the case for our weak tournament, it will be not only complete but also transitive. It will therefore be a weak order i.e. an ordering of the champions from best to worst possibly with ties :cite:`RoubensVincke85`.
 
 
 
@@ -2036,7 +2036,7 @@ Experimental setup
 ------------------
 
 A match between two agents is played with the following code, where the variables :code:`player` and :code:`opponent` contain an instance of an agent (a class derived from :code:`Player`).
-Because most games we played in our preliminary workd finished in less than 200 moves, we limit games to 500 moves to avoid playing infinite games. A game that goes over the threshold of 500 moves is considered a draw, regardless of the score of both players.
+Because most games we played in our preliminary work finished in less than 200 moves, we limit games to 500 moves to avoid playing infinite games. A game that goes over the threshold of 500 moves is considered a draw, regardless of the score of both players.
 
 
 
@@ -2326,9 +2326,9 @@ MCTS
 ~~~~
 
 The MCTS agent has a parameter :math:`t` that states how much time the agent may spend on simulation during its turn.
-As we have shown in :numref:`sec:mcts-perf`, given enough time, with MCTS, the estimated value of a node converges to weighted average of the true value of the leaves of the subtree. So we know that the higher is :math:`t`, the better the agent is. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
+As we have shown in :numref:`sec:mcts-perf`, given enough time, with MCTS, the estimated value of a node converges to weighted the average of the true value of the leaves of the subtree. So we know that the higher is :math:`t`, the better the agent is. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
 
-Given our objective of producing an agent capable of playing against a human, choosing a value of :math:`t` higher than 1 minute is unrealistic as the human will not want to wait more than that at each turn of the game. While 1 minute is an upper bound, having a much smaller waiting time at each turn would be valuable. We think that  :math:`t = 5s` is a reasonable value.
+Given our objective of producing an agent capable of playing against a human, choosing a value of :math:`t` higher than 1 minute is unrealistic as the human will not want to wait for more than that at each turn of the game. While 1 minute is an upper bound, having a much smaller waiting time at each turn would be valuable. We think that  :math:`t = 5s` is a reasonable value.
 
 As stated earlier, we know that the strength of the agent is an increasing function of :math:`t`. However, we don't know the shape of this function. We compare the strength of MCTS(:math:`t=5`) against a range of values of :math:`t' \in \{0.5, 1, 1.5, 2, 3, 5, 7, 10, 15, 20, 30, 40\}` by playing 10 matches for each value of :math:`t'`.
 
@@ -2359,7 +2359,7 @@ As stated earlier, we know that the strength of the agent is an increasing funct
 
 
   
-While the results shown in in :numref:`fig:mcts-time_5s` are also noisy, we indeed see that the strength of MCTS increases with :math:`t` but the slope of the curve is not very important after :math:`t=5s` so we decide that :math:`t=5s` is a good compromise between strength and waiting time.
+While the results shown in :numref:`fig:mcts-time_5s` are also noisy, we indeed see that the strength of MCTS increases with :math:`t` but the slope of the curve is not very important after :math:`t=5s` so we decide that :math:`t=5s` is a good compromise between strength and waiting time.
 
 
 
@@ -2436,7 +2436,7 @@ The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`
 
 
   
-What we see in :numref:`fig:utc-tuning-c` is a bell curve with some noise and a plateau around :math:`c = \sqrt(2) / 2`. The noise is louder on the right than on on the left of its maximum. An explanation for this could be that on the left, as :math:`c` is lower, there is not much exploration so the algorithm is more deterministic while it's the opposite on the right and each simulation could be either really good or really bad depending on luck.
+What we see in :numref:`fig:utc-tuning-c` is a bell curve with some noise and a plateau around :math:`c = \sqrt(2) / 2`. The noise is louder on the right than on the left of its maximum. An explanation for this could be that on the left, as :math:`c` is lower, there is not much exploration so the algorithm is more deterministic while it's the opposite on the right and each simulation could be either really good or bad depending on luck.
 
 As the maximum of the bell curve is around :math:`c = \sqrt{2} / 2` it seems to confirm that it is the optimum value for UCT.
 
@@ -2631,7 +2631,7 @@ We select the best agent for every algorithm and make each of them play 50 match
 
 
   
-The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorted by alphabetic order show the ratio of win of the row player against the column player. We then transform this result in a binary weak tournament by computing the :math:`\succeq` relation. The results are show on the right of :numref:`fig:matrix`.
+The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorted by alphabetic order show the ratio of win of the row player against the column player. We then transform this result in a binary weak tournament by computing the :math:`\succeq` relation. The results are shown on the right of :numref:`fig:matrix`.
 
 
 
@@ -2699,7 +2699,7 @@ We can see that this binary matrix representation of our tournament is not step-
 
 
   
-We can see that this binary matrix is a representation of our weak tournament and is step-type. This means that our weak tournament is not only complete but also transitive and it yields the following weak order shown in :numref:`fig:order`.
+We can see that this binary matrix is a representation of our weak tournament and is step-type. This means that our weak tournament is not only complete but also transitive and it yields the following weak order shown in :numref:`fig:order`: the random and greedy agents do not have a significant strength difference between them; the basic MCTS beats them both and gets beaten by UCT and greedy UCT.
 
 .. _fig:order:
 
@@ -2728,7 +2728,7 @@ In this work, we have shown that
 
     <h1>Acknowledgements</h1>
     
-I would like to thank everybody that helped me and supported me during the writing of my thesis, with a particular mention to my father that spent countless hours by my side helping me, my mother that encouraged me to finish my studies, my girlfriend that was always supportive and my promotor that followed me during the many years of my master studies. Thank you from the bottom of my heart!
+I would like to thank everybody that helped me and supported me during the writing of my thesis, with a particular mention to: my father that spent countless hours by my side helping me, my mother that encouraged me to finish my studies, my girlfriend that was always supportive, my promotor that followed me during the many years of my master studies and my colleague that gave me the opportunity to write while working. Thank you all from the bottom of my heart!
 
 
 

@@ -68,11 +68,11 @@ nbsphinx_execute = "never"
 
 numfig = True
 numfig_format = {
-    "figure": "Figure %s",
-    "table": "Table %s",
-    "code-block": "Listing %s",
-    "section": "Section %s",
-    "proof": "Theorem %s",
+    "figure": "Figure %s",
+    "table": "Table %s",
+    "code-block": "Listing %s",
+    "section": "Section %s",
+    "proof": "Theorem %s",
 }
 numfig_secnum_depth = 0
 

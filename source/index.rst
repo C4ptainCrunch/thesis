@@ -397,7 +397,7 @@ Implementation of the rules
 
 You might be reading this document in the form of a web page or a pdf file but its original form is a Jupyter Notebook :cite:`jupyter`. Jupyter Notebooks are documents mixing computer code (in this case Python code), the result of the execution of the code and text. These can be used to document experiments in the same place they are run.
 
-Most of this document can be read both with and without looking at the Python code as the implementation is available in Python as well as in pseudocode. If you are not fluent in Python or do not want to be distracted by the details of the implementation, you can choose to hide the notebooks cells that are also available as pseudocode with the following toggle.
+Most of this document can be read both with and without looking at the Python code as the implementation is available in Python as well as in pseudocode. If you are not fluent in Python or do not want to be distracted by the details of the implementation, you can choose to hide some of the notebooks cells (those that are also available as pseudocode) with the following toggle.
 
 .. raw:: html
 
@@ -439,7 +439,7 @@ Sections containing code are prefixed by :code:`In[]:` and the output of the cod
 
 
   
-In this subsection, we use the use Jupyter Notebooks cells to define in multiple steps a Python class holding the state of the game. We then successively inherit from it to add an implementation of the rules and some convenience methods.
+In this subsection, we use the use Jupyter Notebooks cells to define in multiple steps a Python class holding the state of the game. We then successively inherit from it to add an implementation of the rules and some convenience methods. You can skip this and go to :numref:`sec:game-theory` if you do not care about the implementation.
 
 We set the following encoding conventions in our Python implementation:
  - :math:`0` is South, :math:`1` is North,

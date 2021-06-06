@@ -19,6 +19,20 @@
 
 
   
+.. raw:: html
+
+    <small>
+
+*Abstract* - Awale is a popular board game played since centuries in Africa and more recently around the world. It has simple rules but a gameplay interesting enough to be played in competitions. We introduce Game Theory frameworks such as perfect information zero-sum games, extensive form representation and minimax trees. We then review various artificial intelligence approaches to solve Awale and board games in general: retrograde analysis, :math:`\alpha\beta`-pruning Minimax and Monte Carlo Tree Search (MCTS); we look into variants of MCTS such as Upper Confidence for Trees (UCT) and heavy playouts. We then describe a statistical framework to compare different algorithms, show that the strenght relation between them is not necessarily transitive and set the rules for a tournament between selected agents. Finaly, we run the experiments to tune the performance of multiple agents, select a subset of champions and play a full tourament between them. We show that UCT and heavy playouts yield the best results.
+
+.. raw:: html
+
+    </small>
+
+
+
+
+  
 .. contents:: Table of Contents
    :depth: 3
 
@@ -50,7 +64,7 @@ We apply those techniques to Awale because the game is not as often studied as G
 In :numref:`sec:awale`, we present Awale in detail. We then introduce Game Theory frameworks in :numref:`sec:game-theory`.
 :numref:`sec:ai-awale` reviews various approaches to solve Awale: retrograde analysis, :math:`\alpha\beta`-pruning Minimax, and basic Monte Carlo Tree Search.
 In :numref:`sec:variants`, we describe more advanced versions of MCTS and in particular UCT.
-:numref:`sec:method` presents the mothod used in :numref:`sec:experiments` where we show some empirical results (simulations) allowing to compare several MCTS algorithms and :numref:`sec:conclusion` concludes.
+:numref:`sec:method` presents the method used in :numref:`sec:experiments` where we show some empirical results (simulations) allowing to compare several MCTS algorithms and :numref:`sec:conclusion` concludes.
 
 
 This document, its souce, the code used to run the experiments and their results are available to download under an open-source license in a Git repository `hosted on GitHub <https://github.com/C4ptainCrunch/thesis>`_. This document is also hosted in its original form as a web page on `https://awale.ml <https://awale.ml>`_.
@@ -104,7 +118,7 @@ The rules vary slightly across countries and are detailed in :numref:`sec:rules`
     
 
 
-.. figure:: index_files/index_7_0.svg
+.. figure:: index_files/index_8_0.svg
 
 
 
@@ -193,7 +207,7 @@ In this work, the pits of a player are numbered left to right from his point of 
     
 
 
-.. figure:: index_files/index_11_0.svg
+.. figure:: index_files/index_12_0.svg
 
 
 
@@ -230,7 +244,7 @@ As an example, in the initial state (:numref:`fig:initial_board`), the first pla
     
 
 
-.. figure:: index_files/index_14_0.svg
+.. figure:: index_files/index_15_0.svg
 
 
 
@@ -276,7 +290,7 @@ For example, if South plays :math:`4` in the configuration shown in :numref:`fig
     
 
 
-.. figure:: index_files/index_17_0.svg
+.. figure:: index_files/index_18_0.svg
 
 
 
@@ -306,7 +320,7 @@ For example, if South plays :math:`4` in the configuration shown in :numref:`fig
     
 
 
-.. figure:: index_files/index_19_0.svg
+.. figure:: index_files/index_20_0.svg
 
 
 
@@ -349,7 +363,7 @@ In :numref:`fig:feed`, South has to play pit 5 because playing pit 1 would leave
     
 
 
-.. figure:: index_files/index_22_0.svg
+.. figure:: index_files/index_23_0.svg
 
 
 
@@ -709,7 +723,7 @@ To show a minimal example of the implementation, we can now play a move and have
     
 
 
-.. figure:: index_files/index_39_0.svg
+.. figure:: index_files/index_40_0.svg
 
 
 
@@ -878,7 +892,7 @@ the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresp
     
 
 
-.. figure:: index_files/index_43_0.svg
+.. figure:: index_files/index_44_0.svg
 
 
 
@@ -1266,7 +1280,7 @@ The algorithm keeps track of two values, :math:`\alpha` and :math:`\beta`, which
 Initially, :math:`\alpha = -\infty` and :math:`\beta = +\infty`: both players begin with their worst possible score.
 If the maximum score that the minimizing player is assured of becomes less than the minimum score that the maximizing player is assured of (so :math:`\beta < \alpha`), the maximizing player does not need to consider further children of this node (it prunes the node) as they are certain that the minimizing player would never play this move.
 This pruning of entire sub-trees is where the complexity gain arises from. 
-As :math:`\alpha\beta` minimax has no disadvantage over minimax and has a lower computational complexity, this is the one we implement.
+As :math:`\alpha\beta` minimax has no disadvantage over minimax and has a lower computational complexity, this is the one show here.
 
 
 
@@ -1315,75 +1329,6 @@ As :math:`\alpha\beta` minimax has no disadvantage over minimax and has a lower 
       </pre>
 
 
-
-
-.. raw:: html
-
-      <div class="code-intro">
-
-Implemented in Python as
-
-.. raw:: html
-
-      </div>
-
-
-
-
-
-.. raw:: html
-
-      <div class="code-hide">
-
-.. code:: ipython3
-
-    class AlphaBetaMinimaxPlayer(Player):
-        def __init__(self, player_id, cutoff_depth):
-            self.root = Game()
-            self.player_id = player_id
-            self.cutoff_depth = cutoff_depth
-        
-        def get_action(self):
-            actions = self.root.legal_actions
-            values = []
-            for action in actions:
-                child, _, _ = self.root.step(action)
-                value = self.minimax(child, self.cutoff_depth, float("-inf"), float("+inf"), False)
-                values.append(value)
-            best_action, best_value = max_rand(list(zip(actions, values)), key=lambda x: x[1])
-            
-            return best_action
-            
-            
-        def minimax(self, node, depth, alpha, beta, is_maximizing):
-            if depth == 0 or node.game_finished:
-                return self.evaluate(node)
-            
-            if is_maximizing:
-                value = float("-inf")
-                for action in node.legal_actions:
-                    child, _, _ = node.step(action)
-                    value = max(value, self.minimax(child, depth - 1, alpha, beta, False))
-                    alpha = max(alpha, value)
-                    if alpha >= beta:
-                        break
-                return value
-            else:
-                value = float("+inf")
-                for action in node.legal_actions:
-                    child, _, _ = node.step(action)
-                    value = min(value, self.minimax(child, depth - 1, alpha, beta, True))
-                    beta = min(beta, value)
-                    if alpha >= beta:
-                        break
-                return value
-            
-        def evaluate(self, node):
-            return node.captures[self.player_id] - node.captures[1 - self.player_id]
-
-.. raw:: html
-
-      </div>
 
 
 
@@ -2771,6 +2716,8 @@ We can see that this binary matrix is a representation of our weak tournament an
 ==========
 Conclusion
 ==========
+
+In this work, we have shown that 
 
 
 

@@ -1369,13 +1369,20 @@ Such a huge database is of course not practical and we thus think there is still
 improvement if we can create an agent with a policy that does not need a
 exhaustive database, even if the agent is not capable of a perfect play.
 
+
+
+
+
+  
 .. _sec:mcts:
 
 
 Monte Carlo Tree Search
 -----------------------
 
-Monte Carlo Tree Search (MCTS) has been introduced by :cite:`coulom2006mcts` as a formalization of Monte Carlo methods applied to tree search that were previously explored by others, among which :cite:`Bouzy2004montecarlo`. Since then, MCTS has been a major advancement and topic of interest in the field of AI research, particularly for games and planning problems.
+Monte Carlo Tree Search (MCTS) has been introduced by :cite:`coulom2006mcts` as a formalization of Monte Carlo methods applied to tree search that were previously explored by others, among which :cite:`Bouzy2004montecarlo`. Since then, MCTS has been a major advancement and topic of interest in the field of artificial intelligence research, particularly for games and planning problems.
+
+
 
 
 .. todo:: This section is still a work in progress
@@ -1400,6 +1407,8 @@ A great benefit of MCTS is that unlike depth-limited minimax, MCTS is aheuristic
 
 
 
+
+  
 Algorithm
 ~~~~~~~~~
 
@@ -1438,6 +1447,10 @@ Each node :math:`x` holds 3 counters : :math:`N_x` (the number of simulation tha
 
      Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionally choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
 
+
+
+
+  
 .. _sec:mcts-perf:
 
 Strength
@@ -2307,7 +2320,7 @@ The results of these matches is shown in :numref:`fig:eps-matrix` below in which
     
 
 
-.. figure:: index_files/index_111_0.svg
+.. figure:: index_files/index_114_0.svg
 
 
 
@@ -2380,7 +2393,7 @@ While the results shown in :numref:`fig:mcts-time_5s` are also noisy, we indeed 
     
 
 
-.. figure:: index_files/index_116_0.svg
+.. figure:: index_files/index_119_0.svg
 
 
 
@@ -2459,7 +2472,7 @@ As the maximum of the bell curve is around :math:`c = \sqrt{2} / 2` it seems to 
     
 
 
-.. figure:: index_files/index_121_0.svg
+.. figure:: index_files/index_124_0.svg
 
 
 
@@ -2522,7 +2535,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
     
 
 
-.. figure:: index_files/index_126_0.svg
+.. figure:: index_files/index_129_0.svg
 
 
 
@@ -2586,7 +2599,7 @@ The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :mat
     
 
 
-.. figure:: index_files/index_130_0.svg
+.. figure:: index_files/index_133_0.svg
 
 
 
@@ -2652,7 +2665,7 @@ The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorte
     
 
 
-.. figure:: index_files/index_134_0.svg
+.. figure:: index_files/index_137_0.svg
 
 
 
@@ -2686,7 +2699,7 @@ We can see that this binary matrix representation of our tournament is not step-
     
 
 
-.. figure:: index_files/index_137_0.svg
+.. figure:: index_files/index_140_0.svg
 
 
 

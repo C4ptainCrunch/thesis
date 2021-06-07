@@ -24,7 +24,7 @@
     <div id="abstract">
     <h1>Abstract</h1>
 
-Awale is a popular board game played since centuries in Africa and more recently around the world. It has simple rules but a gameplay interesting enough to be played in competitions. In this thesis, we introduce Game Theory frameworks such as perfect information zero-sum games, extensive form representation and minimax trees. We then review various artificial intelligence approaches to solve Awale and board games in general: retrograde analysis, :math:`\alpha\beta`-pruning Minimax and Monte Carlo Tree Search (MCTS); we look into variants of MCTS such as Upper Confidence for Trees (UCT) and heavy playouts. We then describe a statistical framework to compare different algorithms, show that the strength relation between them is not necessarily transitive and set the rules for a tournament between selected agents. Finally, we run the experiments to tune the performance of multiple agents, select a subset of champions and play a full tournament between them. We show that UCT and heavy playouts yield the best results.
+Awale is a popular board game played since centuries in Africa and more recently around the world. It has simple rules but a gameplay interesting enough to be played in competitions. We introduce Game Theory frameworks such as perfect information zero-sum games, extensive form representations and minimax trees. We then review various artificial intelligence approaches to solve Awale and board games in general: retrograde analysis, :math:`\alpha\beta`-pruning Minimax and Monte Carlo Tree Search (MCTS); we look into variants of MCTS such as Upper Confidence for Trees (UCT) and heavy playouts. We then describe a statistical framework to compare different algorithms, show that the strength relation between them is not necessarily transitive and set the rules for a tournament between selected agents. Finaly, we run experiments to tune the performances of the selected agents and play a full tournament between them. We show that UCT and heavy playouts yield the best results.
 
 .. raw:: html
 
@@ -410,7 +410,7 @@ Most of this document can be read both with and without looking at the Python co
   </label>
 
 However, even when activating this toggle, some sections of Python code will still be shown as the sections containing them would have little meaning without them.
-Sections containing code are prefixed by :code:`In[]:` and the output of the code is showed immediately under it, prefixed by :code:`Out[]:`. An example is shown below.
+Sections containing code are prefixed by :code:`[In]:` and the output of the code is showed immediately under it, prefixed by :code:`[Out]:`. An example is shown below.
 
 
 
@@ -1382,6 +1382,8 @@ Monte Carlo Tree Search
 
 Monte Carlo Tree Search (MCTS) has been introduced by :cite:`coulom2006mcts` as a formalization of Monte Carlo methods applied to tree search that were previously explored by others, among which :cite:`Bouzy2004montecarlo`. Since then, MCTS has been a major advancement and topic of interest in the field of artificial intelligence research, particularly for games and planning problems.
 
+A great benefit of MCTS is that unlike depth-limited minimax, MCTS is aheuristic: there is no need to estimate the values of non-terminal nodes with an domain specific heuristic. This in turn, greatly reduces (or even removes) the need to acquire and incorporate domain knowledge. This explains our interest on the subject and the title of this work.
+
 
 
 
@@ -1403,7 +1405,7 @@ Monte Carlo Tree Search (MCTS) has been introduced by :cite:`coulom2006mcts` as 
 
      The MCTS algorithm constructs an estimation of the game tree by sampling. 
 
-A great benefit of MCTS is that unlike depth-limited minimax, MCTS is aheuristic: there is no need to estimate the values of non-terminal nodes with an domain specific heuristic. This in turn, greatly reduces (or even removes) the need to acquire and incorporate domain knowledge. This explains our interest on the subject and the title of this work.
+
 
 
 
@@ -2731,7 +2733,7 @@ We can see that this binary matrix is a representation of our weak tournament an
 Conclusion
 ==========
 
-In this work, we have shown that 
+.. todo:: Work in progress
 
 
 

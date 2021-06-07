@@ -2003,11 +2003,13 @@ Let  :math:`A_x` be an algorithm :math:`A` with a continuous parameter :math:`x 
 We make the assumption that with :math:`n` big enough, :math:`f_n(A_{x}, A_{y})` is smooth for all :math:`x,y \in X` due to the fact that both agents :math:`A_{x}` and :math:`A_{y}` share the same algorithm. This smoothness property will be empirically confirmed later (see Sections :numref:`%s <sec:eps-tuning>` and :numref:`%s <sec:uct-tuning>`).
 
 
-So, for :math:`x_1` close to :math:`x_1` and :math:`y_1` close to :math:`y_2`, the value of :math:`f_n(A_{x_1}, A_{y_1})` gives us an indication about the value of :math:`f_n(A_{x_2}, A_{y_2})`.
+So, for :math:`x_1` close to :math:`x_2` and :math:`y_1` close to :math:`y_2`, the value of :math:`f_n(A_{x_1}, A_{y_1})` gives us an indication about the value of :math:`f_n(A_{x_2}, A_{y_2})`.
 This assumption and the fact that we evaluate :math:`f_n` over a dense sample of the parameter space allows us to compare agents from a single family by playing much less matches than the 50 matches derived from our statistical power analysis.
 
 
-During the champion selection, contrary to the round-robin tournament, we also assume that the strength relation :math:`\succ` over agents of a family a weaker property than transitivity: :math:`\forall y \in X, \exists x \neq y, y \in X` such that :math:`f_{n \to \infty} (A_{x}, A_{y}) \frac{1}{n} > f_{n \to \infty} (A_{y}, A_{x}) \frac{1}{n}`: there exists an agent that wins more than half the time against every other agent of its family.
+During the champion selection, contrary to the round-robin tournament, we also assume that the strength relation :math:`\succ` over agents of a family satisfies a weaker property than transitivity: 
+
+:math:`\exists y \in X` such that, :math:`\forall x \in X: x \neq y`,  we have :math:`f_{n \to \infty} (A_{x}, A_{y}) \frac{1}{n} > f_{n \to \infty} (A_{y}, A_{x}) \frac{1}{n}`: there exists an agent that wins more than half the time against every other agent of its family.
 
 
 
@@ -2020,7 +2022,7 @@ Now that we have selected a champion for each algorithm, we can play a given num
 
 We can represent our weak tournament as a binary matrix :math:`M` indexed in both dimensions by the champions and where each entry :math:`M_{ij} = 1 \iff i \succeq j`. A binary matrix :math:`M` is a *step-type matrix* when each row is non-decreasing from left to right and each column is non-decreasing from top to bottom :cite:`PirlotVincke97`.
 
-The :math:`\succeq` is transitive if and only if it has a step-type matrix representation in which the order of the columns and of the lines is the same. If this is the case for our weak tournament, it will be not only complete but also transitive. It will therefore be a weak order i.e. an ordering of the champions from best to worst possibly with ties :cite:`RoubensVincke85`.
+The :math:`\succeq` is transitive if and only if it has a step-type matrix representation in which the order of the columns and of the lines is the same. If this is the case for our weak tournament, it will be not only complete but also transitive. It will therefore be a weak order i.e. an ordering of the champions from best to worst, possibly with ties :cite:`RoubensVincke85`.
 
 
 
@@ -2075,8 +2077,8 @@ Because most games we played in our preliminary work finished in less than 200 m
 Relevant data from the match is then available in the following variables:
  * :code:`duration` is the total duration of the game in seconds,
  * :code:`depth` is the number of moves played by both agents,
- * :code:`score` is a tuple of score of South followed by the score of North,
- * :code:`winner` is :code:`0` if South won, :code:`1` if North won and :code:`None` is the game was a draw.
+ * :code:`score` is a 2-tuple of score of South followed by the score of North,
+ * :code:`winner` is :code:`0` if South won, :code:`1` if North won and :code:`None` if the game was a draw.
 
 
 
@@ -2239,7 +2241,7 @@ They are then importable with the following code
 Experiments
 ===========
 
-We first run a series of experiments for selecting a champion in each family of agents then play a tournament involving each champion and analyze the tournament result to present a ranking of the different agents.
+We first run a series of experiments for selecting a champion in each family of agents. We then play a tournament involving each champion and analyze the tournament result to present a ranking of the different agents.
 
 Champion selection
 ------------------
@@ -2323,7 +2325,7 @@ MCTS
 ~~~~
 
 The MCTS agent has a parameter :math:`t` that states how much time the agent may spend on simulation during its turn.
-As we have shown in :numref:`sec:mcts-perf`, given enough time, with MCTS, the estimated value of a node converges to weighted the average of the true value of the leaves of the subtree. So we know that the higher is :math:`t`, the better the agent is. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
+As we have shown in :numref:`sec:mcts-perf`, given enough time, with MCTS, the estimated value of a node converges to the weighted the average of the true value of the leaves of the subtree. So we know that the higher is :math:`t`, the better the agent is. However, since we are constrained by the capacity of our computation resources, we have to choose a reasonable value of :math:`t`.
 
 Given our objective of producing an agent capable of playing against a human, choosing a value of :math:`t` higher than 1 minute is unrealistic as the human will not want to wait for more than that at each turn of the game. While 1 minute is an upper bound, having a much smaller waiting time at each turn would be valuable. We think that  :math:`t = 5s` is a reasonable value.
 
@@ -2433,9 +2435,7 @@ The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`
 
 
   
-What we see in :numref:`fig:utc-tuning-c` is a bell curve with some noise and a plateau around :math:`c = \sqrt(2) / 2`. The noise is louder on the right than on the left of its maximum. An explanation for this could be that on the left, as :math:`c` is lower, there is not much exploration so the algorithm is more deterministic while it's the opposite on the right and each simulation could be either really good or bad depending on luck.
-
-As the maximum of the bell curve is around :math:`c = \sqrt{2} / 2` it seems to confirm that it is the optimum value for UCT.
+What we see in :numref:`fig:utc-tuning-c` is a bell curve with some noise and a plateau around :math:`c = \sqrt(2) / 2`. Tt seems to confirm that it is the optimum value for UCT.
 
 
 
@@ -2469,7 +2469,7 @@ As the maximum of the bell curve is around :math:`c = \sqrt{2} / 2` it seems to 
 
 
   
-Under the assumption that the true curve is smooth, we can assume that :math:`c = \sqrt(2) / 2` wins against any value of :math:`c \in [0.2, 2.2]`. While this result might be convenient, we don't know if the relation of one agent winning against another is transitive, so while :math:`c = \sqrt(2) / 2` beats every value, we might have another value of :math:`c = \sqrt(2) / 2` that beats every :math:`c \neq \sqrt(2) / 2` by a bigger margin. To have a better intuition it is the case or not, we can also run the same experiment as above but with :math:`c = 1.5` to see if we were not lucky by using :math:`c = \sqrt(2) / 2` the first time. 
+Under the assumption that the true curve is smooth, we can assume that :math:`c = \sqrt(2) / 2` wins against any value of :math:`c \in [0.2, 2.2]`. While this result is convenient, we do not know if the relation of one agent winning against another is transitive, so while :math:`c = \sqrt(2) / 2` beats every value, we might have another value of :math:`c = \sqrt(2) / 2` that beats every :math:`c \neq \sqrt(2) / 2` by a bigger margin. To have a better intuition it is the case or not, we can also run the same experiment as above but with :math:`c = 1.5` to see if we were not lucky by using :math:`c = \sqrt(2) / 2` the first time. 
 
 
 
@@ -2628,7 +2628,7 @@ We select the best agent for every algorithm and make each of them play 50 match
 
 
   
-The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorted by alphabetic order show the ratio of win of the row player against the column player. We then transform this result in a binary weak tournament by computing the :math:`\succeq` relation. The results are shown on the right of :numref:`fig:matrix`.
+The results are represented in a matrix (:numref:`fig:matrix`, left) sorted in alphabetic order. It shows the ratio of win of the row player against the column player. We then transform this result in a binary weak tournament by computing the :math:`\succeq` relation as explained in :numref:`sec:compare_ab`. The results are shown on the right of :numref:`fig:matrix`.
 
 
 

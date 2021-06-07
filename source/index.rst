@@ -1382,35 +1382,18 @@ Monte Carlo Tree Search
 
 Monte Carlo Tree Search (MCTS) has been introduced by :cite:`coulom2006mcts` as a formalization of Monte Carlo methods applied to tree search that were previously explored by others, among which :cite:`Bouzy2004montecarlo`. Since then, MCTS has been a major advancement and topic of interest in the field of artificial intelligence research, particularly for games and planning problems.
 
+MCTS explores the game tree based on random sampling of the game space. The principle of Monte Carlo tree search in games is based on many playouts, also called roll-outs. In each playout, the game is simulated out to the end by selecting moves at random. The final game value of each playout is then used to estimate the value of the non-terminal nodes in the game tree. This estimation is refined by every successive playout
+
 A great benefit of MCTS is that unlike depth-limited minimax, MCTS is aheuristic: there is no need to estimate the values of non-terminal nodes with an domain specific heuristic. This in turn, greatly reduces (or even removes) the need to acquire and incorporate domain knowledge. This explains our interest on the subject and the title of this work.
 
-
-
-
-.. todo:: This section is still a work in progress
-
-
-..
-     --cc-- The focus of MCTS is on the analysis of the most promising moves, expanding the search tree based on random sampling of the game space. The application of Monte Carlo tree search in games is based on many playouts, also called roll-outs. In each playout, the game is played out to the very end by selecting moves at random. The final game result of each playout is then used to weight the nodes in the game tree so that better nodes are more likely to be chosen in future playouts.
-
-     --cc-- The most basic way to use playouts is to apply the same number of playouts after each legal move of the current player, then choose the move which led to the most victories.[10] The efficiency of this method—called Pure Monte Carlo Game Search—often increases with time as more playouts are assigned to the moves that have frequently resulted in the current player's victory according to previous playouts. Each round of Monte Carlo tree search consists of four steps:[35]
-
-     --cc-- A tree is built in an incremental and asymmetric manner.
-    For each iteration of the algorithm, a tree policy is used to find the most urgent node of the current tree.
-    The tree policy attempts to balance considerations of exploration (look in areas that have not been well sampled yet) and exploitation (look in areas which appear to be promising).
-
-     --cc-- A simulation is then run from the selected node and the search tree updated according to the result.
-    This involves the addition of a child node corresponding to the action taken from the selected node, and an update of the statistics of its ancestors.
-    Moves are made during this simulation according to some default policy, which in the simplest case is to make uniform random moves.
-
-     The MCTS algorithm constructs an estimation of the game tree by sampling. 
-
-
+Because MCTS incrementaly samples the game tree , we can stop the algorithm after any number of iterations (when our computational budget is exhausted) and still get a result without the need to explore the tree to a fixed depth like in :math:`\alpha\beta` minimax. Also, because that MCTS simulates games to the last move, it is robust in delayed rewards (like in Awale where the reward is +1 or -1 at the very last step, 0 everywhere else).
 
 
 
 
   
+.. _sec:mcts-algo:
+
 Algorithm
 ~~~~~~~~~
 
@@ -1430,6 +1413,20 @@ The estimation of the true game tree is constructed with the following algorithm
 
 
 Each node :math:`x` holds 3 counters : :math:`N_x` (the number of simulation that went through :math:`x`), :math:`W^S_x` and :math:`W^N_x` (the number of simulations going through :math:`x` and leading to a win respectively for South and North). From these counters, a probability of North winning can be estimated by :math:`\frac{W^N_x}{N_x}` if both players play randomly from :math:`x`.
+
+
+
+
+     --cc-- A tree is built in an incremental and asymmetric manner.
+    For each iteration of the algorithm, a tree policy is used to find the most urgent node of the current tree.
+    The tree policy attempts to balance considerations of exploration (look in areas that have not been well sampled yet) and exploitation (look in areas which appear to be promising).
+
+     --cc-- A simulation is then run from the selected node and the search tree updated according to the result.
+    This involves the addition of a child node corresponding to the action taken from the selected node, and an update of the statistics of its ancestors.
+    Moves are made during this simulation according to some default policy, which in the simplest case is to make uniform random moves.
+
+     The MCTS algorithm constructs an estimation of the game tree by sampling. 
+
 
 
 .. todo:: This section is still a work in progress

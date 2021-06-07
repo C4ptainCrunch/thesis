@@ -1382,7 +1382,7 @@ Monte Carlo Tree Search
 
 Monte Carlo Tree Search (MCTS) has been introduced by :cite:`coulom2006mcts` as a formalization of Monte Carlo methods applied to tree search that were previously explored by others, among which :cite:`Bouzy2004montecarlo`. Since then, MCTS has been a major advancement and topic of interest in the field of artificial intelligence research, particularly for games and planning problems.
 
-MCTS explores the game tree based on random sampling of the game space. The principle of Monte Carlo tree search in games is based on many playouts, also called roll-outs. In each playout, the game is simulated out to the end by selecting moves at random. The final game value of each playout is then used to estimate the value of the non-terminal nodes in the game tree. This estimation is refined by every successive playout
+MCTS explores the game tree based on random sampling of the game space. The principle of Monte Carlo tree search in games is based on many playouts. In each playout, the game is simulated out to the end by selecting moves at random. The final game value of each playout is then used to estimate the value of the non-terminal nodes in the game tree. This estimation is refined by every successive playout
 
 A great benefit of MCTS is that unlike depth-limited minimax, MCTS is aheuristic: there is no need to estimate the values of non-terminal nodes with an domain specific heuristic. This in turn, greatly reduces (or even removes) the need to acquire and incorporate domain knowledge. This explains our interest on the subject and the title of this work.
 
@@ -1401,7 +1401,10 @@ Algorithm
 
    The 4 steps of MCTS :cite:`chaslot2008monte`
 
-The estimation of the true game tree is constructed with the following algorithm: The estimation starts with a single node, the current state of the game. Then these four steps are repeated until the budget (usually a time or memory constraint) is exhausted. 
+To estimate value :math:`\hat{v}(x)` of node :math:`x`, playouts are run multiple times until the time budget (usually a time or memory constraint) of the agent is exceeded. Each playout consists of these four steps: selection, expansion, simulation and back-propagation.
+
+To be able to execute these steps, the algorithm need to hold 3 counter for each node :math:`y` it encounters : :math:`N_y` (the number of simulation that went through :math:`y`), :math:`W^S_y` and :math:`W^N_y` (the number of simulations going through :math:`y` and leading to a win respectively for South and North). From these counters, a probability of North winning can be estimated by :math:`\frac{W^N_y}{N_y}` if both players play randomly from :math:`y`.
+
 
 * Selection: first, a node from the estimated tree is selected by starting at the root node and repeatedly
   choosing (using a tree policy, defined later) a child until a leaf :math:`L` is reached.
@@ -1412,105 +1415,11 @@ The estimation of the true game tree is constructed with the following algorithm
   of :math:`T`.
 
 
-Each node :math:`x` holds 3 counters : :math:`N_x` (the number of simulation that went through :math:`x`), :math:`W^S_x` and :math:`W^N_x` (the number of simulations going through :math:`x` and leading to a win respectively for South and North). From these counters, a probability of North winning can be estimated by :math:`\frac{W^N_x}{N_x}` if both players play randomly from :math:`x`.
+For each iteration of the algorithm, a tree policy is used to find the most urgent node of the current tree.
+Moves are made during this simulation according to some default policy, which in the simplest case is to make uniform random moves.
 
 
-
-
-     --cc-- A tree is built in an incremental and asymmetric manner.
-    For each iteration of the algorithm, a tree policy is used to find the most urgent node of the current tree.
-    The tree policy attempts to balance considerations of exploration (look in areas that have not been well sampled yet) and exploitation (look in areas which appear to be promising).
-
-     --cc-- A simulation is then run from the selected node and the search tree updated according to the result.
-    This involves the addition of a child node corresponding to the action taken from the selected node, and an update of the statistics of its ancestors.
-    Moves are made during this simulation according to some default policy, which in the simplest case is to make uniform random moves.
-
-     The MCTS algorithm constructs an estimation of the game tree by sampling. 
-
-
-
-.. todo:: This section is still a work in progress
-
-
-..
-     This sampling can be ran as many times as allowed (most of the
-    time, the agent is time constrained). One can also stop the sampling earlier if
-
-     each time refining the probability of
-    winning when choosing a child of the root node. When we are done sampling, the
-    agent chooses the child with the highest probability of winning and plays the
-    corresponding action in the game.
-
-     the total number of times a node has been played during a
-    sampling iteration (:math:`N_x`)
-
-     Every game are played at full random so the estimated value of a node (wins - losses / total_games) will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS were trying to be clever by pruning some branches or choose more often promising moves. We intentionally choose at full random so we can compare it later to UCT that chooses in a formalized way with no domain knowledge and is proven to converge to minimax.
-
-
-
-
-  
-.. _sec:mcts-perf:
-
-Strength
-~~~~~~~~
-
-We show that this simple MCTS method is better than a random agent.
-The estimated value :math:`\hat{v}(x) = (W^S_x- W^N_x)/N_x` of node :math:`x` when :math:`N_x` is large converges to a weighted average of the true value of the leaves of the subtree :math:`\Gamma(x)`.
-Indeed, for every leaf :math:`l`, :math:`\hat{v}(l) = v(l)` if :math:`N_l > 0` and for every other node, :math:`\lim_{N_{X} \to\infty} \hat{v}(x) = m(x)`, where
-
-.. math::
-    m(x) = \sum_{y \in A(x)} \frac{\hat{v}(y)}{|A(x)|}.
-    
-So, if all children of a node are leaves, the estimated value of the node is the mean of the true values of its children. For any other node, its estimated value is a weighted (depending on the topology of the sub-tree) average of the values of all the leaves in its sub-tree.
-
-Suppose a node :math:`x` where an agent A is to play and :math:`A(x)` only contains terminal nodes. If A plays :math:`\operatorname{arg max}_{y \in A(x)} \hat{v}(y)`, since :math:`\hat{v}(y) = v(y)`, it plays the best move and always wins :math:`v(y)`. If A plays at random, it wins on average :math:`m(y)`. For every other :math:`x`, if A plays :math:`\operatorname{arg max}_{y \in A(x)} \hat{v}(y)` and the opponent plays at random, A wins on average :math:`\max_{y \in A(x)} \hat{v}(y)`, where if A plays at random, A wins :math:`m(y)`.
-
-
-We have thus shown that MCTS is better than playing at random. However, it is still sub-optimal as branches of the game with a low value that will never be taken by the player still influence the estimated values of node above them. A lot of research has been done, as early as the first mention of MCTS :cite:`coulom2006mcts` to limit the impact of those branches by playing more simulations starting from nodes that look best according to various heuristics, often specific to the game and driven by human knowledge. 
-
-
-
-
-  
-Implementation
-~~~~~~~~~~~~~~
-
-
-
-
-  
-First, we subclass :code:`TreeGame` so in addition to holding the game state, each node also hold three counters needed for MCTS and its variants: the number of simulations this node was used into and the amount of those simulations that resulted in a win for each player.
-
-
-
-
-  
-
-
-  .. code:: ipython3
-
-    @dataclass
-    class TreeStatsGame(TreeGame):
-        wins: np.array = field(default_factory=lambda: np.zeros(2, dtype=int))
-        n_playouts: int = 0
-    
-        def update_stats(self, winner):
-            if winner in [0, 1]:
-                self.wins[winner] += 1
-            self.n_playouts += 1
-            if self.parent and self.parent():
-                self.parent().update_stats(winner)
-
-
-
-
-
-
-  
-The MCTS first chooses a node to expand with the :code:`tree_policy()` when the node is found, it is expanded with the :code:`default_policy()`. When reaching a terminal node, the counters are updated. This is repeated :code:`budget` times and then the final action is chosen as the action that has the highest mean of game values (game value is 1 for wins, 0 for draws, -1 for losses).
-
-Both policies in this implementation are random walks.
+All the moves in every playout is completely random so the estimated value of a node :math:`\hat{v}(x) = (W^S_x- W^N_x)/N_x` will converge to the mean of the value of all possible children games. A lot of early implementations of MCTS in the research already use heuristics to avoid playing completely at random, for example by pruning some branches or choose more often promising moves. We intentionally choose not to use these heuristics in the pure MCTS implementation so we can compare it later to UCT that chooses moves in a formalized way with no domain knowledge.
 
 
 
@@ -1565,11 +1474,91 @@ Both policies in this implementation are random walks.
 
 
 
+  
+.. _sec:mcts-perf:
+
+Strength
+~~~~~~~~
+
+We show that this simple MCTS method is better than a random agent.
+The estimated value :math:`\hat{v}(x) = (W^S_x- W^N_x)/N_x` of node :math:`x` when :math:`N_x` is large converges to a weighted average of the true value of the leaves of the subtree :math:`\Gamma(x)`.
+Indeed, for every leaf :math:`l`, :math:`\hat{v}(l) = v(l)` if :math:`N_l > 0` and for every other node, :math:`\lim_{N_{X} \to\infty} \hat{v}(x) = m(x)`, where
+
+.. math::
+    m(x) = \sum_{y \in A(x)} \frac{\hat{v}(y)}{|A(x)|}.
+    
+So, if all children of a node are leaves, the estimated value of the node is the mean of the true values of its children. For any other node, its estimated value is a weighted (depending on the topology of the sub-tree) average of the values of all the leaves in its sub-tree.
+
+Suppose a node :math:`x` where an agent A is to play and :math:`A(x)` only contains terminal nodes. If A plays :math:`\operatorname{arg max}_{y \in A(x)} \hat{v}(y)`, since :math:`\hat{v}(y) = v(y)`, it plays the best move and always wins :math:`v(y)`. If A plays at random, it wins on average :math:`m(y)`. For every other :math:`x`, if A plays :math:`\operatorname{arg max}_{y \in A(x)} \hat{v}(y)` and the opponent plays at random, A wins on average :math:`\max_{y \in A(x)} \hat{v}(y)`, where if A plays at random, A wins :math:`m(y)`.
+
+
+We have thus shown that MCTS is better than playing at random. However, it is still sub-optimal as branches of the game with a low value that will never be taken by the player still influence the estimated values of node above them. A lot of research has been done, as early as the first mention of MCTS :cite:`coulom2006mcts` to limit the impact of those branches by playing more simulations starting from nodes that look best according to various heuristics, often specific to the game and driven by human knowledge. 
+
+
+
+
 .. raw:: html
 
       <div class="code-intro">
 
-Implemented in Python as
+Implementation
+~~~~~~~~~~~~~~
+
+.. raw:: html
+
+      </div>
+
+
+
+
+
+.. raw:: html
+
+      <div class="code-intro">
+
+First, we subclass :code:`TreeGame` so in addition to holding the game state, each node also hold three counters needed for MCTS and its variants: the number of simulations this node was used into and the amount of those simulations that resulted in a win for each player.
+
+.. raw:: html
+
+      </div>
+
+
+
+
+
+.. raw:: html
+
+      <div class="code-hide">
+
+.. code:: ipython3
+
+    @dataclass
+    class TreeStatsGame(TreeGame):
+        wins: np.array = field(default_factory=lambda: np.zeros(2, dtype=int))
+        n_playouts: int = 0
+    
+        def update_stats(self, winner):
+            if winner in [0, 1]:
+                self.wins[winner] += 1
+            self.n_playouts += 1
+            if self.parent and self.parent():
+                self.parent().update_stats(winner)
+
+.. raw:: html
+
+      </div>
+
+
+
+
+
+.. raw:: html
+
+      <div class="code-intro">
+
+The MCTS first chooses a node to expand with the :code:`tree_policy()` when the node is found, it is expanded with the :code:`default_policy()`. When reaching a terminal node, the counters are updated. This is repeated :code:`budget` times and then the final action is chosen as the action that has the highest mean of game values (game value is 1 for wins, 0 for draws, -1 for losses).
+
+Both policies in this implementation are random walks.
 
 .. raw:: html
 
@@ -2319,7 +2308,7 @@ The results of these matches is shown in :numref:`fig:eps-matrix` below in which
     
 
 
-.. figure:: index_files/index_114_0.svg
+.. figure:: index_files/index_113_0.svg
 
 
 
@@ -2392,7 +2381,7 @@ While the results shown in :numref:`fig:mcts-time_5s` are also noisy, we indeed 
     
 
 
-.. figure:: index_files/index_119_0.svg
+.. figure:: index_files/index_118_0.svg
 
 
 
@@ -2471,7 +2460,7 @@ As the maximum of the bell curve is around :math:`c = \sqrt{2} / 2` it seems to 
     
 
 
-.. figure:: index_files/index_124_0.svg
+.. figure:: index_files/index_123_0.svg
 
 
 
@@ -2534,7 +2523,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth as in the firs
     
 
 
-.. figure:: index_files/index_129_0.svg
+.. figure:: index_files/index_128_0.svg
 
 
 
@@ -2598,7 +2587,7 @@ The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :mat
     
 
 
-.. figure:: index_files/index_133_0.svg
+.. figure:: index_files/index_132_0.svg
 
 
 
@@ -2664,7 +2653,7 @@ The results, displayed in a matrix in on the left of :numref:`fig:matrix`, sorte
     
 
 
-.. figure:: index_files/index_137_0.svg
+.. figure:: index_files/index_136_0.svg
 
 
 
@@ -2698,7 +2687,7 @@ We can see that this binary matrix representation of our tournament is not step-
     
 
 
-.. figure:: index_files/index_140_0.svg
+.. figure:: index_files/index_139_0.svg
 
 
 
@@ -2740,7 +2729,7 @@ Conclusion
 
     <h1>Acknowledgements</h1>
     
-I would like to thank everybody that helped me and supported me during the writing of my thesis, with a particular mention to: my father that spent countless hours by my side helping me, my mother that encouraged me to finish my studies, my girlfriend that was always supportive, my promotor that followed me during the many years of my master studies and my colleague that gave me the opportunity to write while working. Thank you all from the bottom of my heart!
+I would like to thank everybody that helped me and supported me during the writing of my thesis, with a particular mention to: my parents that encouraged me to finish my studies, my partner that was always supportive, my promotor that followed me during the many years of my master studies and my colleague that gave me the opportunity to write while working. Thank you all from the bottom of my heart!
 
 
 

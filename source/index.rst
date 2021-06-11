@@ -1751,7 +1751,7 @@ The tree policy from MCTS is then replaced by a policy always choosing the node 
 Heavy playouts
 --------------
 
-While the results of applying UCT to Awale are already impressive, we feel like there is still room for improvement in another part of the MCTS method: the detault policy where for now, moves are being played at random. This makes us think that it is not ideal as, in a real game, no player would play like that and there might be no point in simulating moves that are certain to put the player in a bad situation.
+We feel like there is still room for improvement in another part of the MCTS method: the detault policy where for now, moves are being played at random. This makes us think that it is not ideal as, in a real game, no player would play like that and there might be no point in simulating moves that are certain to put the player in a bad situation.
 
 To counter this problem, an approach called *heavy playouts* can be used where moves selection can be biased using domain-specific heuristics. Here we try this approach by modifying the UCT algorithm from the previous section and replacing the uniformly random selection from the simulation phase with weighted random selection where the probability of choosing the node is weighted by the number of stones that would be captured by playing the move.
 
@@ -1808,12 +1808,6 @@ To counter this problem, an approach called *heavy playouts* can be used where m
 
       </div>
 
-
-
-
-
-  
-While intuitively, we thought this could only improve the performance of the UCT algorithm, our results do not show a significant improvement. But this seems to be expected as in some cases, stronger rollouts can decrease the agent strength :cite:`Gelly2007`. Heavy playouts is still an open subject with research like :cite:`Swiechowski2014` and :cite:`Soemers2019`.
 
 
 
@@ -1989,6 +1983,7 @@ We have 6 algorithms, each with some continuous or discrete parameters. Even if 
 The approach that we take is to first select, for each algorithm, the parameters that result in the best agent (a champion). This in turn reduces the number of agents playing in the round-robin tournament to 6 and the number of matches to play to :math:`6^2 * 50 = 180`, a much more reasonable number. While this approach reduces drastically the number of computations needed, it might not be perfect.
 We have no guarantee that the champion within a family (all agents derived from a single algorithm) is also the best family member against agents from other families. This is a known limitation and verifying this assumption is outside of the scope of this work.  
 
+.. _sec:champion-select:
 
 Champion selection
 ~~~~~~~~~~~~~~~~~~
@@ -2300,7 +2295,7 @@ The results of these matches is shown in :numref:`fig:eps-matrix` below in which
     
 
 
-.. figure:: index_files/index_113_0.svg
+.. figure:: index_files/index_112_0.svg
 
 
 
@@ -2352,7 +2347,7 @@ As stated earlier, we know that the strength of the agent is an increasing funct
 
 
   
-While the results shown in :numref:`fig:mcts-time_5s` are also noisy, we indeed see that the strength of MCTS increases with :math:`t` but the slope of the curve is not very important after :math:`t=5s` so we decide that :math:`t=5s` is a good compromise between strength and waiting time.
+While the results shown in :numref:`fig:mcts-time_5s` are also noisy, we indeed see that the strength of MCTS increases with :math:`t` but the slope of the curve is not very important after :math:`t=5s` so we decide that :math:`t=5s` is a good compromise between strength and waiting time. These empirical results are compatible with the expected smoothness described in :numref:`sec:champion-select`.
 
 
 
@@ -2373,7 +2368,7 @@ While the results shown in :numref:`fig:mcts-time_5s` are also noisy, we indeed 
     
 
 
-.. figure:: index_files/index_118_0.svg
+.. figure:: index_files/index_117_0.svg
 
 
 
@@ -2393,7 +2388,7 @@ UCT
 
 The UCT agent has 2 variables that we can tune, :math:`t` as in MCTS and :math:`c` the balance between exploration and exploitation. Like MCTS, the strength of UCT increases with :math:`t` so we fix :math:`t=5s` to be able to fairly compare MCTS and UTC later.
 
-:cite:`kocsis2006bandit` has shown that :math:`c=\sqrt{2} / 2` is a good starting value. We thus play matches of UCT(:math:`c=\sqrt{2} / 2`) against a range of 11 values equally spaced between 0.2 and 2.2
+:cite:`kocsis2006bandit` has shown that :math:`c=\sqrt{2} / 2` is a good starting value. We thus play matches of :math:`UCT(c=\sqrt{2} / 2)` against a range of 11 values equally spaced between 0.2 and 2.2
 
 
 
@@ -2450,7 +2445,7 @@ What we see in :numref:`fig:utc-tuning-c` is a bell curve with some noise and a 
     
 
 
-.. figure:: index_files/index_123_0.svg
+.. figure:: index_files/index_122_0.svg
 
 
 
@@ -2463,7 +2458,14 @@ What we see in :numref:`fig:utc-tuning-c` is a bell curve with some noise and a 
 
 
   
-Under the assumption that the true curve is smooth, we can assume that :math:`c = \sqrt(2) / 2` wins against any value of :math:`c \in [0.2, 2.2]`. While this result is convenient, we do not know if the relation of one agent winning against another is transitive, so while :math:`c = \sqrt(2) / 2` beats every value, we might have another value of :math:`c = \sqrt(2) / 2` that beats every :math:`c \neq \sqrt(2) / 2` by a bigger margin. To have a better intuition it is the case or not, we can also run the same experiment as above but with :math:`c = 1.5` to see if we were not lucky by using :math:`c = \sqrt(2) / 2` the first time. 
+Under the assumption that the true curve is smooth, we can assume that :math:`UCT(c = \sqrt(2) / 2)` wins against any value of :math:`c \in [0.2, 2.2]`. While this result is convenient, we do not know whether the relation 'stronger than' is transitive.
+Hence, while :math:`UCT(\sqrt{2}/2)` wins against :math:`UCT(y)` for all :math:`y \in [0.2, 2.2]`, there might be :math:`z \neq \sqrt{2}/2` such that :math:`UCT(z)` beats :math:`UCT(y)` for some or even many :math:`y \in  [0.2, 2.2]`.
+It could even be the case that :math:`UCT(z)` beats :math:`UCT(y)` by a larger margin than :math:`UCT(\sqrt{2}/2)` beats :math:`UCT(y)`.
+This would weaken our conclusion that :math:`\sqrt{2}/2` is the optimum.
+To confirm our intuition, we should run the same experiment as above with various values of :math:`c`, instead of :math:`c=\sqrt{2}/2`.
+We do it first for :math:`c=1.5` and obtain the curve depicted in :numref:`fig:uct-tuning-c-15`.
+It is the same curve as in :numref:`fig:utc-tuning-c` (shifted upward) and confirms that :math:`c=\sqrt{2}/2` is optimal.
+This result is so clear that we deem it superfluous to run the same experiment as above with other values of :math:`c`.
 
 
 
@@ -2513,14 +2515,14 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth either, the re
     
 
 
-.. figure:: index_files/index_128_0.svg
+.. figure:: index_files/index_127_0.svg
 
 
 
 
 
   
-  Strength of UCT(:math:`c=1.5`) against other values of :math:`c`.
+  Strength of :math:`UCT(c=1.5`) against other values of :math:`c`.
 
 
 
@@ -2577,7 +2579,7 @@ The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :mat
     
 
 
-.. figure:: index_files/index_132_0.svg
+.. figure:: index_files/index_131_0.svg
 
 
 
@@ -2643,7 +2645,7 @@ The results are represented in a matrix (:numref:`fig:matrix`, left) sorted in a
     
 
 
-.. figure:: index_files/index_136_0.svg
+.. figure:: index_files/index_135_0.svg
 
 
 
@@ -2677,7 +2679,7 @@ We can see that this binary matrix representation of our tournament is not step-
     
 
 
-.. figure:: index_files/index_139_0.svg
+.. figure:: index_files/index_138_0.svg
 
 
 
@@ -2698,6 +2700,12 @@ We can see that this binary matrix is a representation of our weak tournament an
    :width: 70%
    
    Graph representation of the weak order between our champions
+
+
+
+
+  
+While we did expect the random and greedy agents to have poor performance and UCT to outperform plain MCTS, we intuitively thought that heavy playouts could only improve the performance of the UCT algorithm, our results do not show a significant improvement over plain UCT. But this seems to be expected as in some cases, stronger rollouts can decrease the agent strength :cite:`Gelly2007`. Heavy playouts is still an open subject with research like :cite:`Swiechowski2014` and :cite:`Soemers2019`.
 
 
 

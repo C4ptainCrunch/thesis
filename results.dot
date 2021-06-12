@@ -1,0 +1,8 @@
+digraph G {
+
+  UCT -> MCTS
+  GreedyUCT -> MCTS
+  MCTS -> Random
+  MCTS -> Greedy
+  rankdir="RL";
+}

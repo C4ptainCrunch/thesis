@@ -9,11 +9,11 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 94)">
 <title>G</title>
 <polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-94 355.7071,-94 355.7071,4 -4,4"/>
-<!-- Random -->
+<!-- UCT -->
 <g id="node1" class="node">
-<title>Random</title>
-<ellipse fill="none" stroke="#000000" cx="43.761" cy="-72" rx="43.5233" ry="18"/>
-<text text-anchor="middle" x="43.761" y="-67.8" font-family="Times,serif" font-size="14.00" fill="#000000">Random</text>
+<title>UCT</title>
+<ellipse fill="none" stroke="#000000" cx="292.943" cy="-72" rx="30.1958" ry="18"/>
+<text text-anchor="middle" x="292.943" y="-67.8" font-family="Times,serif" font-size="14.00" fill="#000000">UCT</text>
 </g>
 <!-- MCTS -->
 <g id="node2" class="node">
@@ -21,47 +21,47 @@
 <ellipse fill="none" stroke="#000000" cx="160.8505" cy="-45" rx="37.1578" ry="18"/>
 <text text-anchor="middle" x="160.8505" y="-40.8" font-family="Times,serif" font-size="14.00" fill="#000000">MCTS</text>
 </g>
-<!-- Random&#45;&gt;MCTS -->
+<!-- UCT&#45;&gt;MCTS -->
 <g id="edge1" class="edge">
-<title>Random&#45;&gt;MCTS</title>
-<path fill="none" stroke="#000000" d="M82.1005,-63.1592C93.346,-60.5661 105.7252,-57.7115 117.2719,-55.0489"/>
-<polygon fill="#000000" stroke="#000000" points="118.1973,-58.4274 127.1552,-52.7699 116.6244,-51.6064 118.1973,-58.4274"/>
+<title>UCT&#45;&gt;MCTS</title>
+<path fill="none" stroke="#000000" d="M263.9548,-66.0747C246.7521,-62.5585 224.5903,-58.0286 205.2244,-54.0701"/>
+<polygon fill="#000000" stroke="#000000" points="205.8915,-50.6342 195.3931,-52.0606 204.4896,-57.4924 205.8915,-50.6342"/>
 </g>
-<!-- UCT -->
+<!-- Random -->
 <g id="node4" class="node">
-<title>UCT</title>
-<ellipse fill="none" stroke="#000000" cx="292.943" cy="-72" rx="30.1958" ry="18"/>
-<text text-anchor="middle" x="292.943" y="-67.8" font-family="Times,serif" font-size="14.00" fill="#000000">UCT</text>
+<title>Random</title>
+<ellipse fill="none" stroke="#000000" cx="43.761" cy="-72" rx="43.5233" ry="18"/>
+<text text-anchor="middle" x="43.761" y="-67.8" font-family="Times,serif" font-size="14.00" fill="#000000">Random</text>
 </g>
-<!-- MCTS&#45;&gt;UCT -->
+<!-- MCTS&#45;&gt;Random -->
 <g id="edge3" class="edge">
-<title>MCTS&#45;&gt;UCT</title>
-<path fill="none" stroke="#000000" d="M195.5563,-52.0939C213.486,-55.7588 235.4272,-60.2436 253.9413,-64.028"/>
-<polygon fill="#000000" stroke="#000000" points="253.3287,-67.475 263.827,-66.0486 254.7305,-60.6168 253.3287,-67.475"/>
-</g>
-<!-- GreedyUCT -->
-<g id="node5" class="node">
-<title>GreedyUCT</title>
-<ellipse fill="none" stroke="#000000" cx="292.943" cy="-18" rx="58.529" ry="18"/>
-<text text-anchor="middle" x="292.943" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">GreedyUCT</text>
-</g>
-<!-- MCTS&#45;&gt;GreedyUCT -->
-<g id="edge4" class="edge">
-<title>MCTS&#45;&gt;GreedyUCT</title>
-<path fill="none" stroke="#000000" d="M195.5563,-37.9061C207.2514,-35.5156 220.6534,-32.7762 233.6977,-30.1099"/>
-<polygon fill="#000000" stroke="#000000" points="234.4723,-33.524 243.5688,-28.0922 233.0704,-26.6658 234.4723,-33.524"/>
+<title>MCTS&#45;&gt;Random</title>
+<path fill="none" stroke="#000000" d="M126.9834,-52.8095C116.1177,-55.3151 103.8639,-58.1407 92.167,-60.8379"/>
+<polygon fill="#000000" stroke="#000000" points="91.038,-57.5063 82.0802,-63.1639 92.611,-64.3273 91.038,-57.5063"/>
 </g>
 <!-- Greedy -->
-<g id="node3" class="node">
+<g id="node5" class="node">
 <title>Greedy</title>
 <ellipse fill="none" stroke="#000000" cx="43.761" cy="-18" rx="39.4061" ry="18"/>
 <text text-anchor="middle" x="43.761" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">Greedy</text>
 </g>
-<!-- Greedy&#45;&gt;MCTS -->
+<!-- MCTS&#45;&gt;Greedy -->
+<g id="edge4" class="edge">
+<title>MCTS&#45;&gt;Greedy</title>
+<path fill="none" stroke="#000000" d="M126.9834,-37.1905C115.1521,-34.4623 101.675,-31.3545 89.0631,-28.4463"/>
+<polygon fill="#000000" stroke="#000000" points="89.7129,-25.0044 79.1821,-26.1679 88.14,-31.8254 89.7129,-25.0044"/>
+</g>
+<!-- GreedyUCT -->
+<g id="node3" class="node">
+<title>GreedyUCT</title>
+<ellipse fill="none" stroke="#000000" cx="292.943" cy="-18" rx="58.529" ry="18"/>
+<text text-anchor="middle" x="292.943" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">GreedyUCT</text>
+</g>
+<!-- GreedyUCT&#45;&gt;MCTS -->
 <g id="edge2" class="edge">
-<title>Greedy&#45;&gt;MCTS</title>
-<path fill="none" stroke="#000000" d="M79.2095,-26.1742C91.2126,-28.942 104.7584,-32.0656 117.3161,-34.9613"/>
-<polygon fill="#000000" stroke="#000000" points="116.5962,-38.3871 127.127,-37.2236 118.1691,-31.5661 116.5962,-38.3871"/>
+<title>GreedyUCT&#45;&gt;MCTS</title>
+<path fill="none" stroke="#000000" d="M243.7566,-28.0538C231.1494,-30.6307 217.6638,-33.3872 205.3103,-35.9123"/>
+<polygon fill="#000000" stroke="#000000" points="204.3402,-32.5382 195.2437,-37.97 205.7421,-39.3964 204.3402,-32.5382"/>
 </g>
 </g>
 </svg>

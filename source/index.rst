@@ -841,9 +841,9 @@ Calculating the value of a game (when it exists), is called *solving the game*. 
 
 Consider  a finite two-players zero-sum game with perfect information with :math:`O=\{-1, 0, +1\}`  and let us apply :numref:`theo:vonNeumann`.  There are three cases.
 
- 1. If player 0 has a winning strategy, then :math:`\underline{v}=1` and by the zero-sum property, :math:`\underline{v}=1`. Whence the game has a value and it is 1.
- 2. If player 1 has a winning strategy, then :math:`\underline{v}=-1` and by the zero-sum property, :math:`\underline{v}=-1`. Whence the game has a value and it is -1.
- 3. If each of the two players has a strategy guaranteeing at least a draw, then each of them  plays such a strategy and the outcome of the game is a draw. So, :math:`\underline{v}=0` and  :math:`\underline{v}=0`. Whence anew the game has a value and it is 0.
+ 1. If player 0 has a winning strategy, then :math:`\underline{v}=1` and by the zero-sum property, :math:`\overline{v}=1`. Whence the game has a value and it is 1.
+ 2. If player 1 has a winning strategy, then :math:`\underline{v}=-1` and by the zero-sum property, :math:`\overline{v}=-1`. Whence the game has a value and it is -1.
+ 3. If each of the two players has a strategy guaranteeing at least a draw, then each of them  plays such a strategy and the outcome of the game is a draw. So, :math:`\underline{v}=0` and  :math:`\overline{v}=0`. Whence anew the game has a value and it is 0.
 
 We have just proved the following:
 
@@ -1408,10 +1408,10 @@ To be able to execute these steps, the algorithm needs to hold 3 counter for eac
 The MCTS algorithm starts by creating a tree :math:`T` containing a single node: the game state we want to estimate the value of.
 Then, for each playout, we repeat these four steps, starting at the root of the tree:
 
-1. Selection: a leaf from :math:`T` is selected by starting at the root node and repeatedly selecting a child until a leaf :math:`L` of :math:`T` is reached.
-2. Expansion: create a node :math:`C` by playing a move at random from :math:`L` and adding it to :math:`T` it as a child of :math:`L`.
-3. Simulation: play a game starting from :math:`C` until a terminal node :math:`E` is reached.
-4. Back-propagation: update the counters described above for each ancestor of :math:`E` with the result of the simulation.
+1. Selection: a leaf from :math:`T` is selected by starting at the root node and repeatedly selecting a child until a leaf :math:`l` of :math:`T` is reached.
+2. Expansion: create a node :math:`c` by playing a move at random from :math:`l` and adding it to :math:`T` it as a child of :math:`l`.
+3. Simulation: play a game starting from :math:`c` until a terminal node :math:`e` is reached.
+4. Back-propagation: update the counters described above for each ancestor of :math:`e` with the result of the simulation.
 
 The method for node selection during step 1 is called the *tree policy*. In the most basic version of MCTS, nodes are chosen at random. Variants (such as UCT in :numref:`sec:uct`) can use more sophisticated heuristics to chose more often nodes that should be explored first. In the simulation step, nodes to be played are chosen according to a *default policy*. In most variants of MCTS, the default policy is to make uniformly random moves but some variants may also use heuristics. We intentionally choose not to use heuristics for both policies in the pure MCTS implementation so we can compare it later to UCT that chooses moves in a formalized way with no domain knowledge.
 
@@ -1495,7 +1495,7 @@ We have thus shown that MCTS is better than playing at random. However, it is st
 Implementation
 ~~~~~~~~~~~~~~
 
-This section can be ignored
+This section contains details about the Python implementation of Algorithm 4 described above. The reader can be safely ignore it by going directly to :numref:`sec:variants` if they are not interested in the details of the code.
 
 
 
@@ -2652,7 +2652,7 @@ The results are represented in a matrix (:numref:`fig:matrix`, left) sorted in a
 
 
   
-  Matrix representation of the valued and binary tournaments between every algorithm
+  Matrix representation of the valued and binary tournaments between every champion
 
 
 

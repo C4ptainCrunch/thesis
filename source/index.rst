@@ -1382,11 +1382,11 @@ Monte Carlo Tree Search
 
 Monte Carlo Tree Search (MCTS) has been introduced by :cite:`coulom2006mcts` as a formalization of Monte Carlo methods applied to tree search that were previously explored by others, among which :cite:`Bouzy2004montecarlo`. Since then, MCTS has been a major advancement and topic of interest in the field of artificial intelligence research, particularly for games and planning problems.
 
-MCTS explores the game tree based on random sampling of the game space. The principle of Monte Carlo tree search in games is based on many playouts. In each playout, the game is simulated out to the end by selecting moves at random. The final game value of each playout is then used to estimate the value of the non-terminal nodes in the game tree. This estimation is refined by every successive playout
+MCTS explores the game tree based on random sampling of the game space. The principle of Monte Carlo tree search in games is based on many playouts. In each playout, a game is simulated out to the end by selecting moves at random. The final game value of each playout is then used to estimate the value of the non-terminal nodes in the game tree. This estimation is refined by every successive playout
 
-A great benefit of MCTS is that, unlike depth-limited minimax, it is aheuristic: there is no need to estimate the values of non-terminal nodes with a domain specific heuristic. This in turn, greatly reduces (or even removes) the need to acquire and incorporate domain knowledge. This explains our interest in the subject and the title of this work.
+A great benefit of MCTS is that, unlike depth-limited minimax, it is aheuristic: there is no need to estimate the value of non-terminal nodes with a domain specific heuristic. This, in turn, greatly reduces (or even removes) the need to acquire and incorporate domain knowledge. This explains our interest in the subject and the title of this work.
 
-Because MCTS incrementally samples the game tree, we can stop the algorithm after any number of iterations (when our computational budget is exhausted) and still get a result without the need to explore the tree to a fixed depth like in :math:`\alpha\beta` minimax.
+Because MCTS incrementally samples the game tree, we can stop the algorithm after any number of iterations (e.g. when our computational budget is exhausted) and still get a result without the need to explore the tree to a fixed depth like in :math:`\alpha\beta` minimax.
 
 
 
@@ -1410,10 +1410,10 @@ Then, for each playout, we repeat these four steps, starting at the root of the 
 
 1. Selection: a leaf from :math:`T` is selected by starting at the root node and repeatedly selecting a child until a leaf :math:`l` of :math:`T` is reached.
 2. Expansion: create a node :math:`c` by playing a move at random from :math:`l` and adding it to :math:`T` it as a child of :math:`l`.
-3. Simulation: play a game starting from :math:`c` until a terminal node :math:`e` is reached.
-4. Back-propagation: update the counters described above for each ancestor of :math:`e` with the result of the simulation.
+3. Simulation: play a game starting from :math:`c` until a terminal node :math:`e` of the game tree is reached.
+4. Back-propagation: update the counters described above for each ancestor of :math:`e` in :math:`T` with the result of the simulation.
 
-The method for node selection during step 1 is called the *tree policy*. In the most basic version of MCTS, nodes are chosen at random. Variants (such as UCT in :numref:`sec:uct`) can use more sophisticated heuristics to chose more often nodes that should be explored first. In the simulation step, nodes to be played are chosen according to a *default policy*. In most variants of MCTS, the default policy is to make uniformly random moves but some variants may also use heuristics. We intentionally choose not to use heuristics for both policies in the pure MCTS implementation so we can compare it later to UCT that chooses moves in a formalized way with no domain knowledge.
+The method for node selection during step 1 is called the *tree policy*. In the most basic version of MCTS, nodes are chosen at random. Variants (such as UCT in :numref:`sec:uct`) can use more sophisticated heuristics to choose more often nodes that should be explored first. In the simulation step, nodes to be played are chosen according to a *default policy*. In most variants of MCTS, the default policy is to make uniformly random moves but some variants may also use heuristics. We intentionally choose not to use heuristics for both policies in the pure MCTS implementation so we can compare it later to UCT that chooses moves in a formalized way with no domain knowledge.
 
 
 

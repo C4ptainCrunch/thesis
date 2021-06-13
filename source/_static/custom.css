@@ -62,7 +62,25 @@ section.first-page h2 {
   width: 70%;
 }
 
+.no-print {
+  display: inherit;
+}
+
+.no-web {
+  display: none;
+}
+
+
 @media print {
+
+  .no-print {
+    display: none;
+  }
+
+  .no-web {
+    display: inherit;
+  }
+
   div.document {
       width: 100%;
   }

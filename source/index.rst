@@ -397,18 +397,38 @@ Implementation of the rules
 
 You might be reading this document in the form of a web page or a pdf file but its source is a Jupyter Notebook :cite:`jupyter`. Jupyter Notebooks are documents mixing computer code (in this case Python code), the result of the execution of the code and text. These can be used to document experiments in the same place they are run.
 
-Most of this document can be read both with and without looking at the Python code as the implementation is available in Python as well as in pseudocode. If you are not fluent in Python or do not want to be distracted by the details of the implementation, you can choose to hide some of the notebooks cells (those that are also available as pseudocode) with the following toggle.
+
+
+
+  
+.. raw:: html
+
+    <div class="no-print">
+      <p>
+        Most of this document can be read both with and without looking at the Python code as the implementation is available in Python as well as in pseudocode. If you are not fluent in Python or do not want to be distracted by the details of the implementation, you can choose to hide some of the notebooks cells (those that are also available as pseudocode) with the following toggle.
+      </p>
+      <label class="switcher">
+        <div class="switch">
+          <input type="checkbox" checked data-action="input->notebook-toggle#toggle">
+          <span class="slider"></span>
+        </div>
+        Show notebook code and execution results
+      </label>
+   </div>
+
 
 .. raw:: html
 
-  <label class="switcher">
-    <div class="switch">
-      <input type="checkbox" checked data-action="input->notebook-toggle#toggle">
-      <span class="slider"></span>
-    </div>
-    Show notebook code and execution results
-  </label>
+  <div class="no-web">
+      Most of this document can be read both with and without looking at the Python code as the implementation is available in Python as well as in pseudocode. If you are not fluent in Python or do not want to be distracted by the details of the implementation, you can view this document in a web page on <a href="https://awale.ml" class="reference external">https://awale.ml</a> and choose to hide some of the notebooks cells (those that are also available as pseudocode) with the a toggle.
+  </div>  
+  
 
+
+
+
+
+  
 However, even when activating this toggle, some sections of Python code will still be shown as the sections containing them would have little meaning without them.
 Sections containing code are prefixed by :code:`[In]:` and the output of the code is shown immediately under it, prefixed by :code:`[Out]:`. An example is shown below.
 
@@ -724,7 +744,7 @@ To show a minimal example of the implementation, we can now play a move and have
     
 
 
-.. figure:: index_files/index_40_0.svg
+.. figure:: index_files/index_42_0.svg
 
 
 
@@ -893,7 +913,7 @@ the subtree of the game tree, which we will denote by :math:`\Gamma(x)`, corresp
     
 
 
-.. figure:: index_files/index_44_0.svg
+.. figure:: index_files/index_46_0.svg
 
 
 
@@ -2295,7 +2315,7 @@ The results of these matches is shown in :numref:`fig:eps-matrix` below in which
     
 
 
-.. figure:: index_files/index_112_0.svg
+.. figure:: index_files/index_114_0.svg
 
 
 
@@ -2368,7 +2388,7 @@ While the results shown in :numref:`fig:mcts-time_5s` are also noisy, we indeed 
     
 
 
-.. figure:: index_files/index_117_0.svg
+.. figure:: index_files/index_119_0.svg
 
 
 
@@ -2445,7 +2465,7 @@ What we see in :numref:`fig:utc-tuning-c` is a bell curve with some noise and a 
     
 
 
-.. figure:: index_files/index_122_0.svg
+.. figure:: index_files/index_124_0.svg
 
 
 
@@ -2515,7 +2535,7 @@ While the curve in :numref:`fig:uct-tuning-c-15` is not as smooth either, the re
     
 
 
-.. figure:: index_files/index_127_0.svg
+.. figure:: index_files/index_129_0.svg
 
 
 
@@ -2579,7 +2599,7 @@ The Informed UCT agent also has 2 variables that we can tune, :math:`t` and :mat
     
 
 
-.. figure:: index_files/index_131_0.svg
+.. figure:: index_files/index_133_0.svg
 
 
 
@@ -2645,7 +2665,7 @@ The results are represented in a matrix (:numref:`fig:matrix`, left) sorted in a
     
 
 
-.. figure:: index_files/index_135_0.svg
+.. figure:: index_files/index_137_0.svg
 
 
 
@@ -2679,7 +2699,7 @@ We can see that this binary matrix representation of our tournament is not step-
     
 
 
-.. figure:: index_files/index_138_0.svg
+.. figure:: index_files/index_140_0.svg
 
 
 

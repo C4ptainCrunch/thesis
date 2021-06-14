@@ -59,7 +59,7 @@ At each turn, the players move some seeds and can potentially capture some of th
    A typical Awale board in the initial state with both players on their side of the board.
    
 
-This work explores the different machine learning approaches to board games. In particular, we focus on MCTS, its evolution and variants as they proved to be good at beating humans in many games while not requiring domain-specific knowledge beyond the understanding of the rules.
+This work explores different machine learning approaches to board games. In particular, we focus on MCTS, its evolution and variants as they proved to be good at beating humans in many games while not requiring domain-specific knowledge beyond the understanding of the rules.
 We apply those techniques to Awale because the game is not as often studied as Go or Chess, while being complex enough to be interesting. It is challenging enough to be played in real-life championships but still simple enough that a single computer still has a chance to at least beat a moderate level human player.
 
 In :numref:`sec:awale`, we present Awale in detail. We then introduce Game Theory frameworks in :numref:`sec:game-theory`.
@@ -2737,7 +2737,11 @@ While we did expect the random and greedy agents to have poor performance and UC
 Conclusion
 ==========
 
-.. todo:: Work in progress
+In this work, we introduced Game Theory concepts and used those to explore different machine learning approaches to Awale, from the simple, greedy, algorithm to advanced variants of MCTS like UCT with heavy playouts.
+After designing a statistical framework to compare the strength of different agents, we ran a massive amount of simulations and were able to rank our different implementations despite the strength relation not being transitive in all cases.
+
+We showed that MCTS is a powerful method that is significantly better than a naive, greedy, agent.
+We then showed that UCT, by applying to MCTS techniques solving the multi-armed bandit problem, is in turn vastly superior to the original MCTS due to the intelligent prioritization of some branches of the game tree. We then tried to improve UCT by using heavy playouts but, while not diminishing the strength of the algorithm, we were not able to improve it above the strength of the original algorithm. This was not a surprise as heavy playouts might decrease agent strength in some cases.
 
 
 

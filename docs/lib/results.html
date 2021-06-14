@@ -1,0 +1,356 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+<title>Playing Awale with MCTS</title>
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "displayMath": [["$$", "$$"], ["\\[", "\\]"]], "processEscapes": true, "processEnvironments": true}})</script>
+
+    <script id="pseudocode-script" src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js"></script>
+    
+    <script src="_static/jquery.js"></script>
+    <script src="_static/proof.js"></script>
+
+    <script type="module" src="_static/js/custom.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+  <div data-controller="notebook-toggle" data-notebook-toggle-show-value="true">
+    
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="download-data-from-aws">
+<h1><span class="section-number">9. </span>Download data from AWS<a class="headerlink" href="#download-data-from-aws" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="kn">import</span> <span class="nn">boto3</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span> <span class="k">as</span> <span class="n">td</span>
+
+<span class="n">session</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;logs&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">download_results</span><span class="p">():</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Querying&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Query for the first time beginning in 1970</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">start_query</span><span class="p">(</span>
+            <span class="n">logGroupName</span><span class="o">=</span><span class="s1">&#39;/aws/batch/job&#39;</span><span class="p">,</span>
+            <span class="n">startTime</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+            <span class="n">endTime</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span>
+            <span class="n">queryString</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                fields @message, @timestamp</span>
+<span class="s2">                | filter success == 1</span>
+<span class="s2">                | sort @timestamp asc</span>
+<span class="s2">                | limit 10000</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="mi">10000</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Loop untill the query response is ready</span>
+        <span class="n">query_result</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;Scheduled&#39;</span><span class="p">}</span>
+        <span class="k">while</span> <span class="n">query_result</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;Scheduled&#39;</span><span class="p">,</span> <span class="s1">&#39;Running&#39;</span><span class="p">):</span>
+            <span class="n">query_result</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get_query_results</span><span class="p">(</span><span class="n">queryId</span><span class="o">=</span><span class="n">query</span><span class="p">[</span><span class="s1">&#39;queryId&#39;</span><span class="p">])</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">query_result</span>
+
+        <span class="c1"># If we reached the end, we don&#39;t have any more data, we break</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">query_result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="c1"># If we did not reach the end, we get the timestamp of the last line and use this</span>
+        <span class="c1"># as a starting point for the next iteration</span>
+        <span class="k">assert</span> <span class="n">query_result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;field&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;@timestamp&quot;</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">query_result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S.</span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># Process the data a little bit and push it to results</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">query_result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">]</span>
+        <span class="p">]</span>
+        <span class="n">results</span> <span class="o">+=</span> <span class="n">data</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">results</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">SOURCE_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+
+
+<span class="n">DATA_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SOURCE_DIR</span><span class="p">,</span> <span class="s2">&quot;data/&quot;</span><span class="p">)</span>
+<span class="n">CLOUDWATCH_DATA_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATA_DIR</span><span class="p">,</span> <span class="s2">&quot;cloudwtach-results.jsonl&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">write_results</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">CLOUDWATCH_DATA_PATH</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">fd</span><span class="p">)</span>
+            <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#write_results(download_results())</span>
+</pre></div>
+</div>
+</div></blockquote>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  Querying
+  Querying
+  Done
+
+
+
+
+
+
+
+
+
+
+.. code:: ipython3
+
+  import glob
+
+  def read_results():
+      with open(CLOUDWATCH_DATA_PATH) as fd:
+          cloudwatch = [json.loads(l) for l in fd]
+
+          local = []
+
+          for path in glob.glob(os.path.join(DATA_DIR, &quot;local-results&quot;, &quot;*.jsonl&quot;)):
+              with open(path) as fd:
+                  data = [json.loads(l) for l in fd if l.startswith(&quot;{&quot;)]
+              local += data
+
+      raw_results = cloudwatch + local
+
+      for row in raw_results:
+          if row[&#39;winner&#39;] is None:
+              row[&#39;winner&#39;] = 0.5
+
+      df = pd.DataFrame(raw_results)
+      return df
+
+
+
+
+
+
+
+
+
+.. code:: ipython3
+
+  def get_locals():
+      class Player:
+          def __init__(self, *args, **kwargs):
+              self.args = args
+              self.kwargs = kwargs
+
+      class GreedyPlayer(Player):
+          pass
+
+      class MCTSPlayer(Player):
+          pass
+
+      class UCTPlayer(Player):
+          pass
+
+      class GreedyUCTPlayer(Player):
+          pass
+
+      class RandomPlayer(Player):
+          pass
+
+      class AlphaBetaMinimaxPlayer(Player):
+          pass
+
+      return locals()
+
+
+
+
+
+
+
+
+
+.. code:: ipython3
+
+  player_locals = get_locals()
+
+
+
+
+
+
+
+
+
+.. code:: ipython3
+
+  def process_results(df):
+
+
+      # Fix bad data
+      df[&#39;version&#39;] = df.version.fillna(1).astype(int)
+      df[&#39;side&#39;] = df[&#39;side&#39;].fillna(-1).astype(int)
+
+      # Only keep usable data
+      df = df[df.version &gt;= 2]
+
+      is_normalized = df[&#39;side&#39;] == 0
+
+      to_normalise = df[~is_normalized].copy()
+
+      # Swap columns
+      opponents = to_normalise[&#39;opponent&#39;].copy()
+      players = to_normalise[&#39;player&#39;].copy()
+
+      to_normalise[&#39;player&#39;] = opponents
+      to_normalise[&#39;opponent&#39;] = players
+
+      # Swap winner
+      to_normalise[&#39;winner&#39;] = 1 - to_normalise[&#39;winner&#39;]
+
+      # Swap individual scores
+      to_normalise[&#39;score&#39;] = to_normalise[&#39;score&#39;].map(lambda x: list(reversed(x)))
+
+      # Concatenate the 2 sides
+      normalised = pd.concat([
+          df[is_normalized].copy(),
+          to_normalise.copy()
+      ]).copy()
+
+
+      # Evaluate both players
+      normalised[&#39;player_eval&#39;] = normalised[&#39;player&#39;].map(lambda x: eval(x, globals(), player_locals))
+      normalised[&#39;opponent_eval&#39;] = normalised[&#39;opponent&#39;].map(lambda x: eval(x, globals(), player_locals))
+
+      return normalised
+
+
+
+
+
+
+
+
+
+.. code:: ipython3
+
+  raw_results = read_results()
+
+
+
+
+
+
+
+
+
+.. code:: ipython3
+
+  results = process_results(raw_results)
+</pre></div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+  </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Playing Awale with MCTS</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Nikita Marchant.
+      
+      |
+      <a href="../_sources/lib/results.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
